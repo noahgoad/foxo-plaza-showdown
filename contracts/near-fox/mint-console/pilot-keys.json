@@ -1,0 +1,10 @@
+{
+  "quartermaster": {
+    "accountId": "quartermaster.xuancanh1.testnet",
+    "publicKey": "ed25519:E7LnxQaj3kHepifiTWfPhuQWaseJeWpQcCCd2tzuYoy1"
+  },
+  "sponsor": {
+    "accountId": "sponsor.xuancanh1.testnet",
+    "publicKey": "ed25519:DLUaWky9UUhYVE2F2JaKn2TurTfJd9yRTq27WW8VKkgy"
+  }
+}

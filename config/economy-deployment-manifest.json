@@ -1,0 +1,69 @@
+{
+  "schemaVersion": 1,
+  "network": "near-testnet",
+  "operatorId": "xuancanh1.testnet",
+  "tokenId": "foxo.xuancanh1.testnet",
+  "collectionId": "fox.xuancanh1.testnet",
+  "modules": [
+    {
+      "name": "economy",
+      "accountId": "economy.xuancanh1.testnet",
+      "wasm": "contracts/near-economy/target/wasm32-unknown-unknown/release/near_economy.wasm",
+      "init": {
+        "owner_id": "xuancanh1.testnet",
+        "foxo_contract_id": "foxo.xuancanh1.testnet",
+        "network": "near-testnet",
+        "settlement_signer_id": "xuancanh1.testnet"
+      },
+      "runtimeConfig": {
+        "settlementSignerId": "settler.xuancanh1.testnet"
+      }
+    },
+    {
+      "name": "passport",
+      "accountId": "passport.xuancanh1.testnet",
+      "wasm": "contracts/near-passport/target/wasm32-unknown-unknown/release/near_passport.wasm",
+      "init": {
+        "owner_id": "xuancanh1.testnet",
+        "collection_id": "fox.xuancanh1.testnet",
+        "network": "near-testnet",
+        "career_signer_id": "xuancanh1.testnet"
+      },
+      "runtimeConfig": {
+        "careerSignerId": "career.xuancanh1.testnet"
+      }
+    },
+    {
+      "name": "pool",
+      "accountId": "pool.xuancanh1.testnet",
+      "wasm": "contracts/near-pool/target/wasm32-unknown-unknown/release/near_pool.wasm",
+      "init": {
+        "owner_id": "xuancanh1.testnet",
+        "token_id": "foxo.xuancanh1.testnet",
+        "receipt_signer_id": "xuancanh1.testnet"
+      }
+    },
+    {
+      "name": "guild",
+      "accountId": "guild.xuancanh1.testnet",
+      "wasm": "contracts/near-guild/target/wasm32-unknown-unknown/release/near_guild.wasm",
+      "init": {
+        "economy_mt": "economy.xuancanh1.testnet",
+        "foxo_contract_id": "foxo.xuancanh1.testnet"
+      }
+    },
+    {
+      "name": "market",
+      "accountId": "market.xuancanh1.testnet",
+      "wasm": "contracts/near-market/target/wasm32-unknown-unknown/release/near_market.wasm",
+      "init": {
+        "owner_id": "xuancanh1.testnet",
+        "foxo_contract_id": "foxo.xuancanh1.testnet",
+        "nft_contract_id": "fox.xuancanh1.testnet",
+        "passport_contract_id": "passport.xuancanh1.testnet"
+      }
+    }
+  ],
+  "enablement": "disabled-until-finalized-verification",
+  "funding": "reconcile-remaining-approved-allocation-before-any-transfer"
+}

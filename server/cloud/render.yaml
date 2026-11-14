@@ -1,0 +1,20 @@
+services:
+  - type: web
+    name: chog-game-relay
+    runtime: docker
+    plan: free
+    region: singapore
+    dockerfilePath: ./server/cloud/Dockerfile
+    healthCheckPath: /health
+    autoDeployTrigger: off
+    envVars:
+      - key: CHOG_ALLOWED_ORIGINS
+        value: https://chog-world-disorder.vercel.app
+      - key: CHOG_DATABASE_URL
+        sync: false
+      - key: CHOG_DATABASE_AUTH_TOKEN
+        sync: false
+      - key: CHOG_SIGNER_PRIVATE_KEY
+        sync: false
+      - key: CHOG_DEPLOYMENT_CONFIG
+        sync: false

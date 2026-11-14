@@ -1,0 +1,188 @@
+{
+  "schemaVersion": 2,
+  "rulesVersion": "fox-economy-2.1",
+  "legacy": {
+    "recipeId": "violet-fox-finish",
+    "recipeVersion": 1,
+    "sku": "fox-finish-violet",
+    "unchanged": true
+  },
+  "items": [
+    {
+      "sku": "weapon-finish-aurora-v2",
+      "recipeId": "aurora-weapon-finish",
+      "recipeVersion": 2,
+      "label": "Aurora Weapon Finish",
+      "class": "weapon-finish",
+      "visualKind": "weapon-material",
+      "inputs": {
+        "alloy": 24,
+        "core": 0,
+        "catalyst": 2
+      },
+      "feeAtomic": "5000000000000000000000000",
+      "outputCount": 1,
+      "transferability": "tradable",
+      "entitlementScope": "item-owner",
+      "licenseRequirement": {
+        "produce": "armorer:aurora-v2",
+        "equip": "owned-item",
+        "buyerNeedsProducerLicense": false
+      },
+      "asset": {
+        "path": "assets/near-fox/pilot-v2/aurora-finish.json",
+        "sha256": "d07a6450724a687425b9696e43ce746cace7c165825fca7945c176a2473fe078"
+      },
+      "preview": {
+        "path": "assets/near-fox/pilot-v2/aurora-finish.svg",
+        "sha256": "8f26cadbefa4f64e534fcf6ed61f6ab7c8a0428b761d0c13ca9c2903d0e4af94"
+      },
+      "modelCompatibility": {
+        "ids": [
+          "shooter",
+          "twins",
+          "spinner",
+          "charger",
+          "blaster"
+        ],
+        "models": [
+          {
+            "path": "assets/chog-weapons-v1/shooter.glb",
+            "sha256": "34f9724f62921510b5537e2b17c076ba8d1f76fa37ff3bb529bc4af5e0dcb7d6"
+          },
+          {
+            "path": "assets/chog-weapons-v1/twins.glb",
+            "sha256": "e70e2d4f2eca9b5b637396b992b226fa835e683fff03064b4541c37a3df83113"
+          },
+          {
+            "path": "assets/chog-weapons-v1/spinner.glb",
+            "sha256": "e45df3f657d9836c124a6dc0f5a93369f79941dd3734ac0fc5ce1d3fd2434f7d"
+          },
+          {
+            "path": "assets/chog-weapons-v1/charger.glb",
+            "sha256": "034a4a7c6c6966dfdc23b02932bb9ac5ef8e2d932a15e233fe6592cc67231a4f"
+          },
+          {
+            "path": "assets/chog-weapons-v1/blaster.glb",
+            "sha256": "c4616d191ea0165692d6af6669436673323f83d44b33e385e2f7560aabbc8871"
+          }
+        ],
+        "preserveRig": true,
+        "preserveHat": true,
+        "preserveCombatGeometry": true
+      },
+      "license": {
+        "assetRecipe": "MIT",
+        "sourceModels": "user-supplied; redistribution/commercial grant unverified",
+        "commercialUseApproved": false
+      },
+      "enabled": false,
+      "status": "local-preview-only",
+      "disabledReason": "Runtime menu/gameplay screenshots, performance and source-model rights review pending."
+    },
+    {
+      "sku": "outfit-recolor-tide-v2",
+      "recipeId": "tide-garment-recolor",
+      "recipeVersion": 2,
+      "label": "Tide Garment Recolor",
+      "class": "outfit-recolor",
+      "visualKind": "garment-region-recolor",
+      "inputs": {
+        "alloy": 36,
+        "core": 1,
+        "catalyst": 0
+      },
+      "feeAtomic": "8000000000000000000000000",
+      "outputCount": 1,
+      "transferability": "tradable",
+      "entitlementScope": "item-owner",
+      "licenseRequirement": {
+        "produce": "stylist:tide-v2",
+        "equip": "owned-item",
+        "buyerNeedsProducerLicense": false
+      },
+      "asset": {
+        "path": "assets/near-fox/pilot-v2/tide-recolor.json",
+        "sha256": "85e418cfed8b724e20a4bcc707a7c08290ee308ac31906ad4605ffe39b83138b"
+      },
+      "preview": {
+        "path": "assets/near-fox/pilot-v2/tide-recolor.svg",
+        "sha256": "b5b956cc1b87273dd6a9d57c77b9c496fb3ed67123785309bf6dcb7cb8bf1cec"
+      },
+      "modelCompatibility": {
+        "ids": [
+          "near-fox-garment-v1"
+        ],
+        "models": [
+          {
+            "path": "assets/near-fox/fox-garment.glb",
+            "sha256": "1dc19dc1a88a33d92aa04176e972229ead109942de6d7204b27dc67c34a3ed41"
+          }
+        ],
+        "preserveRig": true,
+        "preserveHat": true,
+        "preserveCombatGeometry": true
+      },
+      "license": {
+        "assetRecipe": "MIT",
+        "sourceModels": "user-supplied; redistribution/commercial grant unverified",
+        "commercialUseApproved": false
+      },
+      "enabled": false,
+      "status": "local-preview-only",
+      "disabledReason": "Runtime menu/gameplay screenshots, performance and source-model rights review pending."
+    },
+    {
+      "sku": "guild-banner-beacon-v2",
+      "recipeId": "guild-beacon-banner",
+      "recipeVersion": 2,
+      "label": "Guild Beacon Banner",
+      "class": "guild-banner",
+      "visualKind": "guild-banner",
+      "inputs": {
+        "alloy": 48,
+        "core": 2,
+        "catalyst": 2
+      },
+      "feeAtomic": "15000000000000000000000000",
+      "outputCount": 1,
+      "transferability": "guild-bound",
+      "entitlementScope": "active-guild-membership",
+      "licenseRequirement": {
+        "produce": "guild:beacon-v2",
+        "equip": "active-guild-member",
+        "buyerNeedsProducerLicense": false
+      },
+      "asset": {
+        "path": "assets/near-fox/pilot-v2/guild-beacon.json",
+        "sha256": "5640629a248337e3e9d4bfe171dc682186a511df5fe0cb5f27d45fe808f76a32"
+      },
+      "preview": {
+        "path": "assets/near-fox/pilot-v2/guild-beacon.svg",
+        "sha256": "1499e0c408f70e63857d3e6776166c1784b89807806d8620fd1f92a25a02b67a"
+      },
+      "modelCompatibility": {
+        "ids": [
+          "near-fox-garment-v1"
+        ],
+        "models": [
+          {
+            "path": "assets/near-fox/fox-garment.glb",
+            "sha256": "1dc19dc1a88a33d92aa04176e972229ead109942de6d7204b27dc67c34a3ed41"
+          }
+        ],
+        "preserveRig": true,
+        "preserveHat": true,
+        "preserveCombatGeometry": true
+      },
+      "license": {
+        "assetRecipe": "MIT",
+        "sourceModels": "user-supplied; redistribution/commercial grant unverified",
+        "commercialUseApproved": false
+      },
+      "enabled": false,
+      "status": "local-preview-only",
+      "disabledReason": "Runtime menu/gameplay screenshots, performance and source-model rights review pending."
+    }
+  ]
+}

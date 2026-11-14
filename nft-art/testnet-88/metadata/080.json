@@ -1,0 +1,8 @@
+{
+  "title": "NEAR Fox #080",
+  "description": "An original fox avatar for the NEAR Arena game.",
+  "media": "images/080.png",
+  "media_hash": "0K5R8xCBLF7SF04m295HtfK9TQdKq198qKo2jLn55Zk=",
+  "copies": 1,
+  "extra": "{\"attributes\":[{\"trait_type\":\"Background\",\"value\":\"Pink\"},{\"trait_type\":\"Outfit\",\"value\":\"Teal Track Jacket\"},{\"trait_type\":\"Headwear\",\"value\":\"Cyan Bucket Hat\"},{\"trait_type\":\"Accessory\",\"value\":\"Cheek Bandage\"},{\"trait_type\":\"Expression\",\"value\":\"Playful Wink\"},{\"trait_type\":\"Eyewear\",\"value\":\"Round Frames\"}]}"
+}

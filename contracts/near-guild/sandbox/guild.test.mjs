@@ -1,0 +1,67 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import { Worker } from 'near-workspaces';
+const unit=10n**24n, fee=15n*unit, gas='250000000000000', yocto='1';
+test('guild canonical burn + exact 15 FOXO fee; failed commits and material/fee refunds conserve principal',async()=>{
+ const worker=await Worker.init();
+ try {
+  const root=worker.rootAccount, accounts={};
+  for(const n of ['token','economy','guild','alice','bob','carl','dana'])accounts[n]=await root.createSubAccount(n);
+  const {token,economy,guild,alice,bob,carl,dana}=accounts;
+  await token.deploy('/wasm/sandbox_mock_ft.wasm');await economy.deploy('/wasm/near_economy.wasm');await guild.deploy('/wasm/near_guild.wasm');
+  await root.call(token,'new',{owner_id:root.accountId,supply:String(1000n*unit)});
+  await root.call(economy,'new',{owner_id:root.accountId,foxo_contract_id:token.accountId,network:'near-testnet',settlement_signer_id:root.accountId});
+  await root.call(guild,'new',{economy_mt:economy.accountId,foxo_contract_id:token.accountId});
+  for(const a of [alice,guild,economy])await root.call(token,'storage_deposit',{account_id:a.accountId},{attachedDeposit:String(unit/10n)});
+  await root.call(token,'ft_transfer',{receiver_id:alice.accountId,amount:String(60n*unit)},{attachedDeposit:yocto});
+  for(const a of [alice,bob,carl,dana])await a.call(guild,'fund_storage',{}, {attachedDeposit:String(unit)});
+  await alice.call(guild,'create_guild',{guild_id:'fox',governors:[alice.accountId,bob.accountId],threshold:2});
+  for(const a of [bob,carl,dana])await a.call(guild,'join',{guild_id:'fox'});
+  await root.call(economy,'set_crafting_enabled',{enabled:true});
+  const stocks=[{alloy:12,core:1,catalyst:1},{alloy:12,core:1,catalyst:1},{alloy:12,core:0,catalyst:0},{alloy:12,core:0,catalyst:0}],players=[alice,bob,carl,dana],zero={alloy:0,core:0,catalyst:0};
+  for(let i=0;i<players.length;i++)await root.call(economy,'grant_materials',{account_id:players[i].accountId,match_id:'stock',materials:stocks[i]});
+  await root.call(economy,'set_crafting_enabled',{enabled:false});const manifest='b'.repeat(64);
+  await root.call(economy,'begin_mt_migration',{manifest_hash:manifest});
+  for(let i=0;i<players.length;i++)await root.call(economy,'import_mt_account',{account_id:players[i].accountId,expected_available:stocks[i],expected_reserved:zero,expected_consumed:zero,expected_item_ids:[]});
+  await root.call(economy,'finalize_mt_migration',{manifest_hash:manifest,expected_accounts:4,expected_supply:['48','2','2'],expected_items:0});
+  for(const a of [...players,guild])await root.call(economy,'storage_deposit',{account_id:a.accountId},{attachedDeposit:String(unit/10n)});
+  await root.call(economy,'set_mt_enabled',{enabled:true});
+  await root.call(economy,'configure_guild_contract',{guild_contract_id:guild.accountId,enabled:true},{attachedDeposit:String(unit)});
+  const block=await root.provider.block({finality:'final'}),deadline=Number(BigInt(block.header.timestamp_nanosec)+3600n*1000000000n);
+  const open=async id=>{await alice.call(guild,'open_project',{project_id:id,guild_id:'fox',deadline});return guild.view('project',{project_id:id});};
+  const send=(actor,pid,p,op,ids,amounts)=>actor.call(economy,'mt_batch_transfer_call',{receiver_id:guild.accountId,token_ids:ids,amounts,msg:JSON.stringify({project_id:pid,terms_hash:p.terms_hash,operation_id:op})},{attachedDeposit:yocto,gas});
+  const fund=(pid,p)=>alice.call(token,'ft_transfer_call',{receiver_id:guild.accountId,amount:String(fee),msg:JSON.stringify({project_id:pid,terms_hash:p.terms_hash})},{attachedDeposit:yocto,gas});
+  const p=await open('refund');await send(alice,'refund',p,'r1',['alloy'],['10']);await send(alice,'refund',p,'r1',['alloy'],['1']);
+  assert.equal(await economy.view('mt_balance_of',{account_id:alice.accountId,token_id:'alloy'}),'2');
+  await assert.rejects(alice.call(guild,'commit',{project_id:'refund'},{gas}),/funded/);
+  await assert.rejects(alice.call(guild,'mt_on_transfer',{sender_id:alice.accountId,previous_owner_ids:[alice.accountId],token_ids:['alloy'],amounts:['1'],msg:'{}'}),/economy/);
+  await fund('refund',p);await alice.call(guild,'cancel',{project_id:'refund'});
+  await root.call(economy,'set_mt_enabled',{enabled:false});await bob.call(guild,'refund',{operation_id:'r1'},{gas});
+  assert.equal((await guild.view('contribution',{operation_id:'r1'})).status,'escrow');
+  await root.call(economy,'set_mt_enabled',{enabled:true});await bob.call(guild,'refund',{operation_id:'r1'},{gas});
+  assert.equal((await guild.view('contribution',{operation_id:'r1'})).status,'refunded');
+  await bob.call(guild,'refund_fee',{project_id:'refund'},{gas});assert.equal((await guild.view('project',{project_id:'refund'})).fee_state,'refunded');
+  assert.equal(await economy.view('mt_balance_of',{account_id:alice.accountId,token_id:'alloy'}),'12');
+  await assert.rejects(bob.call(guild,'refund',{operation_id:'r1'},{gas}),/pending or delivered/);
+  const q=await open('commit');
+  for(let i=0;i<players.length;i++){const ids=i<2?['alloy','core','catalyst']:['alloy'],amounts=i<2?['12','1','1']:['12'];await send(players[i],'commit',q,'c'+i,ids,amounts);}
+  await assert.rejects(alice.call(guild,'commit',{project_id:'commit'},{gas}),/15 FOXO/);
+  await fund('commit',q);
+  await root.call(economy,'configure_guild_contract',{guild_contract_id:guild.accountId,enabled:false});
+  await alice.call(guild,'commit',{project_id:'commit'},{gas});
+  assert.equal((await guild.view('project',{project_id:'commit'})).status,'open');assert.equal((await guild.view('project',{project_id:'commit'})).fee_state,'held');
+  assert.equal(await guild.view('can_display',{project_id:'commit',account_id:bob.accountId}),false);
+  assert.equal(await economy.view('mt_supply',{token_id:'alloy'}),'48');
+  await root.call(economy,'configure_guild_contract',{guild_contract_id:guild.accountId,enabled:true});
+  await alice.call(guild,'commit',{project_id:'commit'},{gas});
+  assert.equal((await guild.view('project',{project_id:'commit'})).status,'committed');
+  assert.equal(await guild.view('can_display',{project_id:'commit',account_id:bob.accountId}),true);
+  for(const id of ['alloy','core','catalyst']){assert.equal(await economy.view('mt_supply',{token_id:id}),'0');assert.equal(await economy.view('mt_balance_of',{account_id:guild.accountId,token_id:id}),'0');}
+  assert.equal(await token.view('ft_balance_of',{account_id:economy.accountId}),String(fee));
+  assert.equal(await token.view('ft_balance_of',{account_id:guild.accountId}),'0');assert.equal(await token.view('ft_balance_of',{account_id:alice.accountId}),String(45n*unit));
+  const receipt=await economy.view('get_guild_commit_receipt',{guild_contract_id:guild.accountId,project_id:'commit'});assert.equal(receipt.terms_hash,q.terms_hash);assert.equal(receipt.fee_atomic,String(fee));
+  await bob.call(guild,'leave',{guild_id:'fox'});assert.equal(await guild.view('can_display',{project_id:'commit',account_id:bob.accountId}),false);
+  await alice.call(guild,'disband',{guild_id:'fox'});assert.equal((await guild.view('project',{project_id:'commit'})).status,'archived');
+  await assert.rejects(alice.call(guild,'refund',{operation_id:'c0'},{gas}),/uncommitted/);
+ } finally{await worker.tearDown();}
+});

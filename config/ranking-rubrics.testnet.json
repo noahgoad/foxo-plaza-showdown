@@ -1,0 +1,50 @@
+{
+  "version": "near-ranking-preview-1",
+  "reviewStatus": "approved",
+  "enabledModes": ["boss", "hunt", "control", "trials"],
+  "scoreScaleAtomic": "1000000",
+  "activityMinimumBps": 2000,
+  "fullActivityBps": 8000,
+  "difficultyBps": { "easy": 0, "normal": 10000, "hard": 10000 },
+  "maxOpponentMeetings": 3,
+  "modes": {
+    "hunt": {
+      "bestOf": 3,
+      "required": ["durationMs", "activeMs", "difficulty", "left", "captures", "traits", "supplies", "stuns", "humanOpponentCount", "maxOpponentMeetings"],
+      "components": [
+        { "field": "captures", "target": 3, "weightBps": 3500 },
+        { "field": "traits", "target": 4, "weightBps": 3500 },
+        { "field": "supplies", "target": 6, "weightBps": 2000 },
+        { "field": "stuns", "target": 5, "weightBps": 1000 }
+      ]
+    },
+    "boss": {
+      "bestOf": 3,
+      "required": ["durationMs", "activeMs", "difficulty", "left", "bossDamage", "bossMaxHp", "allyHealing", "allyBlocked", "shieldBreaks"],
+      "components": [
+        { "field": "bossDamage", "targetField": "bossMaxHp", "targetDivisor": 6, "weightBps": 4000 },
+        { "field": "allyHealing", "target": 300, "weightBps": 2500 },
+        { "field": "allyBlocked", "target": 300, "weightBps": 1500 },
+        { "field": "shieldBreaks", "target": 3, "weightBps": 2000 }
+      ]
+    },
+    "control": {
+      "bestOf": 3,
+      "required": ["durationMs", "activeMs", "difficulty", "left", "captureMs", "contestMs", "defenseMs", "humanOpponentCount", "maxOpponentMeetings"],
+      "components": [
+        { "field": "captureMs", "target": 30000, "weightBps": 4000 },
+        { "field": "contestMs", "target": 60000, "weightBps": 3500 },
+        { "field": "defenseMs", "target": 60000, "weightBps": 2500 }
+      ]
+    },
+    "trials": {
+      "bestOf": 1,
+      "objectiveActiveTargetMs": 24000,
+      "required": ["durationMs", "activeMs", "difficulty", "left", "objectiveProgress", "remainingMs", "challengeDurationMs", "standardizedKit"],
+      "components": [
+        { "field": "objectiveProgress", "target": 8, "weightBps": 8000 },
+        { "field": "remainingMs", "targetField": "challengeDurationMs", "targetDivisor": 1, "requiresCompleted": true, "weightBps": 2000 }
+      ]
+    }
+  }
+}

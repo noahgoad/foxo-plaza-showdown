@@ -1,0 +1,8 @@
+{
+  "enabled": false,
+  "policyVersion": "pilot-1",
+  "budgetAtomic": "0",
+  "maxQuantity": 10,
+  "maxTtlMs": 300000,
+  "providerTimeoutMs": 5000
+}

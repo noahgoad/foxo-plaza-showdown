@@ -1,0 +1,1064 @@
+{
+  "network": "testnet",
+  "receiver_id": "xuancanh1.testnet",
+  "status": "draft",
+  "media_requires_public_base_url": false,
+  "tokens": [
+    {
+      "token_id": "001",
+      "receiver_id": "xuancanh1.testnet",
+      "token_metadata": {
+        "title": "NEAR Fox #001",
+        "description": "An original fox avatar for the NEAR Arena game.",
+        "media": "https://near-fox-testnet-media.vercel.app/images/001.png",
+        "media_hash": "MPR6D7xHfkutivTD1ElNEmg3RuvoXZ74uLyVz+BzLf0=",
+        "copies": 1,
+        "extra": "{\"attributes\":[{\"trait_type\":\"Background\",\"value\":\"Butter Yellow\"},{\"trait_type\":\"Outfit\",\"value\":\"Pink Hoodie\"},{\"trait_type\":\"Headwear\",\"value\":\"Cyan Bucket Hat\"},{\"trait_type\":\"Accessory\",\"value\":\"None\"},{\"trait_type\":\"Expression\",\"value\":\"Classic Smile\"},{\"trait_type\":\"Eyewear\",\"value\":\"None\"}]}"
+      }
+    },
+    {
+      "token_id": "002",
+      "receiver_id": "xuancanh1.testnet",
+      "token_metadata": {
+        "title": "NEAR Fox #002",
+        "description": "An original fox avatar for the NEAR Arena game.",
+        "media": "https://near-fox-testnet-media.vercel.app/images/002.png",
+        "media_hash": "2rnWXB6KxVnvL15iNB5TOK5Uk8yF0qBFt0kyiefCj1c=",
+        "copies": 1,
+        "extra": "{\"attributes\":[{\"trait_type\":\"Background\",\"value\":\"Butter Yellow\"},{\"trait_type\":\"Outfit\",\"value\":\"Pink Hoodie\"},{\"trait_type\":\"Headwear\",\"value\":\"Brick Baseball Cap\"},{\"trait_type\":\"Accessory\",\"value\":\"Cheek Bandage\"},{\"trait_type\":\"Expression\",\"value\":\"Classic Smile\"},{\"trait_type\":\"Eyewear\",\"value\":\"Sport Visor\"}]}"
+      }
+    },
+    {
+      "token_id": "003",
+      "receiver_id": "xuancanh1.testnet",
+      "token_metadata": {
+        "title": "NEAR Fox #003",
+        "description": "An original fox avatar for the NEAR Arena game.",
+        "media": "https://near-fox-testnet-media.vercel.app/images/003.png",
+        "media_hash": "rhOPHQkvh8g2zB2EDCx2QmOM6+3lKDZXtWyVn1BTa2U=",
+        "copies": 1,
+        "extra": "{\"attributes\":[{\"trait_type\":\"Background\",\"value\":\"Butter Yellow\"},{\"trait_type\":\"Outfit\",\"value\":\"Pink Hoodie\"},{\"trait_type\":\"Headwear\",\"value\":\"Mustard Beanie\"},{\"trait_type\":\"Accessory\",\"value\":\"Cheek Bandage\"},{\"trait_type\":\"Expression\",\"value\":\"Little Fang\"},{\"trait_type\":\"Eyewear\",\"value\":\"Sport Visor\"}]}"
+      }
+    },
+    {
+      "token_id": "004",
+      "receiver_id": "xuancanh1.testnet",
+      "token_metadata": {
+        "title": "NEAR Fox #004",
+        "description": "An original fox avatar for the NEAR Arena game.",
+        "media": "https://near-fox-testnet-media.vercel.app/images/004.png",
+        "media_hash": "ge/rwKPQJaZyw+1S7UJV0Ql4pXc/NcOKt+AHfsPCFcs=",
+        "copies": 1,
+        "extra": "{\"attributes\":[{\"trait_type\":\"Background\",\"value\":\"Butter Yellow\"},{\"trait_type\":\"Outfit\",\"value\":\"Plum Varsity\"},{\"trait_type\":\"Headwear\",\"value\":\"Cyan Bucket Hat\"},{\"trait_type\":\"Accessory\",\"value\":\"Gold Hoop\"},{\"trait_type\":\"Expression\",\"value\":\"Playful Wink\"},{\"trait_type\":\"Eyewear\",\"value\":\"Round Frames\"}]}"
+      }
+    },
+    {
+      "token_id": "005",
+      "receiver_id": "xuancanh1.testnet",
+      "token_metadata": {
+        "title": "NEAR Fox #005",
+        "description": "An original fox avatar for the NEAR Arena game.",
+        "media": "https://near-fox-testnet-media.vercel.app/images/005.png",
+        "media_hash": "HCG8Z8mf9zxiu+VemdZNcu/a0XDJOlKVmfIifIH2CTU=",
+        "copies": 1,
+        "extra": "{\"attributes\":[{\"trait_type\":\"Background\",\"value\":\"Butter Yellow\"},{\"trait_type\":\"Outfit\",\"value\":\"Plum Varsity\"},{\"trait_type\":\"Headwear\",\"value\":\"Brick Baseball Cap\"},{\"trait_type\":\"Accessory\",\"value\":\"None\"},{\"trait_type\":\"Expression\",\"value\":\"Little Fang\"},{\"trait_type\":\"Eyewear\",\"value\":\"Round Frames\"}]}"
+      }
+    },
+    {
+      "token_id": "006",
+      "receiver_id": "xuancanh1.testnet",
+      "token_metadata": {
+        "title": "NEAR Fox #006",
+        "description": "An original fox avatar for the NEAR Arena game.",
+        "media": "https://near-fox-testnet-media.vercel.app/images/006.png",
+        "media_hash": "blPXmj5ZHgFpXJq+YWe2rxe1JBpn7V8ZSGBK8ZIIzLg=",
+        "copies": 1,
+        "extra": "{\"attributes\":[{\"trait_type\":\"Background\",\"value\":\"Butter Yellow\"},{\"trait_type\":\"Outfit\",\"value\":\"Plum Varsity\"},{\"trait_type\":\"Headwear\",\"value\":\"Mustard Beanie\"},{\"trait_type\":\"Accessory\",\"value\":\"Cheek Bandage\"},{\"trait_type\":\"Expression\",\"value\":\"Playful Wink\"},{\"trait_type\":\"Eyewear\",\"value\":\"None\"}]}"
+      }
+    },
+    {
+      "token_id": "007",
+      "receiver_id": "xuancanh1.testnet",
+      "token_metadata": {
+        "title": "NEAR Fox #007",
+        "description": "An original fox avatar for the NEAR Arena game.",
+        "media": "https://near-fox-testnet-media.vercel.app/images/007.png",
+        "media_hash": "2TkbC0aVrXHl0A/HuiYfdyDJw0sb2EhtLFkkiXNFYT0=",
+        "copies": 1,
+        "extra": "{\"attributes\":[{\"trait_type\":\"Background\",\"value\":\"Butter Yellow\"},{\"trait_type\":\"Outfit\",\"value\":\"Teal Track Jacket\"},{\"trait_type\":\"Headwear\",\"value\":\"Cyan Bucket Hat\"},{\"trait_type\":\"Accessory\",\"value\":\"Gold Hoop\"},{\"trait_type\":\"Expression\",\"value\":\"Classic Smile\"},{\"trait_type\":\"Eyewear\",\"value\":\"None\"}]}"
+      }
+    },
+    {
+      "token_id": "008",
+      "receiver_id": "xuancanh1.testnet",
+      "token_metadata": {
+        "title": "NEAR Fox #008",
+        "description": "An original fox avatar for the NEAR Arena game.",
+        "media": "https://near-fox-testnet-media.vercel.app/images/008.png",
+        "media_hash": "WsAPwTMPkt/4hAb9Y0TBejtZJJevhAncOtet5ibum48=",
+        "copies": 1,
+        "extra": "{\"attributes\":[{\"trait_type\":\"Background\",\"value\":\"Butter Yellow\"},{\"trait_type\":\"Outfit\",\"value\":\"Teal Track Jacket\"},{\"trait_type\":\"Headwear\",\"value\":\"Brick Baseball Cap\"},{\"trait_type\":\"Accessory\",\"value\":\"None\"},{\"trait_type\":\"Expression\",\"value\":\"Classic Smile\"},{\"trait_type\":\"Eyewear\",\"value\":\"Sport Visor\"}]}"
+      }
+    },
+    {
+      "token_id": "009",
+      "receiver_id": "xuancanh1.testnet",
+      "token_metadata": {
+        "title": "NEAR Fox #009",
+        "description": "An original fox avatar for the NEAR Arena game.",
+        "media": "https://near-fox-testnet-media.vercel.app/images/009.png",
+        "media_hash": "rTdfifh7aScRfBbwBV5nVA/blg+d5vRbuM8ZqhtmkHc=",
+        "copies": 1,
+        "extra": "{\"attributes\":[{\"trait_type\":\"Background\",\"value\":\"Butter Yellow\"},{\"trait_type\":\"Outfit\",\"value\":\"Teal Track Jacket\"},{\"trait_type\":\"Headwear\",\"value\":\"Mustard Beanie\"},{\"trait_type\":\"Accessory\",\"value\":\"None\"},{\"trait_type\":\"Expression\",\"value\":\"Little Fang\"},{\"trait_type\":\"Eyewear\",\"value\":\"Sport Visor\"}]}"
+      }
+    },
+    {
+      "token_id": "010",
+      "receiver_id": "xuancanh1.testnet",
+      "token_metadata": {
+        "title": "NEAR Fox #010",
+        "description": "An original fox avatar for the NEAR Arena game.",
+        "media": "https://near-fox-testnet-media.vercel.app/images/010.png",
+        "media_hash": "INWdOlEOI3Q0xw/QjnwYPDwOqUOtybyXwezJdATbLT8=",
+        "copies": 1,
+        "extra": "{\"attributes\":[{\"trait_type\":\"Background\",\"value\":\"Butter Yellow\"},{\"trait_type\":\"Outfit\",\"value\":\"Saffron Jersey\"},{\"trait_type\":\"Headwear\",\"value\":\"Cyan Bucket Hat\"},{\"trait_type\":\"Accessory\",\"value\":\"Cheek Bandage\"},{\"trait_type\":\"Expression\",\"value\":\"Playful Wink\"},{\"trait_type\":\"Eyewear\",\"value\":\"Round Frames\"}]}"
+      }
+    },
+    {
+      "token_id": "011",
+      "receiver_id": "xuancanh1.testnet",
+      "token_metadata": {
+        "title": "NEAR Fox #011",
+        "description": "An original fox avatar for the NEAR Arena game.",
+        "media": "https://near-fox-testnet-media.vercel.app/images/011.png",
+        "media_hash": "cOGr5LbmvOoYLa3XiwNp52anmtXwHLk3qgil2XWX0aw=",
+        "copies": 1,
+        "extra": "{\"attributes\":[{\"trait_type\":\"Background\",\"value\":\"Butter Yellow\"},{\"trait_type\":\"Outfit\",\"value\":\"Saffron Jersey\"},{\"trait_type\":\"Headwear\",\"value\":\"Brick Baseball Cap\"},{\"trait_type\":\"Accessory\",\"value\":\"Gold Hoop\"},{\"trait_type\":\"Expression\",\"value\":\"Little Fang\"},{\"trait_type\":\"Eyewear\",\"value\":\"Round Frames\"}]}"
+      }
+    },
+    {
+      "token_id": "012",
+      "receiver_id": "xuancanh1.testnet",
+      "token_metadata": {
+        "title": "NEAR Fox #012",
+        "description": "An original fox avatar for the NEAR Arena game.",
+        "media": "https://near-fox-testnet-media.vercel.app/images/012.png",
+        "media_hash": "KdATaz35Dj1639D0z2x+kr9WZ40objAPGnlnBCn5HSI=",
+        "copies": 1,
+        "extra": "{\"attributes\":[{\"trait_type\":\"Background\",\"value\":\"Butter Yellow\"},{\"trait_type\":\"Outfit\",\"value\":\"Saffron Jersey\"},{\"trait_type\":\"Headwear\",\"value\":\"Mustard Beanie\"},{\"trait_type\":\"Accessory\",\"value\":\"None\"},{\"trait_type\":\"Expression\",\"value\":\"Playful Wink\"},{\"trait_type\":\"Eyewear\",\"value\":\"None\"}]}"
+      }
+    },
+    {
+      "token_id": "013",
+      "receiver_id": "xuancanh1.testnet",
+      "token_metadata": {
+        "title": "NEAR Fox #013",
+        "description": "An original fox avatar for the NEAR Arena game.",
+        "media": "https://near-fox-testnet-media.vercel.app/images/013.png",
+        "media_hash": "pFx+lYEi9V8aoCLFozq2gVZxQp9uxRtMh68xa0o+AuA=",
+        "copies": 1,
+        "extra": "{\"attributes\":[{\"trait_type\":\"Background\",\"value\":\"Butter Yellow\"},{\"trait_type\":\"Outfit\",\"value\":\"Indigo Denim\"},{\"trait_type\":\"Headwear\",\"value\":\"Plum Bucket Hat\"},{\"trait_type\":\"Accessory\",\"value\":\"Cheek Bandage\"},{\"trait_type\":\"Expression\",\"value\":\"Little Fang\"},{\"trait_type\":\"Eyewear\",\"value\":\"None\"}]}"
+      }
+    },
+    {
+      "token_id": "014",
+      "receiver_id": "xuancanh1.testnet",
+      "token_metadata": {
+        "title": "NEAR Fox #014",
+        "description": "An original fox avatar for the NEAR Arena game.",
+        "media": "https://near-fox-testnet-media.vercel.app/images/014.png",
+        "media_hash": "2dTzPOJf/3Nzs8AfR9gL7wNKR1Jbco+q16gYHrsz2Rc=",
+        "copies": 1,
+        "extra": "{\"attributes\":[{\"trait_type\":\"Background\",\"value\":\"Butter Yellow\"},{\"trait_type\":\"Outfit\",\"value\":\"Indigo Denim\"},{\"trait_type\":\"Headwear\",\"value\":\"Brick Baseball Cap\"},{\"trait_type\":\"Accessory\",\"value\":\"Gold Hoop\"},{\"trait_type\":\"Expression\",\"value\":\"Classic Smile\"},{\"trait_type\":\"Eyewear\",\"value\":\"Sport Visor\"}]}"
+      }
+    },
+    {
+      "token_id": "015",
+      "receiver_id": "xuancanh1.testnet",
+      "token_metadata": {
+        "title": "NEAR Fox #015",
+        "description": "An original fox avatar for the NEAR Arena game.",
+        "media": "https://near-fox-testnet-media.vercel.app/images/015.png",
+        "media_hash": "vKt+r4vGNsN1B9HIjiclNuuSUVFP5mE8ANoy0fjrUJY=",
+        "copies": 1,
+        "extra": "{\"attributes\":[{\"trait_type\":\"Background\",\"value\":\"Butter Yellow\"},{\"trait_type\":\"Outfit\",\"value\":\"Indigo Denim\"},{\"trait_type\":\"Headwear\",\"value\":\"Mustard Beanie\"},{\"trait_type\":\"Accessory\",\"value\":\"Gold Hoop\"},{\"trait_type\":\"Expression\",\"value\":\"Little Fang\"},{\"trait_type\":\"Eyewear\",\"value\":\"Sport Visor\"}]}"
+      }
+    },
+    {
+      "token_id": "016",
+      "receiver_id": "xuancanh1.testnet",
+      "token_metadata": {
+        "title": "NEAR Fox #016",
+        "description": "An original fox avatar for the NEAR Arena game.",
+        "media": "https://near-fox-testnet-media.vercel.app/images/016.png",
+        "media_hash": "Tl2BqBI0aibSW2LK/M318YgjHhNBaR+r/lSs6+SDDwA=",
+        "copies": 1,
+        "extra": "{\"attributes\":[{\"trait_type\":\"Background\",\"value\":\"Lavender\"},{\"trait_type\":\"Outfit\",\"value\":\"Pink Hoodie\"},{\"trait_type\":\"Headwear\",\"value\":\"Plum Bucket Hat\"},{\"trait_type\":\"Accessory\",\"value\":\"Cheek Bandage\"},{\"trait_type\":\"Expression\",\"value\":\"Classic Smile\"},{\"trait_type\":\"Eyewear\",\"value\":\"Round Frames\"}]}"
+      }
+    },
+    {
+      "token_id": "017",
+      "receiver_id": "xuancanh1.testnet",
+      "token_metadata": {
+        "title": "NEAR Fox #017",
+        "description": "An original fox avatar for the NEAR Arena game.",
+        "media": "https://near-fox-testnet-media.vercel.app/images/017.png",
+        "media_hash": "l1ICRiaYNKA21LGRWH/qJn1lUDeXdaL7GldvY/29nH0=",
+        "copies": 1,
+        "extra": "{\"attributes\":[{\"trait_type\":\"Background\",\"value\":\"Lavender\"},{\"trait_type\":\"Outfit\",\"value\":\"Pink Hoodie\"},{\"trait_type\":\"Headwear\",\"value\":\"Brick Baseball Cap\"},{\"trait_type\":\"Accessory\",\"value\":\"Cheek Bandage\"},{\"trait_type\":\"Expression\",\"value\":\"Little Fang\"},{\"trait_type\":\"Eyewear\",\"value\":\"Round Frames\"}]}"
+      }
+    },
+    {
+      "token_id": "018",
+      "receiver_id": "xuancanh1.testnet",
+      "token_metadata": {
+        "title": "NEAR Fox #018",
+        "description": "An original fox avatar for the NEAR Arena game.",
+        "media": "https://near-fox-testnet-media.vercel.app/images/018.png",
+        "media_hash": "w59zFcNTCnm8mvEufF1BIzVBWrOeeCbhOMTPWIG+YoI=",
+        "copies": 1,
+        "extra": "{\"attributes\":[{\"trait_type\":\"Background\",\"value\":\"Lavender\"},{\"trait_type\":\"Outfit\",\"value\":\"Pink Hoodie\"},{\"trait_type\":\"Headwear\",\"value\":\"Mustard Beanie\"},{\"trait_type\":\"Accessory\",\"value\":\"Gold Hoop\"},{\"trait_type\":\"Expression\",\"value\":\"Playful Wink\"},{\"trait_type\":\"Eyewear\",\"value\":\"None\"}]}"
+      }
+    },
+    {
+      "token_id": "019",
+      "receiver_id": "xuancanh1.testnet",
+      "token_metadata": {
+        "title": "NEAR Fox #019",
+        "description": "An original fox avatar for the NEAR Arena game.",
+        "media": "https://near-fox-testnet-media.vercel.app/images/019.png",
+        "media_hash": "LNQof/mU0SzWquUMgO3t6TZ50i+XLh1kfXvWiY4FHtg=",
+        "copies": 1,
+        "extra": "{\"attributes\":[{\"trait_type\":\"Background\",\"value\":\"Lavender\"},{\"trait_type\":\"Outfit\",\"value\":\"Plum Varsity\"},{\"trait_type\":\"Headwear\",\"value\":\"Plum Bucket Hat\"},{\"trait_type\":\"Accessory\",\"value\":\"None\"},{\"trait_type\":\"Expression\",\"value\":\"Little Fang\"},{\"trait_type\":\"Eyewear\",\"value\":\"None\"}]}"
+      }
+    },
+    {
+      "token_id": "020",
+      "receiver_id": "xuancanh1.testnet",
+      "token_metadata": {
+        "title": "NEAR Fox #020",
+        "description": "An original fox avatar for the NEAR Arena game.",
+        "media": "https://near-fox-testnet-media.vercel.app/images/020.png",
+        "media_hash": "ly5iKHlYl6xjW/ow+EoeZAD4+Fju5B7n/wCA19b019I=",
+        "copies": 1,
+        "extra": "{\"attributes\":[{\"trait_type\":\"Background\",\"value\":\"Lavender\"},{\"trait_type\":\"Outfit\",\"value\":\"Plum Varsity\"},{\"trait_type\":\"Headwear\",\"value\":\"Brick Baseball Cap\"},{\"trait_type\":\"Accessory\",\"value\":\"Cheek Bandage\"},{\"trait_type\":\"Expression\",\"value\":\"Classic Smile\"},{\"trait_type\":\"Eyewear\",\"value\":\"Sport Visor\"}]}"
+      }
+    },
+    {
+      "token_id": "021",
+      "receiver_id": "xuancanh1.testnet",
+      "token_metadata": {
+        "title": "NEAR Fox #021",
+        "description": "An original fox avatar for the NEAR Arena game.",
+        "media": "https://near-fox-testnet-media.vercel.app/images/021.png",
+        "media_hash": "LWnByoIQIFd0quvnx89t8yv9B1G48d99SqjQBJqTKCs=",
+        "copies": 1,
+        "extra": "{\"attributes\":[{\"trait_type\":\"Background\",\"value\":\"Lavender\"},{\"trait_type\":\"Outfit\",\"value\":\"Plum Varsity\"},{\"trait_type\":\"Headwear\",\"value\":\"Mustard Beanie\"},{\"trait_type\":\"Accessory\",\"value\":\"Cheek Bandage\"},{\"trait_type\":\"Expression\",\"value\":\"Little Fang\"},{\"trait_type\":\"Eyewear\",\"value\":\"Sport Visor\"}]}"
+      }
+    },
+    {
+      "token_id": "022",
+      "receiver_id": "xuancanh1.testnet",
+      "token_metadata": {
+        "title": "NEAR Fox #022",
+        "description": "An original fox avatar for the NEAR Arena game.",
+        "media": "https://near-fox-testnet-media.vercel.app/images/022.png",
+        "media_hash": "WSnC1SlyNEtvL73qejfWoWSKv9NDkvN4KHqHSM8HNZc=",
+        "copies": 1,
+        "extra": "{\"attributes\":[{\"trait_type\":\"Background\",\"value\":\"Lavender\"},{\"trait_type\":\"Outfit\",\"value\":\"Teal Track Jacket\"},{\"trait_type\":\"Headwear\",\"value\":\"Plum Bucket Hat\"},{\"trait_type\":\"Accessory\",\"value\":\"None\"},{\"trait_type\":\"Expression\",\"value\":\"Classic Smile\"},{\"trait_type\":\"Eyewear\",\"value\":\"Round Frames\"}]}"
+      }
+    },
+    {
+      "token_id": "023",
+      "receiver_id": "xuancanh1.testnet",
+      "token_metadata": {
+        "title": "NEAR Fox #023",
+        "description": "An original fox avatar for the NEAR Arena game.",
+        "media": "https://near-fox-testnet-media.vercel.app/images/023.png",
+        "media_hash": "dz1qHchBYAtYa1xGYSJQBJctPAIOvfqkNxif+qZuIF0=",
+        "copies": 1,
+        "extra": "{\"attributes\":[{\"trait_type\":\"Background\",\"value\":\"Lavender\"},{\"trait_type\":\"Outfit\",\"value\":\"Teal Track Jacket\"},{\"trait_type\":\"Headwear\",\"value\":\"Brick Baseball Cap\"},{\"trait_type\":\"Accessory\",\"value\":\"None\"},{\"trait_type\":\"Expression\",\"value\":\"Little Fang\"},{\"trait_type\":\"Eyewear\",\"value\":\"Round Frames\"}]}"
+      }
+    },
+    {
+      "token_id": "024",
+      "receiver_id": "xuancanh1.testnet",
+      "token_metadata": {
+        "title": "NEAR Fox #024",
+        "description": "An original fox avatar for the NEAR Arena game.",
+        "media": "https://near-fox-testnet-media.vercel.app/images/024.png",
+        "media_hash": "Akp7QX+sfkr2GSePUR2ekcESRzjPOnfx/IT2HWvQxlo=",
+        "copies": 1,
+        "extra": "{\"attributes\":[{\"trait_type\":\"Background\",\"value\":\"Lavender\"},{\"trait_type\":\"Outfit\",\"value\":\"Saffron Jersey\"},{\"trait_type\":\"Headwear\",\"value\":\"Cyan Bucket Hat\"},{\"trait_type\":\"Accessory\",\"value\":\"Gold Hoop\"},{\"trait_type\":\"Expression\",\"value\":\"Classic Smile\"},{\"trait_type\":\"Eyewear\",\"value\":\"None\"}]}"
+      }
+    },
+    {
+      "token_id": "025",
+      "receiver_id": "xuancanh1.testnet",
+      "token_metadata": {
+        "title": "NEAR Fox #025",
+        "description": "An original fox avatar for the NEAR Arena game.",
+        "media": "https://near-fox-testnet-media.vercel.app/images/025.png",
+        "media_hash": "Jkb81/P9jGo7YTr1DYslhBkx5tJOAgx280tAuWuakgo=",
+        "copies": 1,
+        "extra": "{\"attributes\":[{\"trait_type\":\"Background\",\"value\":\"Lavender\"},{\"trait_type\":\"Outfit\",\"value\":\"Saffron Jersey\"},{\"trait_type\":\"Headwear\",\"value\":\"Plum Bucket Hat\"},{\"trait_type\":\"Accessory\",\"value\":\"Gold Hoop\"},{\"trait_type\":\"Expression\",\"value\":\"Little Fang\"},{\"trait_type\":\"Eyewear\",\"value\":\"None\"}]}"
+      }
+    },
+    {
+      "token_id": "026",
+      "receiver_id": "xuancanh1.testnet",
+      "token_metadata": {
+        "title": "NEAR Fox #026",
+        "description": "An original fox avatar for the NEAR Arena game.",
+        "media": "https://near-fox-testnet-media.vercel.app/images/026.png",
+        "media_hash": "Ush9xuPuRP/9AGGgxwMCGeUMrqMWCA2jHObuCThgpms=",
+        "copies": 1,
+        "extra": "{\"attributes\":[{\"trait_type\":\"Background\",\"value\":\"Lavender\"},{\"trait_type\":\"Outfit\",\"value\":\"Saffron Jersey\"},{\"trait_type\":\"Headwear\",\"value\":\"Brick Baseball Cap\"},{\"trait_type\":\"Accessory\",\"value\":\"None\"},{\"trait_type\":\"Expression\",\"value\":\"Classic Smile\"},{\"trait_type\":\"Eyewear\",\"value\":\"Sport Visor\"}]}"
+      }
+    },
+    {
+      "token_id": "027",
+      "receiver_id": "xuancanh1.testnet",
+      "token_metadata": {
+        "title": "NEAR Fox #027",
+        "description": "An original fox avatar for the NEAR Arena game.",
+        "media": "https://near-fox-testnet-media.vercel.app/images/027.png",
+        "media_hash": "gk7qObFcA5M06Uwpc1genyTek3wIhV1ycEZH5qxg3Gk=",
+        "copies": 1,
+        "extra": "{\"attributes\":[{\"trait_type\":\"Background\",\"value\":\"Lavender\"},{\"trait_type\":\"Outfit\",\"value\":\"Indigo Denim\"},{\"trait_type\":\"Headwear\",\"value\":\"Cyan Bucket Hat\"},{\"trait_type\":\"Accessory\",\"value\":\"Cheek Bandage\"},{\"trait_type\":\"Expression\",\"value\":\"Playful Wink\"},{\"trait_type\":\"Eyewear\",\"value\":\"Round Frames\"}]}"
+      }
+    },
+    {
+      "token_id": "028",
+      "receiver_id": "xuancanh1.testnet",
+      "token_metadata": {
+        "title": "NEAR Fox #028",
+        "description": "An original fox avatar for the NEAR Arena game.",
+        "media": "https://near-fox-testnet-media.vercel.app/images/028.png",
+        "media_hash": "VuGBvX+wMJwMZW0c7FQMzggfybHuTrqtacm1FcrYmGM=",
+        "copies": 1,
+        "extra": "{\"attributes\":[{\"trait_type\":\"Background\",\"value\":\"Lavender\"},{\"trait_type\":\"Outfit\",\"value\":\"Indigo Denim\"},{\"trait_type\":\"Headwear\",\"value\":\"Plum Bucket Hat\"},{\"trait_type\":\"Accessory\",\"value\":\"Gold Hoop\"},{\"trait_type\":\"Expression\",\"value\":\"Classic Smile\"},{\"trait_type\":\"Eyewear\",\"value\":\"Round Frames\"}]}"
+      }
+    },
+    {
+      "token_id": "029",
+      "receiver_id": "xuancanh1.testnet",
+      "token_metadata": {
+        "title": "NEAR Fox #029",
+        "description": "An original fox avatar for the NEAR Arena game.",
+        "media": "https://near-fox-testnet-media.vercel.app/images/029.png",
+        "media_hash": "JuZjJjPg6d9g1pvt2iMD0nTuWLXQBbQ1m0n4aW6Uklk=",
+        "copies": 1,
+        "extra": "{\"attributes\":[{\"trait_type\":\"Background\",\"value\":\"Lavender\"},{\"trait_type\":\"Outfit\",\"value\":\"Indigo Denim\"},{\"trait_type\":\"Headwear\",\"value\":\"Brick Baseball Cap\"},{\"trait_type\":\"Accessory\",\"value\":\"Gold Hoop\"},{\"trait_type\":\"Expression\",\"value\":\"Little Fang\"},{\"trait_type\":\"Eyewear\",\"value\":\"Round Frames\"}]}"
+      }
+    },
+    {
+      "token_id": "030",
+      "receiver_id": "xuancanh1.testnet",
+      "token_metadata": {
+        "title": "NEAR Fox #030",
+        "description": "An original fox avatar for the NEAR Arena game.",
+        "media": "https://near-fox-testnet-media.vercel.app/images/030.png",
+        "media_hash": "dlbxwWUchF8szWlciB6lJaYDTSyQSqFmxXHw58a21E8=",
+        "copies": 1,
+        "extra": "{\"attributes\":[{\"trait_type\":\"Background\",\"value\":\"Mint\"},{\"trait_type\":\"Outfit\",\"value\":\"Pink Hoodie\"},{\"trait_type\":\"Headwear\",\"value\":\"Cyan Bucket Hat\"},{\"trait_type\":\"Accessory\",\"value\":\"Cheek Bandage\"},{\"trait_type\":\"Expression\",\"value\":\"Classic Smile\"},{\"trait_type\":\"Eyewear\",\"value\":\"None\"}]}"
+      }
+    },
+    {
+      "token_id": "031",
+      "receiver_id": "xuancanh1.testnet",
+      "token_metadata": {
+        "title": "NEAR Fox #031",
+        "description": "An original fox avatar for the NEAR Arena game.",
+        "media": "https://near-fox-testnet-media.vercel.app/images/031.png",
+        "media_hash": "th91rSxhCXWktcePnad9JvldTGcNOFh1VHLI+DCs4vA=",
+        "copies": 1,
+        "extra": "{\"attributes\":[{\"trait_type\":\"Background\",\"value\":\"Mint\"},{\"trait_type\":\"Outfit\",\"value\":\"Pink Hoodie\"},{\"trait_type\":\"Headwear\",\"value\":\"Plum Bucket Hat\"},{\"trait_type\":\"Accessory\",\"value\":\"Cheek Bandage\"},{\"trait_type\":\"Expression\",\"value\":\"Little Fang\"},{\"trait_type\":\"Eyewear\",\"value\":\"None\"}]}"
+      }
+    },
+    {
+      "token_id": "032",
+      "receiver_id": "xuancanh1.testnet",
+      "token_metadata": {
+        "title": "NEAR Fox #032",
+        "description": "An original fox avatar for the NEAR Arena game.",
+        "media": "https://near-fox-testnet-media.vercel.app/images/032.png",
+        "media_hash": "aN9IO8X+LWt+jhaNzFrfQo+Oy7gZn14il4nA8Jwefow=",
+        "copies": 1,
+        "extra": "{\"attributes\":[{\"trait_type\":\"Background\",\"value\":\"Mint\"},{\"trait_type\":\"Outfit\",\"value\":\"Pink Hoodie\"},{\"trait_type\":\"Headwear\",\"value\":\"Brick Baseball Cap\"},{\"trait_type\":\"Accessory\",\"value\":\"Gold Hoop\"},{\"trait_type\":\"Expression\",\"value\":\"Classic Smile\"},{\"trait_type\":\"Eyewear\",\"value\":\"Sport Visor\"}]}"
+      }
+    },
+    {
+      "token_id": "033",
+      "receiver_id": "xuancanh1.testnet",
+      "token_metadata": {
+        "title": "NEAR Fox #033",
+        "description": "An original fox avatar for the NEAR Arena game.",
+        "media": "https://near-fox-testnet-media.vercel.app/images/033.png",
+        "media_hash": "DP45tA3eExIeyuibSJ2xQcW3LfIREXxxWPoctvAuxRc=",
+        "copies": 1,
+        "extra": "{\"attributes\":[{\"trait_type\":\"Background\",\"value\":\"Mint\"},{\"trait_type\":\"Outfit\",\"value\":\"Plum Varsity\"},{\"trait_type\":\"Headwear\",\"value\":\"Cyan Bucket Hat\"},{\"trait_type\":\"Accessory\",\"value\":\"None\"},{\"trait_type\":\"Expression\",\"value\":\"Playful Wink\"},{\"trait_type\":\"Eyewear\",\"value\":\"Round Frames\"}]}"
+      }
+    },
+    {
+      "token_id": "034",
+      "receiver_id": "xuancanh1.testnet",
+      "token_metadata": {
+        "title": "NEAR Fox #034",
+        "description": "An original fox avatar for the NEAR Arena game.",
+        "media": "https://near-fox-testnet-media.vercel.app/images/034.png",
+        "media_hash": "faB3nFp8c9VWNFprvP+tj1SQ0ufxbR5AWFCwspGcJ6E=",
+        "copies": 1,
+        "extra": "{\"attributes\":[{\"trait_type\":\"Background\",\"value\":\"Mint\"},{\"trait_type\":\"Outfit\",\"value\":\"Plum Varsity\"},{\"trait_type\":\"Headwear\",\"value\":\"Plum Bucket Hat\"},{\"trait_type\":\"Accessory\",\"value\":\"Cheek Bandage\"},{\"trait_type\":\"Expression\",\"value\":\"Classic Smile\"},{\"trait_type\":\"Eyewear\",\"value\":\"Round Frames\"}]}"
+      }
+    },
+    {
+      "token_id": "035",
+      "receiver_id": "xuancanh1.testnet",
+      "token_metadata": {
+        "title": "NEAR Fox #035",
+        "description": "An original fox avatar for the NEAR Arena game.",
+        "media": "https://near-fox-testnet-media.vercel.app/images/035.png",
+        "media_hash": "528jvvNbs723btPEIKaTa02MawQGAUBcJbXC+xuBE4M=",
+        "copies": 1,
+        "extra": "{\"attributes\":[{\"trait_type\":\"Background\",\"value\":\"Mint\"},{\"trait_type\":\"Outfit\",\"value\":\"Plum Varsity\"},{\"trait_type\":\"Headwear\",\"value\":\"Mustard Beanie\"},{\"trait_type\":\"Accessory\",\"value\":\"Gold Hoop\"},{\"trait_type\":\"Expression\",\"value\":\"Playful Wink\"},{\"trait_type\":\"Eyewear\",\"value\":\"None\"}]}"
+      }
+    },
+    {
+      "token_id": "036",
+      "receiver_id": "xuancanh1.testnet",
+      "token_metadata": {
+        "title": "NEAR Fox #036",
+        "description": "An original fox avatar for the NEAR Arena game.",
+        "media": "https://near-fox-testnet-media.vercel.app/images/036.png",
+        "media_hash": "z988nFWyg1/IwrkjcoMzG0oSnExGbhohPxjrX825Ge8=",
+        "copies": 1,
+        "extra": "{\"attributes\":[{\"trait_type\":\"Background\",\"value\":\"Mint\"},{\"trait_type\":\"Outfit\",\"value\":\"Teal Track Jacket\"},{\"trait_type\":\"Headwear\",\"value\":\"Cyan Bucket Hat\"},{\"trait_type\":\"Accessory\",\"value\":\"None\"},{\"trait_type\":\"Expression\",\"value\":\"Classic Smile\"},{\"trait_type\":\"Eyewear\",\"value\":\"None\"}]}"
+      }
+    },
+    {
+      "token_id": "037",
+      "receiver_id": "xuancanh1.testnet",
+      "token_metadata": {
+        "title": "NEAR Fox #037",
+        "description": "An original fox avatar for the NEAR Arena game.",
+        "media": "https://near-fox-testnet-media.vercel.app/images/037.png",
+        "media_hash": "R6f8VoeSYxm7GqoOHrIRY8KMSsi/eKUvQpBdUnSt7Z0=",
+        "copies": 1,
+        "extra": "{\"attributes\":[{\"trait_type\":\"Background\",\"value\":\"Mint\"},{\"trait_type\":\"Outfit\",\"value\":\"Teal Track Jacket\"},{\"trait_type\":\"Headwear\",\"value\":\"Plum Bucket Hat\"},{\"trait_type\":\"Accessory\",\"value\":\"None\"},{\"trait_type\":\"Expression\",\"value\":\"Little Fang\"},{\"trait_type\":\"Eyewear\",\"value\":\"None\"}]}"
+      }
+    },
+    {
+      "token_id": "038",
+      "receiver_id": "xuancanh1.testnet",
+      "token_metadata": {
+        "title": "NEAR Fox #038",
+        "description": "An original fox avatar for the NEAR Arena game.",
+        "media": "https://near-fox-testnet-media.vercel.app/images/038.png",
+        "media_hash": "Oa22w12KrZixcQVh6+FYRa+WSiQBHNC90q1B5rJv65c=",
+        "copies": 1,
+        "extra": "{\"attributes\":[{\"trait_type\":\"Background\",\"value\":\"Mint\"},{\"trait_type\":\"Outfit\",\"value\":\"Teal Track Jacket\"},{\"trait_type\":\"Headwear\",\"value\":\"Mustard Beanie\"},{\"trait_type\":\"Accessory\",\"value\":\"Cheek Bandage\"},{\"trait_type\":\"Expression\",\"value\":\"Little Fang\"},{\"trait_type\":\"Eyewear\",\"value\":\"Sport Visor\"}]}"
+      }
+    },
+    {
+      "token_id": "039",
+      "receiver_id": "xuancanh1.testnet",
+      "token_metadata": {
+        "title": "NEAR Fox #039",
+        "description": "An original fox avatar for the NEAR Arena game.",
+        "media": "https://near-fox-testnet-media.vercel.app/images/039.png",
+        "media_hash": "Bz3pqiIER1rPxLsM4/x7aFq+KOzNWw+lypjab+hS5cc=",
+        "copies": 1,
+        "extra": "{\"attributes\":[{\"trait_type\":\"Background\",\"value\":\"Mint\"},{\"trait_type\":\"Outfit\",\"value\":\"Saffron Jersey\"},{\"trait_type\":\"Headwear\",\"value\":\"Cyan Bucket Hat\"},{\"trait_type\":\"Accessory\",\"value\":\"Gold Hoop\"},{\"trait_type\":\"Expression\",\"value\":\"Playful Wink\"},{\"trait_type\":\"Eyewear\",\"value\":\"Round Frames\"}]}"
+      }
+    },
+    {
+      "token_id": "040",
+      "receiver_id": "xuancanh1.testnet",
+      "token_metadata": {
+        "title": "NEAR Fox #040",
+        "description": "An original fox avatar for the NEAR Arena game.",
+        "media": "https://near-fox-testnet-media.vercel.app/images/040.png",
+        "media_hash": "MbqnzOliEEvGVHsl6aWRo/Vy3wnkMyDXhLxx7SFA/ic=",
+        "copies": 1,
+        "extra": "{\"attributes\":[{\"trait_type\":\"Background\",\"value\":\"Mint\"},{\"trait_type\":\"Outfit\",\"value\":\"Saffron Jersey\"},{\"trait_type\":\"Headwear\",\"value\":\"Plum Bucket Hat\"},{\"trait_type\":\"Accessory\",\"value\":\"None\"},{\"trait_type\":\"Expression\",\"value\":\"Classic Smile\"},{\"trait_type\":\"Eyewear\",\"value\":\"Round Frames\"}]}"
+      }
+    },
+    {
+      "token_id": "041",
+      "receiver_id": "xuancanh1.testnet",
+      "token_metadata": {
+        "title": "NEAR Fox #041",
+        "description": "An original fox avatar for the NEAR Arena game.",
+        "media": "https://near-fox-testnet-media.vercel.app/images/041.png",
+        "media_hash": "X+cRL1EdLvAjDXq3oqMQH6txlHXbqTangvkpgaTRn2g=",
+        "copies": 1,
+        "extra": "{\"attributes\":[{\"trait_type\":\"Background\",\"value\":\"Mint\"},{\"trait_type\":\"Outfit\",\"value\":\"Saffron Jersey\"},{\"trait_type\":\"Headwear\",\"value\":\"Mustard Beanie\"},{\"trait_type\":\"Accessory\",\"value\":\"Cheek Bandage\"},{\"trait_type\":\"Expression\",\"value\":\"Playful Wink\"},{\"trait_type\":\"Eyewear\",\"value\":\"None\"}]}"
+      }
+    },
+    {
+      "token_id": "042",
+      "receiver_id": "xuancanh1.testnet",
+      "token_metadata": {
+        "title": "NEAR Fox #042",
+        "description": "An original fox avatar for the NEAR Arena game.",
+        "media": "https://near-fox-testnet-media.vercel.app/images/042.png",
+        "media_hash": "C+88hfdW3xgqoKs3l6B2Yz61gj5VCMbKHdeZuzgjfA8=",
+        "copies": 1,
+        "extra": "{\"attributes\":[{\"trait_type\":\"Background\",\"value\":\"Mint\"},{\"trait_type\":\"Outfit\",\"value\":\"Indigo Denim\"},{\"trait_type\":\"Headwear\",\"value\":\"Cyan Bucket Hat\"},{\"trait_type\":\"Accessory\",\"value\":\"Gold Hoop\"},{\"trait_type\":\"Expression\",\"value\":\"Classic Smile\"},{\"trait_type\":\"Eyewear\",\"value\":\"None\"}]}"
+      }
+    },
+    {
+      "token_id": "043",
+      "receiver_id": "xuancanh1.testnet",
+      "token_metadata": {
+        "title": "NEAR Fox #043",
+        "description": "An original fox avatar for the NEAR Arena game.",
+        "media": "https://near-fox-testnet-media.vercel.app/images/043.png",
+        "media_hash": "1jKkFpnBZdzBlyjCStzzO/sM0moEmscnpg6xl8buLs0=",
+        "copies": 1,
+        "extra": "{\"attributes\":[{\"trait_type\":\"Background\",\"value\":\"Mint\"},{\"trait_type\":\"Outfit\",\"value\":\"Indigo Denim\"},{\"trait_type\":\"Headwear\",\"value\":\"Plum Bucket Hat\"},{\"trait_type\":\"Accessory\",\"value\":\"Gold Hoop\"},{\"trait_type\":\"Expression\",\"value\":\"Little Fang\"},{\"trait_type\":\"Eyewear\",\"value\":\"None\"}]}"
+      }
+    },
+    {
+      "token_id": "044",
+      "receiver_id": "xuancanh1.testnet",
+      "token_metadata": {
+        "title": "NEAR Fox #044",
+        "description": "An original fox avatar for the NEAR Arena game.",
+        "media": "https://near-fox-testnet-media.vercel.app/images/044.png",
+        "media_hash": "bA9sDWK4T+eAgUgMRnS1q0FXztYJq41HXay6x/GfLOk=",
+        "copies": 1,
+        "extra": "{\"attributes\":[{\"trait_type\":\"Background\",\"value\":\"Mint\"},{\"trait_type\":\"Outfit\",\"value\":\"Indigo Denim\"},{\"trait_type\":\"Headwear\",\"value\":\"Mustard Beanie\"},{\"trait_type\":\"Accessory\",\"value\":\"None\"},{\"trait_type\":\"Expression\",\"value\":\"Little Fang\"},{\"trait_type\":\"Eyewear\",\"value\":\"Sport Visor\"}]}"
+      }
+    },
+    {
+      "token_id": "045",
+      "receiver_id": "xuancanh1.testnet",
+      "token_metadata": {
+        "title": "NEAR Fox #045",
+        "description": "An original fox avatar for the NEAR Arena game.",
+        "media": "https://near-fox-testnet-media.vercel.app/images/045.png",
+        "media_hash": "WRjdRT0UvznX1XNtQr+Zofq3YSj9evdxafCg+TeGSe8=",
+        "copies": 1,
+        "extra": "{\"attributes\":[{\"trait_type\":\"Background\",\"value\":\"Peach\"},{\"trait_type\":\"Outfit\",\"value\":\"Pink Hoodie\"},{\"trait_type\":\"Headwear\",\"value\":\"Cyan Bucket Hat\"},{\"trait_type\":\"Accessory\",\"value\":\"Cheek Bandage\"},{\"trait_type\":\"Expression\",\"value\":\"Playful Wink\"},{\"trait_type\":\"Eyewear\",\"value\":\"Round Frames\"}]}"
+      }
+    },
+    {
+      "token_id": "046",
+      "receiver_id": "xuancanh1.testnet",
+      "token_metadata": {
+        "title": "NEAR Fox #046",
+        "description": "An original fox avatar for the NEAR Arena game.",
+        "media": "https://near-fox-testnet-media.vercel.app/images/046.png",
+        "media_hash": "MpUA2LpLJIECbgZypnFkKn3dxdhmDMWdo6/D9PRdLIc=",
+        "copies": 1,
+        "extra": "{\"attributes\":[{\"trait_type\":\"Background\",\"value\":\"Peach\"},{\"trait_type\":\"Outfit\",\"value\":\"Pink Hoodie\"},{\"trait_type\":\"Headwear\",\"value\":\"Brick Baseball Cap\"},{\"trait_type\":\"Accessory\",\"value\":\"Gold Hoop\"},{\"trait_type\":\"Expression\",\"value\":\"Little Fang\"},{\"trait_type\":\"Eyewear\",\"value\":\"Round Frames\"}]}"
+      }
+    },
+    {
+      "token_id": "047",
+      "receiver_id": "xuancanh1.testnet",
+      "token_metadata": {
+        "title": "NEAR Fox #047",
+        "description": "An original fox avatar for the NEAR Arena game.",
+        "media": "https://near-fox-testnet-media.vercel.app/images/047.png",
+        "media_hash": "khvcNekbHmRmVoo5zkgpf1zjL9p72DGSmsBzsGdwHdM=",
+        "copies": 1,
+        "extra": "{\"attributes\":[{\"trait_type\":\"Background\",\"value\":\"Peach\"},{\"trait_type\":\"Outfit\",\"value\":\"Pink Hoodie\"},{\"trait_type\":\"Headwear\",\"value\":\"Mustard Beanie\"},{\"trait_type\":\"Accessory\",\"value\":\"None\"},{\"trait_type\":\"Expression\",\"value\":\"Playful Wink\"},{\"trait_type\":\"Eyewear\",\"value\":\"None\"}]}"
+      }
+    },
+    {
+      "token_id": "048",
+      "receiver_id": "xuancanh1.testnet",
+      "token_metadata": {
+        "title": "NEAR Fox #048",
+        "description": "An original fox avatar for the NEAR Arena game.",
+        "media": "https://near-fox-testnet-media.vercel.app/images/048.png",
+        "media_hash": "+pTtWSNtmXSvzy6Kb2ZelwO6JBUeydbUS83F/OMSMTw=",
+        "copies": 1,
+        "extra": "{\"attributes\":[{\"trait_type\":\"Background\",\"value\":\"Peach\"},{\"trait_type\":\"Outfit\",\"value\":\"Plum Varsity\"},{\"trait_type\":\"Headwear\",\"value\":\"Cyan Bucket Hat\"},{\"trait_type\":\"Accessory\",\"value\":\"Cheek Bandage\"},{\"trait_type\":\"Expression\",\"value\":\"Classic Smile\"},{\"trait_type\":\"Eyewear\",\"value\":\"None\"}]}"
+      }
+    },
+    {
+      "token_id": "049",
+      "receiver_id": "xuancanh1.testnet",
+      "token_metadata": {
+        "title": "NEAR Fox #049",
+        "description": "An original fox avatar for the NEAR Arena game.",
+        "media": "https://near-fox-testnet-media.vercel.app/images/049.png",
+        "media_hash": "x3HQnDeALWL85njsG7faYkRLZUmQt7w97h0YgnnS0tk=",
+        "copies": 1,
+        "extra": "{\"attributes\":[{\"trait_type\":\"Background\",\"value\":\"Peach\"},{\"trait_type\":\"Outfit\",\"value\":\"Plum Varsity\"},{\"trait_type\":\"Headwear\",\"value\":\"Brick Baseball Cap\"},{\"trait_type\":\"Accessory\",\"value\":\"Gold Hoop\"},{\"trait_type\":\"Expression\",\"value\":\"Classic Smile\"},{\"trait_type\":\"Eyewear\",\"value\":\"Sport Visor\"}]}"
+      }
+    },
+    {
+      "token_id": "050",
+      "receiver_id": "xuancanh1.testnet",
+      "token_metadata": {
+        "title": "NEAR Fox #050",
+        "description": "An original fox avatar for the NEAR Arena game.",
+        "media": "https://near-fox-testnet-media.vercel.app/images/050.png",
+        "media_hash": "ap4QXF/xag0UyXBAU4mfWMB0EPa7HSpWdclosL61tUs=",
+        "copies": 1,
+        "extra": "{\"attributes\":[{\"trait_type\":\"Background\",\"value\":\"Peach\"},{\"trait_type\":\"Outfit\",\"value\":\"Plum Varsity\"},{\"trait_type\":\"Headwear\",\"value\":\"Mustard Beanie\"},{\"trait_type\":\"Accessory\",\"value\":\"Gold Hoop\"},{\"trait_type\":\"Expression\",\"value\":\"Little Fang\"},{\"trait_type\":\"Eyewear\",\"value\":\"Sport Visor\"}]}"
+      }
+    },
+    {
+      "token_id": "051",
+      "receiver_id": "xuancanh1.testnet",
+      "token_metadata": {
+        "title": "NEAR Fox #051",
+        "description": "An original fox avatar for the NEAR Arena game.",
+        "media": "https://near-fox-testnet-media.vercel.app/images/051.png",
+        "media_hash": "6SyhUNzUItAZLBwn799uOLPq1w8pnQS7FeZ4+r6eVpQ=",
+        "copies": 1,
+        "extra": "{\"attributes\":[{\"trait_type\":\"Background\",\"value\":\"Peach\"},{\"trait_type\":\"Outfit\",\"value\":\"Teal Track Jacket\"},{\"trait_type\":\"Headwear\",\"value\":\"Cyan Bucket Hat\"},{\"trait_type\":\"Accessory\",\"value\":\"None\"},{\"trait_type\":\"Expression\",\"value\":\"Playful Wink\"},{\"trait_type\":\"Eyewear\",\"value\":\"Round Frames\"}]}"
+      }
+    },
+    {
+      "token_id": "052",
+      "receiver_id": "xuancanh1.testnet",
+      "token_metadata": {
+        "title": "NEAR Fox #052",
+        "description": "An original fox avatar for the NEAR Arena game.",
+        "media": "https://near-fox-testnet-media.vercel.app/images/052.png",
+        "media_hash": "Og51jhPwYWbI+MycIrHYNHgzv6egbK8kOOhkJszvqR8=",
+        "copies": 1,
+        "extra": "{\"attributes\":[{\"trait_type\":\"Background\",\"value\":\"Peach\"},{\"trait_type\":\"Outfit\",\"value\":\"Teal Track Jacket\"},{\"trait_type\":\"Headwear\",\"value\":\"Brick Baseball Cap\"},{\"trait_type\":\"Accessory\",\"value\":\"Cheek Bandage\"},{\"trait_type\":\"Expression\",\"value\":\"Little Fang\"},{\"trait_type\":\"Eyewear\",\"value\":\"Round Frames\"}]}"
+      }
+    },
+    {
+      "token_id": "053",
+      "receiver_id": "xuancanh1.testnet",
+      "token_metadata": {
+        "title": "NEAR Fox #053",
+        "description": "An original fox avatar for the NEAR Arena game.",
+        "media": "https://near-fox-testnet-media.vercel.app/images/053.png",
+        "media_hash": "RjsGKKTffnGGNGi80+9KonrWrI1bOO4k4pZ5YHaG920=",
+        "copies": 1,
+        "extra": "{\"attributes\":[{\"trait_type\":\"Background\",\"value\":\"Peach\"},{\"trait_type\":\"Outfit\",\"value\":\"Teal Track Jacket\"},{\"trait_type\":\"Headwear\",\"value\":\"Mustard Beanie\"},{\"trait_type\":\"Accessory\",\"value\":\"Gold Hoop\"},{\"trait_type\":\"Expression\",\"value\":\"Playful Wink\"},{\"trait_type\":\"Eyewear\",\"value\":\"None\"}]}"
+      }
+    },
+    {
+      "token_id": "054",
+      "receiver_id": "xuancanh1.testnet",
+      "token_metadata": {
+        "title": "NEAR Fox #054",
+        "description": "An original fox avatar for the NEAR Arena game.",
+        "media": "https://near-fox-testnet-media.vercel.app/images/054.png",
+        "media_hash": "9Ss896U73K6+Q9o5ZDh+ZChTOS2fd61eGg9BwPCYnBY=",
+        "copies": 1,
+        "extra": "{\"attributes\":[{\"trait_type\":\"Background\",\"value\":\"Peach\"},{\"trait_type\":\"Outfit\",\"value\":\"Saffron Jersey\"},{\"trait_type\":\"Headwear\",\"value\":\"Cyan Bucket Hat\"},{\"trait_type\":\"Accessory\",\"value\":\"None\"},{\"trait_type\":\"Expression\",\"value\":\"Classic Smile\"},{\"trait_type\":\"Eyewear\",\"value\":\"None\"}]}"
+      }
+    },
+    {
+      "token_id": "055",
+      "receiver_id": "xuancanh1.testnet",
+      "token_metadata": {
+        "title": "NEAR Fox #055",
+        "description": "An original fox avatar for the NEAR Arena game.",
+        "media": "https://near-fox-testnet-media.vercel.app/images/055.png",
+        "media_hash": "z73jDp4lSKIrLoRqiwidRs2B4GLIhgciHusOfBs6rDI=",
+        "copies": 1,
+        "extra": "{\"attributes\":[{\"trait_type\":\"Background\",\"value\":\"Peach\"},{\"trait_type\":\"Outfit\",\"value\":\"Saffron Jersey\"},{\"trait_type\":\"Headwear\",\"value\":\"Brick Baseball Cap\"},{\"trait_type\":\"Accessory\",\"value\":\"Cheek Bandage\"},{\"trait_type\":\"Expression\",\"value\":\"Classic Smile\"},{\"trait_type\":\"Eyewear\",\"value\":\"Sport Visor\"}]}"
+      }
+    },
+    {
+      "token_id": "056",
+      "receiver_id": "xuancanh1.testnet",
+      "token_metadata": {
+        "title": "NEAR Fox #056",
+        "description": "An original fox avatar for the NEAR Arena game.",
+        "media": "https://near-fox-testnet-media.vercel.app/images/056.png",
+        "media_hash": "qiSp7JXYjtbOyCWjzobzmZzk/G9svVIuS3imv1ErNgg=",
+        "copies": 1,
+        "extra": "{\"attributes\":[{\"trait_type\":\"Background\",\"value\":\"Peach\"},{\"trait_type\":\"Outfit\",\"value\":\"Saffron Jersey\"},{\"trait_type\":\"Headwear\",\"value\":\"Mustard Beanie\"},{\"trait_type\":\"Accessory\",\"value\":\"Cheek Bandage\"},{\"trait_type\":\"Expression\",\"value\":\"Little Fang\"},{\"trait_type\":\"Eyewear\",\"value\":\"Sport Visor\"}]}"
+      }
+    },
+    {
+      "token_id": "057",
+      "receiver_id": "xuancanh1.testnet",
+      "token_metadata": {
+        "title": "NEAR Fox #057",
+        "description": "An original fox avatar for the NEAR Arena game.",
+        "media": "https://near-fox-testnet-media.vercel.app/images/057.png",
+        "media_hash": "YvTn4lFrjhQ19MCaM19o79fXhwr/vqBnPVwNubuBgog=",
+        "copies": 1,
+        "extra": "{\"attributes\":[{\"trait_type\":\"Background\",\"value\":\"Peach\"},{\"trait_type\":\"Outfit\",\"value\":\"Indigo Denim\"},{\"trait_type\":\"Headwear\",\"value\":\"Plum Bucket Hat\"},{\"trait_type\":\"Accessory\",\"value\":\"None\"},{\"trait_type\":\"Expression\",\"value\":\"Classic Smile\"},{\"trait_type\":\"Eyewear\",\"value\":\"Round Frames\"}]}"
+      }
+    },
+    {
+      "token_id": "058",
+      "receiver_id": "xuancanh1.testnet",
+      "token_metadata": {
+        "title": "NEAR Fox #058",
+        "description": "An original fox avatar for the NEAR Arena game.",
+        "media": "https://near-fox-testnet-media.vercel.app/images/058.png",
+        "media_hash": "rrA/qFBmdjHah64xodhyVuJSanlSB5DPIDHAdfxwm1g=",
+        "copies": 1,
+        "extra": "{\"attributes\":[{\"trait_type\":\"Background\",\"value\":\"Peach\"},{\"trait_type\":\"Outfit\",\"value\":\"Indigo Denim\"},{\"trait_type\":\"Headwear\",\"value\":\"Brick Baseball Cap\"},{\"trait_type\":\"Accessory\",\"value\":\"None\"},{\"trait_type\":\"Expression\",\"value\":\"Little Fang\"},{\"trait_type\":\"Eyewear\",\"value\":\"Round Frames\"}]}"
+      }
+    },
+    {
+      "token_id": "059",
+      "receiver_id": "xuancanh1.testnet",
+      "token_metadata": {
+        "title": "NEAR Fox #059",
+        "description": "An original fox avatar for the NEAR Arena game.",
+        "media": "https://near-fox-testnet-media.vercel.app/images/059.png",
+        "media_hash": "fALifo6uHA2F8wEa1rk+7ELFHW0ezQXHhF7R3k9L/NY=",
+        "copies": 1,
+        "extra": "{\"attributes\":[{\"trait_type\":\"Background\",\"value\":\"Peach\"},{\"trait_type\":\"Outfit\",\"value\":\"Indigo Denim\"},{\"trait_type\":\"Headwear\",\"value\":\"Mustard Beanie\"},{\"trait_type\":\"Accessory\",\"value\":\"Cheek Bandage\"},{\"trait_type\":\"Expression\",\"value\":\"Playful Wink\"},{\"trait_type\":\"Eyewear\",\"value\":\"None\"}]}"
+      }
+    },
+    {
+      "token_id": "060",
+      "receiver_id": "xuancanh1.testnet",
+      "token_metadata": {
+        "title": "NEAR Fox #060",
+        "description": "An original fox avatar for the NEAR Arena game.",
+        "media": "https://near-fox-testnet-media.vercel.app/images/060.png",
+        "media_hash": "t4u8g6ofW6YO6G1L/KA/hz1m+kPDUVfFsek/Ukgo1dg=",
+        "copies": 1,
+        "extra": "{\"attributes\":[{\"trait_type\":\"Background\",\"value\":\"Sky\"},{\"trait_type\":\"Outfit\",\"value\":\"Pink Hoodie\"},{\"trait_type\":\"Headwear\",\"value\":\"Plum Bucket Hat\"},{\"trait_type\":\"Accessory\",\"value\":\"Gold Hoop\"},{\"trait_type\":\"Expression\",\"value\":\"Little Fang\"},{\"trait_type\":\"Eyewear\",\"value\":\"None\"}]}"
+      }
+    },
+    {
+      "token_id": "061",
+      "receiver_id": "xuancanh1.testnet",
+      "token_metadata": {
+        "title": "NEAR Fox #061",
+        "description": "An original fox avatar for the NEAR Arena game.",
+        "media": "https://near-fox-testnet-media.vercel.app/images/061.png",
+        "media_hash": "17GvYuNGhsdEA7Cjw9O8ZTfbjpHiyfiyUoDqiyBBHhU=",
+        "copies": 1,
+        "extra": "{\"attributes\":[{\"trait_type\":\"Background\",\"value\":\"Sky\"},{\"trait_type\":\"Outfit\",\"value\":\"Pink Hoodie\"},{\"trait_type\":\"Headwear\",\"value\":\"Brick Baseball Cap\"},{\"trait_type\":\"Accessory\",\"value\":\"None\"},{\"trait_type\":\"Expression\",\"value\":\"Classic Smile\"},{\"trait_type\":\"Eyewear\",\"value\":\"Sport Visor\"}]}"
+      }
+    },
+    {
+      "token_id": "062",
+      "receiver_id": "xuancanh1.testnet",
+      "token_metadata": {
+        "title": "NEAR Fox #062",
+        "description": "An original fox avatar for the NEAR Arena game.",
+        "media": "https://near-fox-testnet-media.vercel.app/images/062.png",
+        "media_hash": "meY6TY2DAdJwQzm5Eg7DUexIG4TzbFFhub8qKncA2uw=",
+        "copies": 1,
+        "extra": "{\"attributes\":[{\"trait_type\":\"Background\",\"value\":\"Sky\"},{\"trait_type\":\"Outfit\",\"value\":\"Pink Hoodie\"},{\"trait_type\":\"Headwear\",\"value\":\"Mustard Beanie\"},{\"trait_type\":\"Accessory\",\"value\":\"None\"},{\"trait_type\":\"Expression\",\"value\":\"Little Fang\"},{\"trait_type\":\"Eyewear\",\"value\":\"Sport Visor\"}]}"
+      }
+    },
+    {
+      "token_id": "063",
+      "receiver_id": "xuancanh1.testnet",
+      "token_metadata": {
+        "title": "NEAR Fox #063",
+        "description": "An original fox avatar for the NEAR Arena game.",
+        "media": "https://near-fox-testnet-media.vercel.app/images/063.png",
+        "media_hash": "4xpBK5iTCeotG6MIp11g9qlwHHD534CNNwjderhhvYU=",
+        "copies": 1,
+        "extra": "{\"attributes\":[{\"trait_type\":\"Background\",\"value\":\"Sky\"},{\"trait_type\":\"Outfit\",\"value\":\"Plum Varsity\"},{\"trait_type\":\"Headwear\",\"value\":\"Plum Bucket Hat\"},{\"trait_type\":\"Accessory\",\"value\":\"Gold Hoop\"},{\"trait_type\":\"Expression\",\"value\":\"Classic Smile\"},{\"trait_type\":\"Eyewear\",\"value\":\"Round Frames\"}]}"
+      }
+    },
+    {
+      "token_id": "064",
+      "receiver_id": "xuancanh1.testnet",
+      "token_metadata": {
+        "title": "NEAR Fox #064",
+        "description": "An original fox avatar for the NEAR Arena game.",
+        "media": "https://near-fox-testnet-media.vercel.app/images/064.png",
+        "media_hash": "fCdaNpsOIesHGDzWZT06G3DkvCL/MyVsnSh4aZ+gulk=",
+        "copies": 1,
+        "extra": "{\"attributes\":[{\"trait_type\":\"Background\",\"value\":\"Sky\"},{\"trait_type\":\"Outfit\",\"value\":\"Plum Varsity\"},{\"trait_type\":\"Headwear\",\"value\":\"Brick Baseball Cap\"},{\"trait_type\":\"Accessory\",\"value\":\"Gold Hoop\"},{\"trait_type\":\"Expression\",\"value\":\"Little Fang\"},{\"trait_type\":\"Eyewear\",\"value\":\"Round Frames\"}]}"
+      }
+    },
+    {
+      "token_id": "065",
+      "receiver_id": "xuancanh1.testnet",
+      "token_metadata": {
+        "title": "NEAR Fox #065",
+        "description": "An original fox avatar for the NEAR Arena game.",
+        "media": "https://near-fox-testnet-media.vercel.app/images/065.png",
+        "media_hash": "pk7nm8lNC639qfq/bwL9/0TDXkLiLLX54C8OWj81JbE=",
+        "copies": 1,
+        "extra": "{\"attributes\":[{\"trait_type\":\"Background\",\"value\":\"Sky\"},{\"trait_type\":\"Outfit\",\"value\":\"Plum Varsity\"},{\"trait_type\":\"Headwear\",\"value\":\"Mustard Beanie\"},{\"trait_type\":\"Accessory\",\"value\":\"None\"},{\"trait_type\":\"Expression\",\"value\":\"Playful Wink\"},{\"trait_type\":\"Eyewear\",\"value\":\"None\"}]}"
+      }
+    },
+    {
+      "token_id": "066",
+      "receiver_id": "xuancanh1.testnet",
+      "token_metadata": {
+        "title": "NEAR Fox #066",
+        "description": "An original fox avatar for the NEAR Arena game.",
+        "media": "https://near-fox-testnet-media.vercel.app/images/066.png",
+        "media_hash": "ToZRc3Tx8mjZJ+btogC6VnEE4xH/8VoGlSUyCGCmJgE=",
+        "copies": 1,
+        "extra": "{\"attributes\":[{\"trait_type\":\"Background\",\"value\":\"Sky\"},{\"trait_type\":\"Outfit\",\"value\":\"Teal Track Jacket\"},{\"trait_type\":\"Headwear\",\"value\":\"Plum Bucket Hat\"},{\"trait_type\":\"Accessory\",\"value\":\"Cheek Bandage\"},{\"trait_type\":\"Expression\",\"value\":\"Little Fang\"},{\"trait_type\":\"Eyewear\",\"value\":\"None\"}]}"
+      }
+    },
+    {
+      "token_id": "067",
+      "receiver_id": "xuancanh1.testnet",
+      "token_metadata": {
+        "title": "NEAR Fox #067",
+        "description": "An original fox avatar for the NEAR Arena game.",
+        "media": "https://near-fox-testnet-media.vercel.app/images/067.png",
+        "media_hash": "wB2ZMm1CIqPPIAD/eUF4wue/eigCAu23W1xeNl5mlXY=",
+        "copies": 1,
+        "extra": "{\"attributes\":[{\"trait_type\":\"Background\",\"value\":\"Sky\"},{\"trait_type\":\"Outfit\",\"value\":\"Teal Track Jacket\"},{\"trait_type\":\"Headwear\",\"value\":\"Brick Baseball Cap\"},{\"trait_type\":\"Accessory\",\"value\":\"Gold Hoop\"},{\"trait_type\":\"Expression\",\"value\":\"Classic Smile\"},{\"trait_type\":\"Eyewear\",\"value\":\"Sport Visor\"}]}"
+      }
+    },
+    {
+      "token_id": "068",
+      "receiver_id": "xuancanh1.testnet",
+      "token_metadata": {
+        "title": "NEAR Fox #068",
+        "description": "An original fox avatar for the NEAR Arena game.",
+        "media": "https://near-fox-testnet-media.vercel.app/images/068.png",
+        "media_hash": "JluytDlNBpPf0z8HX6fq3ePnyou7cHFRzLk4y18U6fU=",
+        "copies": 1,
+        "extra": "{\"attributes\":[{\"trait_type\":\"Background\",\"value\":\"Sky\"},{\"trait_type\":\"Outfit\",\"value\":\"Saffron Jersey\"},{\"trait_type\":\"Headwear\",\"value\":\"Cyan Bucket Hat\"},{\"trait_type\":\"Accessory\",\"value\":\"None\"},{\"trait_type\":\"Expression\",\"value\":\"Playful Wink\"},{\"trait_type\":\"Eyewear\",\"value\":\"Round Frames\"}]}"
+      }
+    },
+    {
+      "token_id": "069",
+      "receiver_id": "xuancanh1.testnet",
+      "token_metadata": {
+        "title": "NEAR Fox #069",
+        "description": "An original fox avatar for the NEAR Arena game.",
+        "media": "https://near-fox-testnet-media.vercel.app/images/069.png",
+        "media_hash": "Yq3NIr/cfsEM6ONZzZoOyHp5q/zSC71BScYvimoBJ3Y=",
+        "copies": 1,
+        "extra": "{\"attributes\":[{\"trait_type\":\"Background\",\"value\":\"Sky\"},{\"trait_type\":\"Outfit\",\"value\":\"Saffron Jersey\"},{\"trait_type\":\"Headwear\",\"value\":\"Plum Bucket Hat\"},{\"trait_type\":\"Accessory\",\"value\":\"Cheek Bandage\"},{\"trait_type\":\"Expression\",\"value\":\"Classic Smile\"},{\"trait_type\":\"Eyewear\",\"value\":\"Round Frames\"}]}"
+      }
+    },
+    {
+      "token_id": "070",
+      "receiver_id": "xuancanh1.testnet",
+      "token_metadata": {
+        "title": "NEAR Fox #070",
+        "description": "An original fox avatar for the NEAR Arena game.",
+        "media": "https://near-fox-testnet-media.vercel.app/images/070.png",
+        "media_hash": "rnGHuVIp7Qu8TWW9vOO8Wdop0Nx673f/hTDVtuEbjeU=",
+        "copies": 1,
+        "extra": "{\"attributes\":[{\"trait_type\":\"Background\",\"value\":\"Sky\"},{\"trait_type\":\"Outfit\",\"value\":\"Saffron Jersey\"},{\"trait_type\":\"Headwear\",\"value\":\"Brick Baseball Cap\"},{\"trait_type\":\"Accessory\",\"value\":\"Cheek Bandage\"},{\"trait_type\":\"Expression\",\"value\":\"Little Fang\"},{\"trait_type\":\"Eyewear\",\"value\":\"Round Frames\"}]}"
+      }
+    },
+    {
+      "token_id": "071",
+      "receiver_id": "xuancanh1.testnet",
+      "token_metadata": {
+        "title": "NEAR Fox #071",
+        "description": "An original fox avatar for the NEAR Arena game.",
+        "media": "https://near-fox-testnet-media.vercel.app/images/071.png",
+        "media_hash": "MfuSi1dYvIjCDohrna9poXyuH81bQhhVgS17va6VTc8=",
+        "copies": 1,
+        "extra": "{\"attributes\":[{\"trait_type\":\"Background\",\"value\":\"Sky\"},{\"trait_type\":\"Outfit\",\"value\":\"Indigo Denim\"},{\"trait_type\":\"Headwear\",\"value\":\"Cyan Bucket Hat\"},{\"trait_type\":\"Accessory\",\"value\":\"None\"},{\"trait_type\":\"Expression\",\"value\":\"Classic Smile\"},{\"trait_type\":\"Eyewear\",\"value\":\"None\"}]}"
+      }
+    },
+    {
+      "token_id": "072",
+      "receiver_id": "xuancanh1.testnet",
+      "token_metadata": {
+        "title": "NEAR Fox #072",
+        "description": "An original fox avatar for the NEAR Arena game.",
+        "media": "https://near-fox-testnet-media.vercel.app/images/072.png",
+        "media_hash": "psx26X4EdOoD8cdH9S7Z2t8EW1FQV29BPXNS1VjQQb8=",
+        "copies": 1,
+        "extra": "{\"attributes\":[{\"trait_type\":\"Background\",\"value\":\"Sky\"},{\"trait_type\":\"Outfit\",\"value\":\"Indigo Denim\"},{\"trait_type\":\"Headwear\",\"value\":\"Plum Bucket Hat\"},{\"trait_type\":\"Accessory\",\"value\":\"None\"},{\"trait_type\":\"Expression\",\"value\":\"Little Fang\"},{\"trait_type\":\"Eyewear\",\"value\":\"None\"}]}"
+      }
+    },
+    {
+      "token_id": "073",
+      "receiver_id": "xuancanh1.testnet",
+      "token_metadata": {
+        "title": "NEAR Fox #073",
+        "description": "An original fox avatar for the NEAR Arena game.",
+        "media": "https://near-fox-testnet-media.vercel.app/images/073.png",
+        "media_hash": "qntpqScW7fDHcX654VkiHY4praQAQ3GNX8pU3jWvPMg=",
+        "copies": 1,
+        "extra": "{\"attributes\":[{\"trait_type\":\"Background\",\"value\":\"Sky\"},{\"trait_type\":\"Outfit\",\"value\":\"Indigo Denim\"},{\"trait_type\":\"Headwear\",\"value\":\"Brick Baseball Cap\"},{\"trait_type\":\"Accessory\",\"value\":\"Cheek Bandage\"},{\"trait_type\":\"Expression\",\"value\":\"Classic Smile\"},{\"trait_type\":\"Eyewear\",\"value\":\"Sport Visor\"}]}"
+      }
+    },
+    {
+      "token_id": "074",
+      "receiver_id": "xuancanh1.testnet",
+      "token_metadata": {
+        "title": "NEAR Fox #074",
+        "description": "An original fox avatar for the NEAR Arena game.",
+        "media": "https://near-fox-testnet-media.vercel.app/images/074.png",
+        "media_hash": "Kj0rKifFuZ1c3dIQjWxC8YNbwHnA95Kb+y1sO79QK6k=",
+        "copies": 1,
+        "extra": "{\"attributes\":[{\"trait_type\":\"Background\",\"value\":\"Pink\"},{\"trait_type\":\"Outfit\",\"value\":\"Pink Hoodie\"},{\"trait_type\":\"Headwear\",\"value\":\"Cyan Bucket Hat\"},{\"trait_type\":\"Accessory\",\"value\":\"Gold Hoop\"},{\"trait_type\":\"Expression\",\"value\":\"Playful Wink\"},{\"trait_type\":\"Eyewear\",\"value\":\"Round Frames\"}]}"
+      }
+    },
+    {
+      "token_id": "075",
+      "receiver_id": "xuancanh1.testnet",
+      "token_metadata": {
+        "title": "NEAR Fox #075",
+        "description": "An original fox avatar for the NEAR Arena game.",
+        "media": "https://near-fox-testnet-media.vercel.app/images/075.png",
+        "media_hash": "nw9PMsZHSqA52SDoQKHGIKHUAWIIyzfkA7txqDvuuac=",
+        "copies": 1,
+        "extra": "{\"attributes\":[{\"trait_type\":\"Background\",\"value\":\"Pink\"},{\"trait_type\":\"Outfit\",\"value\":\"Pink Hoodie\"},{\"trait_type\":\"Headwear\",\"value\":\"Plum Bucket Hat\"},{\"trait_type\":\"Accessory\",\"value\":\"None\"},{\"trait_type\":\"Expression\",\"value\":\"Classic Smile\"},{\"trait_type\":\"Eyewear\",\"value\":\"Round Frames\"}]}"
+      }
+    },
+    {
+      "token_id": "076",
+      "receiver_id": "xuancanh1.testnet",
+      "token_metadata": {
+        "title": "NEAR Fox #076",
+        "description": "An original fox avatar for the NEAR Arena game.",
+        "media": "https://near-fox-testnet-media.vercel.app/images/076.png",
+        "media_hash": "xV2zG0TjsaZ64e4HPp8fvA+uqceOItL1EH8skODgArU=",
+        "copies": 1,
+        "extra": "{\"attributes\":[{\"trait_type\":\"Background\",\"value\":\"Pink\"},{\"trait_type\":\"Outfit\",\"value\":\"Pink Hoodie\"},{\"trait_type\":\"Headwear\",\"value\":\"Brick Baseball Cap\"},{\"trait_type\":\"Accessory\",\"value\":\"None\"},{\"trait_type\":\"Expression\",\"value\":\"Little Fang\"},{\"trait_type\":\"Eyewear\",\"value\":\"Round Frames\"}]}"
+      }
+    },
+    {
+      "token_id": "077",
+      "receiver_id": "xuancanh1.testnet",
+      "token_metadata": {
+        "title": "NEAR Fox #077",
+        "description": "An original fox avatar for the NEAR Arena game.",
+        "media": "https://near-fox-testnet-media.vercel.app/images/077.png",
+        "media_hash": "TBX5fGVaZkYAxqkt0wObR/nYz/8nOE4jYYcJpbl6lJM=",
+        "copies": 1,
+        "extra": "{\"attributes\":[{\"trait_type\":\"Background\",\"value\":\"Pink\"},{\"trait_type\":\"Outfit\",\"value\":\"Plum Varsity\"},{\"trait_type\":\"Headwear\",\"value\":\"Cyan Bucket Hat\"},{\"trait_type\":\"Accessory\",\"value\":\"Gold Hoop\"},{\"trait_type\":\"Expression\",\"value\":\"Classic Smile\"},{\"trait_type\":\"Eyewear\",\"value\":\"None\"}]}"
+      }
+    },
+    {
+      "token_id": "078",
+      "receiver_id": "xuancanh1.testnet",
+      "token_metadata": {
+        "title": "NEAR Fox #078",
+        "description": "An original fox avatar for the NEAR Arena game.",
+        "media": "https://near-fox-testnet-media.vercel.app/images/078.png",
+        "media_hash": "/dGRholc9vFhtC/TNd3tunL8LPV7W5l9IyQvh3zjSa0=",
+        "copies": 1,
+        "extra": "{\"attributes\":[{\"trait_type\":\"Background\",\"value\":\"Pink\"},{\"trait_type\":\"Outfit\",\"value\":\"Plum Varsity\"},{\"trait_type\":\"Headwear\",\"value\":\"Plum Bucket Hat\"},{\"trait_type\":\"Accessory\",\"value\":\"Gold Hoop\"},{\"trait_type\":\"Expression\",\"value\":\"Little Fang\"},{\"trait_type\":\"Eyewear\",\"value\":\"None\"}]}"
+      }
+    },
+    {
+      "token_id": "079",
+      "receiver_id": "xuancanh1.testnet",
+      "token_metadata": {
+        "title": "NEAR Fox #079",
+        "description": "An original fox avatar for the NEAR Arena game.",
+        "media": "https://near-fox-testnet-media.vercel.app/images/079.png",
+        "media_hash": "TzYK7KGro7JbIG/H1BzhSfORuZpIvAhEvBSmnW4+qOA=",
+        "copies": 1,
+        "extra": "{\"attributes\":[{\"trait_type\":\"Background\",\"value\":\"Pink\"},{\"trait_type\":\"Outfit\",\"value\":\"Plum Varsity\"},{\"trait_type\":\"Headwear\",\"value\":\"Mustard Beanie\"},{\"trait_type\":\"Accessory\",\"value\":\"None\"},{\"trait_type\":\"Expression\",\"value\":\"Little Fang\"},{\"trait_type\":\"Eyewear\",\"value\":\"Sport Visor\"}]}"
+      }
+    },
+    {
+      "token_id": "080",
+      "receiver_id": "xuancanh1.testnet",
+      "token_metadata": {
+        "title": "NEAR Fox #080",
+        "description": "An original fox avatar for the NEAR Arena game.",
+        "media": "https://near-fox-testnet-media.vercel.app/images/080.png",
+        "media_hash": "0K5R8xCBLF7SF04m295HtfK9TQdKq198qKo2jLn55Zk=",
+        "copies": 1,
+        "extra": "{\"attributes\":[{\"trait_type\":\"Background\",\"value\":\"Pink\"},{\"trait_type\":\"Outfit\",\"value\":\"Teal Track Jacket\"},{\"trait_type\":\"Headwear\",\"value\":\"Cyan Bucket Hat\"},{\"trait_type\":\"Accessory\",\"value\":\"Cheek Bandage\"},{\"trait_type\":\"Expression\",\"value\":\"Playful Wink\"},{\"trait_type\":\"Eyewear\",\"value\":\"Round Frames\"}]}"
+      }
+    },
+    {
+      "token_id": "081",
+      "receiver_id": "xuancanh1.testnet",
+      "token_metadata": {
+        "title": "NEAR Fox #081",
+        "description": "An original fox avatar for the NEAR Arena game.",
+        "media": "https://near-fox-testnet-media.vercel.app/images/081.png",
+        "media_hash": "5WjTpB6XqCxv6kDj729ROFz42rSnjD51rMGUndTNEFE=",
+        "copies": 1,
+        "extra": "{\"attributes\":[{\"trait_type\":\"Background\",\"value\":\"Pink\"},{\"trait_type\":\"Outfit\",\"value\":\"Teal Track Jacket\"},{\"trait_type\":\"Headwear\",\"value\":\"Plum Bucket Hat\"},{\"trait_type\":\"Accessory\",\"value\":\"Gold Hoop\"},{\"trait_type\":\"Expression\",\"value\":\"Classic Smile\"},{\"trait_type\":\"Eyewear\",\"value\":\"Round Frames\"}]}"
+      }
+    },
+    {
+      "token_id": "082",
+      "receiver_id": "xuancanh1.testnet",
+      "token_metadata": {
+        "title": "NEAR Fox #082",
+        "description": "An original fox avatar for the NEAR Arena game.",
+        "media": "https://near-fox-testnet-media.vercel.app/images/082.png",
+        "media_hash": "oOCHZj79M7k26sIsUvyI5SQ9Oh+aj6l8A18VoBuP8D4=",
+        "copies": 1,
+        "extra": "{\"attributes\":[{\"trait_type\":\"Background\",\"value\":\"Pink\"},{\"trait_type\":\"Outfit\",\"value\":\"Teal Track Jacket\"},{\"trait_type\":\"Headwear\",\"value\":\"Mustard Beanie\"},{\"trait_type\":\"Accessory\",\"value\":\"None\"},{\"trait_type\":\"Expression\",\"value\":\"Playful Wink\"},{\"trait_type\":\"Eyewear\",\"value\":\"None\"}]}"
+      }
+    },
+    {
+      "token_id": "083",
+      "receiver_id": "xuancanh1.testnet",
+      "token_metadata": {
+        "title": "NEAR Fox #083",
+        "description": "An original fox avatar for the NEAR Arena game.",
+        "media": "https://near-fox-testnet-media.vercel.app/images/083.png",
+        "media_hash": "giLstfsuIVoLueaJwpR9vsH9BcfrYQC8aAQoKZM//YY=",
+        "copies": 1,
+        "extra": "{\"attributes\":[{\"trait_type\":\"Background\",\"value\":\"Pink\"},{\"trait_type\":\"Outfit\",\"value\":\"Saffron Jersey\"},{\"trait_type\":\"Headwear\",\"value\":\"Cyan Bucket Hat\"},{\"trait_type\":\"Accessory\",\"value\":\"Cheek Bandage\"},{\"trait_type\":\"Expression\",\"value\":\"Classic Smile\"},{\"trait_type\":\"Eyewear\",\"value\":\"None\"}]}"
+      }
+    },
+    {
+      "token_id": "084",
+      "receiver_id": "xuancanh1.testnet",
+      "token_metadata": {
+        "title": "NEAR Fox #084",
+        "description": "An original fox avatar for the NEAR Arena game.",
+        "media": "https://near-fox-testnet-media.vercel.app/images/084.png",
+        "media_hash": "NUViJZySz8cbOd+ZxSRhY6AWlTXzULRRcMzoGPiq7gU=",
+        "copies": 1,
+        "extra": "{\"attributes\":[{\"trait_type\":\"Background\",\"value\":\"Pink\"},{\"trait_type\":\"Outfit\",\"value\":\"Saffron Jersey\"},{\"trait_type\":\"Headwear\",\"value\":\"Plum Bucket Hat\"},{\"trait_type\":\"Accessory\",\"value\":\"Cheek Bandage\"},{\"trait_type\":\"Expression\",\"value\":\"Little Fang\"},{\"trait_type\":\"Eyewear\",\"value\":\"None\"}]}"
+      }
+    },
+    {
+      "token_id": "085",
+      "receiver_id": "xuancanh1.testnet",
+      "token_metadata": {
+        "title": "NEAR Fox #085",
+        "description": "An original fox avatar for the NEAR Arena game.",
+        "media": "https://near-fox-testnet-media.vercel.app/images/085.png",
+        "media_hash": "VuHLFPzjDm6fcPYbwTOonStuANsJWNO2hYiCr2sEpNM=",
+        "copies": 1,
+        "extra": "{\"attributes\":[{\"trait_type\":\"Background\",\"value\":\"Pink\"},{\"trait_type\":\"Outfit\",\"value\":\"Saffron Jersey\"},{\"trait_type\":\"Headwear\",\"value\":\"Mustard Beanie\"},{\"trait_type\":\"Accessory\",\"value\":\"Gold Hoop\"},{\"trait_type\":\"Expression\",\"value\":\"Little Fang\"},{\"trait_type\":\"Eyewear\",\"value\":\"Sport Visor\"}]}"
+      }
+    },
+    {
+      "token_id": "086",
+      "receiver_id": "xuancanh1.testnet",
+      "token_metadata": {
+        "title": "NEAR Fox #086",
+        "description": "An original fox avatar for the NEAR Arena game.",
+        "media": "https://near-fox-testnet-media.vercel.app/images/086.png",
+        "media_hash": "LZE+akAPTgd6KflzvWyINun0z4FRSKDu9ZpqhMF13PM=",
+        "copies": 1,
+        "extra": "{\"attributes\":[{\"trait_type\":\"Background\",\"value\":\"Pink\"},{\"trait_type\":\"Outfit\",\"value\":\"Indigo Denim\"},{\"trait_type\":\"Headwear\",\"value\":\"Cyan Bucket Hat\"},{\"trait_type\":\"Accessory\",\"value\":\"None\"},{\"trait_type\":\"Expression\",\"value\":\"Playful Wink\"},{\"trait_type\":\"Eyewear\",\"value\":\"Round Frames\"}]}"
+      }
+    },
+    {
+      "token_id": "087",
+      "receiver_id": "xuancanh1.testnet",
+      "token_metadata": {
+        "title": "NEAR Fox #087",
+        "description": "An original fox avatar for the NEAR Arena game.",
+        "media": "https://near-fox-testnet-media.vercel.app/images/087.png",
+        "media_hash": "b/ugqfQc08Zdlc76M7AJHng+OzK48C4ChHHdroewrP4=",
+        "copies": 1,
+        "extra": "{\"attributes\":[{\"trait_type\":\"Background\",\"value\":\"Pink\"},{\"trait_type\":\"Outfit\",\"value\":\"Indigo Denim\"},{\"trait_type\":\"Headwear\",\"value\":\"Plum Bucket Hat\"},{\"trait_type\":\"Accessory\",\"value\":\"Cheek Bandage\"},{\"trait_type\":\"Expression\",\"value\":\"Classic Smile\"},{\"trait_type\":\"Eyewear\",\"value\":\"Round Frames\"}]}"
+      }
+    },
+    {
+      "token_id": "088",
+      "receiver_id": "xuancanh1.testnet",
+      "token_metadata": {
+        "title": "NEAR Fox #088",
+        "description": "An original fox avatar for the NEAR Arena game.",
+        "media": "https://near-fox-testnet-media.vercel.app/images/088.png",
+        "media_hash": "lM0MkGGGt/Kv0NusAwa1tgISr/VgLUmsQ3MRFGXmGa0=",
+        "copies": 1,
+        "extra": "{\"attributes\":[{\"trait_type\":\"Background\",\"value\":\"Pink\"},{\"trait_type\":\"Outfit\",\"value\":\"Indigo Denim\"},{\"trait_type\":\"Headwear\",\"value\":\"Mustard Beanie\"},{\"trait_type\":\"Accessory\",\"value\":\"Gold Hoop\"},{\"trait_type\":\"Expression\",\"value\":\"Playful Wink\"},{\"trait_type\":\"Eyewear\",\"value\":\"None\"}]}"
+      }
+    }
+  ]
+}

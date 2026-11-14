@@ -1,0 +1,9 @@
+{
+  "kind": "guild-banner",
+  "color": "#72e1ca",
+  "background": "#172b40",
+  "width": 0.36,
+  "height": 0.54,
+  "mount": "display-stand",
+  "buffs": false
+}

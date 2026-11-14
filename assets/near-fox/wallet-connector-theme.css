@@ -1,0 +1,41 @@
+@font-face {
+  font-family: ChogDisplay;
+  src: url('../fonts/LilitaOne-Regular.ttf') format('truetype');
+  font-display: swap;
+}
+
+@font-face {
+  font-family: ChogText;
+  src: url('../fonts/NunitoSans-Variable.ttf') format('truetype');
+  font-weight: 200 900;
+  font-display: swap;
+}
+
+body { font-family: ChogText, sans-serif; color: #fff; }
+.modal-backdrop { background: #120b1c99; }
+.modal-container {
+  max-width: 540px;
+  max-height: calc(100dvh - 32px);
+  padding: clamp(16px, 5vw, 30px);
+  border: 3px solid #f9f4ff;
+  border-radius: 20px;
+  background: url('../chog-hunt-ui/chog-pattern-light-v2.svg') 0 0 / 108px 108px, #2b1d39;
+  box-shadow: 0 8px 0 #140d20;
+}
+.header h1, .card-title, .waiting-title, .close-btn { font-family: ChogDisplay, sans-serif; }
+.header h1 { font-size: clamp(24px, 5vw, 34px); font-weight: 400; }
+.header p, .waiting-subtitle, .self-hosting-btn { color: #e0d4f2; }
+.cards-container { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.card { background: #38264d; border: 2px solid #b59cd4; box-shadow: 0 4px 0 #170f23; }
+.card:hover, .card:focus-visible { background: #674099; border-color: #ffba54; transform: none; }
+.card:focus-visible, .close-btn:focus-visible { outline: 2px solid #ffba54; outline-offset: 3px; }
+.card-icon { background: #21132d; }
+.card-icon img { width: 100%; height: 100%; object-fit: contain; }
+.close-btn { color: #fff; background: #38264d; border: 2px solid #b59cd4; }
+.close-btn:hover { background: #674099; }
+.waiting-spinner { border-top-color: #ffba54; }
+.retry-btn { background: #ffba54; color: #241632; }
+
+@media (max-width: 420px) {
+  .cards-container { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}

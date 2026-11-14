@@ -1,0 +1,1 @@
+Source: user supplied exec-88ca86f0-5e92-489c-b5f4-598b755b521e.png. Exact source embedded in SVG; sRGB inverse luminance threshold at 0.5, clipped to original alpha. White and black single-ink variants preserve the hair outline, face cutout, eyes and highlights. No image generation or redraw. Used as CSS mask for UI stamp and as repeating SVG background for menu textures.

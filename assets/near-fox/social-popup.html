@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="referrer" content="no-referrer">
+  <title>Fox Social Sign-In</title>
+  <style>
+    body { min-height: 100vh; margin: 0; display: grid; place-items: center; background: #181223; color: #fff; font: 600 16px system-ui; }
+    main { width: min(78%, 400px); padding: 24px; background: #302345; border: 2px solid #ffb239; border-radius: 18px; }
+    h1 { margin: 0 0 12px; font-size: 22px; }
+    p { margin: 0; }
+  </style>
+</head>
+<body>
+  <main><h1>Social Sign-In</h1><p id="status" role="status">Connecting to NEAR Auth…</p></main>
+  <script type="module" src="./social-popup.js"></script>
+</body>
+</html>

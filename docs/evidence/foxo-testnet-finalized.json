@@ -1,0 +1,398 @@
+{
+  "network": "NEAR Testnet",
+  "provider": "https://near-testnet.drpc.org",
+  "block": {
+    "height": 277722627,
+    "hash": "HZ8mTs2N9aZd8GFbAwwqndJdZ7ymFWtRxStCzW5vnZN6",
+    "timestampUtc": "2026-11-14T23:06:51.430Z"
+  },
+  "contracts": {
+    "fox": {
+      "accountId": "fox.xuancanh1.testnet",
+      "localCodeHash": "BbWs3VA5oLmRgJTbMusFSuLj7MByeDXFrT7VUqboV8gq",
+      "views": [
+        {
+          "method": "nft_total_supply",
+          "args": {},
+          "value": "88"
+        },
+        {
+          "method": "get_ownership_epoch",
+          "args": {
+            "token_id": "088"
+          },
+          "value": "0"
+        }
+      ]
+    },
+    "foxo": {
+      "accountId": "foxo.xuancanh1.testnet",
+      "localCodeHash": "11111111111111111111111111111111",
+      "globalCodeHash": "8D1NEU2NC2hKhdtCkHyyAz2KVmVXRazm9ZQMC27D97jF",
+      "views": [
+        {
+          "method": "ft_metadata",
+          "args": {},
+          "value": {
+            "spec": "ft-1.0.0",
+            "name": "FOXO",
+            "symbol": "FOXO",
+            "reference": null,
+            "reference_hash": null,
+            "decimals": 24
+          }
+        },
+        {
+          "method": "ft_total_supply",
+          "args": {},
+          "value": "1000000000000000000000000000000"
+        }
+      ]
+    },
+    "claim": {
+      "accountId": "claim.xuancanh1.testnet",
+      "localCodeHash": "3Ve8kujayJcSMZdoopKtEZnwuB2cjhMCGPP7wFDhhtW3",
+      "views": [
+        {
+          "method": "nft_available",
+          "args": {},
+          "value": 41
+        },
+        {
+          "method": "faucet_available",
+          "args": {},
+          "value": "4970000000000000000000000000"
+        }
+      ]
+    },
+    "economy": {
+      "accountId": "economy.xuancanh1.testnet",
+      "localCodeHash": "nYApJ15WBCFP6H7jzmKBrUPj6oTFrd7u1qVT7NKdN8r",
+      "views": [
+        {
+          "method": "get_config",
+          "args": {},
+          "value": {
+            "ownerId": "xuancanh1.testnet",
+            "foxoContractId": "foxo.xuancanh1.testnet",
+            "network": "near-testnet",
+            "settlementSignerId": "settler.xuancanh1.testnet",
+            "signerEpoch": 2,
+            "settlementEnabled": true,
+            "rewardFundingCap": "80000000000000000000000000000",
+            "craftingEnabled": true,
+            "ordersEnabled": true,
+            "marketFeeBps": 250
+          }
+        },
+        {
+          "method": "get_ledger",
+          "args": {},
+          "value": {
+            "rewardAvailable": "10000000000000000000000000",
+            "campaignAvailable": "19995000000000000000000000000",
+            "fixedReserved": "5000000000000000000000000",
+            "rewardReserved": "0",
+            "rewardInFlight": "0",
+            "rewardPaid": "0",
+            "craftingFees": "0"
+          }
+        },
+        {
+          "method": "get_campaign",
+          "args": {
+            "campaign_id": "fox-pilot-1-fixed"
+          },
+          "value": {
+            "remaining": "15995000000000000000000000000",
+            "maxAward": "5000000000000000000000000",
+            "closesAtMs": 1796947200000,
+            "closed": false
+          }
+        },
+        {
+          "method": "get_recipe",
+          "args": {
+            "recipe_id": "violet-fox-finish",
+            "recipe_version": 1
+          },
+          "value": {
+            "recipeId": "violet-fox-finish",
+            "version": 1,
+            "sku": "fox-finish-violet",
+            "inputs": {
+              "alloy": 36,
+              "core": 1,
+              "catalyst": 0
+            },
+            "feeAtomic": "8000000000000000000000000"
+          }
+        },
+        {
+          "method": "get_recipe",
+          "args": {
+            "recipe_id": "aurora-weapon-finish",
+            "recipe_version": 2
+          },
+          "value": {
+            "recipeId": "aurora-weapon-finish",
+            "version": 2,
+            "sku": "weapon-finish-aurora-v2",
+            "inputs": {
+              "alloy": 24,
+              "core": 0,
+              "catalyst": 2
+            },
+            "feeAtomic": "5000000000000000000000000"
+          }
+        },
+        {
+          "method": "get_recipe",
+          "args": {
+            "recipe_id": "tide-garment-recolor",
+            "recipe_version": 2
+          },
+          "value": {
+            "recipeId": "tide-garment-recolor",
+            "version": 2,
+            "sku": "outfit-recolor-tide-v2",
+            "inputs": {
+              "alloy": 36,
+              "core": 1,
+              "catalyst": 0
+            },
+            "feeAtomic": "8000000000000000000000000"
+          }
+        },
+        {
+          "method": "get_order",
+          "args": {
+            "order_id": "quartermaster.xuancanh1.testnet:violet-pilot-1"
+          },
+          "value": {
+            "buyerId": "quartermaster.xuancanh1.testnet",
+            "recipeId": "violet-fox-finish",
+            "recipeVersion": 1,
+            "unitPrice": "10000000000000000000000000",
+            "remaining": 1,
+            "expiresAtMs": 1794672155519,
+            "closed": false
+          }
+        }
+      ]
+    },
+    "passport": {
+      "accountId": "passport.xuancanh1.testnet",
+      "localCodeHash": "GJo5k1mPEaB8noSSKKVdCErx4iLz6bXKrfNfvdYscYDs",
+      "views": [
+        {
+          "method": "get_config",
+          "args": {},
+          "value": {
+            "ownerId": "xuancanh1.testnet",
+            "collectionId": "fox.xuancanh1.testnet",
+            "network": "near-testnet",
+            "careerSignerId": "career.xuancanh1.testnet",
+            "appendEnabled": true
+          }
+        }
+      ]
+    },
+    "pool": {
+      "accountId": "pool.xuancanh1.testnet",
+      "localCodeHash": "6sonHtsgWQjuefoeVLe8VmY4fkv6uxwvkpU9LdESeUeb",
+      "views": [
+        {
+          "method": "get_config",
+          "args": {},
+          "value": {
+            "durationMs": 604800000,
+            "ownerId": "xuancanh1.testnet",
+            "receiptSignerId": "settler.xuancanh1.testnet",
+            "rewardBudgetAtomic": "1500000000000000000000000000",
+            "targetStakeAtomic": "100000000000000000000000000000",
+            "tokenId": "foxo.xuancanh1.testnet"
+          }
+        },
+        {
+          "method": "get_pool",
+          "args": {},
+          "value": {
+            "principal": "0",
+            "principal_in_flight": "0",
+            "reward_available": "1500000000000000000000000000",
+            "reward_reserved": "0",
+            "reward_in_flight": "0",
+            "reward_paid": "0",
+            "opened_at_ms": 1794640462696,
+            "starts_at_ms": 1794641051853,
+            "ends_at_ms": 1795245851853
+          }
+        }
+      ]
+    },
+    "guild": {
+      "accountId": "guild.xuancanh1.testnet",
+      "localCodeHash": "DnPyc7NcxwCkEnVbbdwKU5hLBrbua2R3mDuwfNH4XexZ",
+      "views": [
+        {
+          "method": "get_config",
+          "args": {},
+          "value": {
+            "economy_mt": "economy.xuancanh1.testnet",
+            "foxo_contract_id": "foxo.xuancanh1.testnet"
+          }
+        }
+      ]
+    },
+    "market": {
+      "accountId": "market.xuancanh1.testnet",
+      "localCodeHash": "GcbAZokgFuiLt63R8zJmnYtn31geL25EcBucJXpAZxDd",
+      "views": [
+        {
+          "method": "get_config",
+          "args": {},
+          "value": {
+            "collectionId": "fox.xuancanh1.testnet",
+            "enabled": true,
+            "foxoContractId": "foxo.xuancanh1.testnet",
+            "ownerId": "xuancanh1.testnet",
+            "passportContractId": "passport.xuancanh1.testnet"
+          }
+        }
+      ]
+    }
+  },
+  "transactions": [
+    {
+      "hash": "GvUFXYj6cYEcFfTofZj1HbZ4BXLP3FWsBPHLxp8iDeta",
+      "signer": "fox.xuancanh1.testnet",
+      "receiver": "fox.xuancanh1.testnet",
+      "finalExecutionStatus": "FINAL",
+      "actions": [
+        {
+          "type": "DeployContract"
+        }
+      ],
+      "successValueBase64": "",
+      "failedReceipts": []
+    },
+    {
+      "hash": "6EoJ5smGRaV9fDjNTeASjxuCKgxBzphc2yso2gRxotjE",
+      "signer": "economy.xuancanh1.testnet",
+      "receiver": "economy.xuancanh1.testnet",
+      "finalExecutionStatus": "FINAL",
+      "actions": [
+        {
+          "type": "DeployContract"
+        }
+      ],
+      "successValueBase64": "",
+      "failedReceipts": []
+    },
+    {
+      "hash": "C1y6vJBn82ZitJhJAtNMwXvzxFnNBfv59eb4CxER1Ddk",
+      "signer": "xuancanh1.testnet",
+      "receiver": "economy.xuancanh1.testnet",
+      "finalExecutionStatus": "FINAL",
+      "actions": [
+        {
+          "type": "FunctionCall",
+          "method": "open_ranking_campaign",
+          "args": {
+            "campaign_id": "fox-pilot-1-hunt-ranking",
+            "mode": "hunt",
+            "season_start_ms": 1794700800000
+          }
+        },
+        {
+          "type": "FunctionCall",
+          "method": "open_ranking_campaign",
+          "args": {
+            "campaign_id": "fox-pilot-1-control-ranking",
+            "mode": "control",
+            "season_start_ms": 1794700800000
+          }
+        },
+        {
+          "type": "FunctionCall",
+          "method": "open_ranking_campaign",
+          "args": {
+            "campaign_id": "fox-pilot-1-trials-ranking",
+            "mode": "trials",
+            "season_start_ms": 1794700800000
+          }
+        }
+      ],
+      "successValueBase64": "",
+      "failedReceipts": []
+    },
+    {
+      "hash": "H66NBZBvrMU7mVGcjjZWMDqPpik5rxU5ZDiE6nZEw17",
+      "signer": "xuancanh1.testnet",
+      "receiver": "pool.xuancanh1.testnet",
+      "finalExecutionStatus": "FINAL",
+      "actions": [
+        {
+          "type": "FunctionCall",
+          "method": "set_receipt_signer",
+          "args": {
+            "signer_id": "settler.xuancanh1.testnet"
+          }
+        },
+        {
+          "type": "FunctionCall",
+          "method": "open_campaign",
+          "args": {
+            "starts_at_ms": 1794641051853
+          }
+        }
+      ],
+      "successValueBase64": "",
+      "failedReceipts": []
+    },
+    {
+      "hash": "5MMaYH1uwQgbrbUfRunPrUpASGVPkciiNi43e6XcFTp1",
+      "signer": "xuancanh1.testnet",
+      "receiver": "foxo.xuancanh1.testnet",
+      "finalExecutionStatus": "FINAL",
+      "actions": [
+        {
+          "type": "FunctionCall",
+          "method": "ft_transfer_call",
+          "args": {
+            "receiver_id": "economy.xuancanh1.testnet",
+            "amount": "10000000000000000000000000",
+            "msg": "{\"action\":\"fund_rewards\"}"
+          }
+        }
+      ],
+      "successValueBase64": "IjEwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwIg==",
+      "failedReceipts": []
+    },
+    {
+      "hash": "D6FYiRBGV5qhfaGApA8UgjZXXibWR4yNqMMTvpfw44nE",
+      "signer": "quartermaster.xuancanh1.testnet",
+      "receiver": "foxo.xuancanh1.testnet",
+      "finalExecutionStatus": "FINAL",
+      "actions": [
+        {
+          "type": "FunctionCall",
+          "method": "ft_transfer_call",
+          "args": {
+            "receiver_id": "economy.xuancanh1.testnet",
+            "amount": "10000000000000000000000000",
+            "msg": "{\"action\":\"fund_order\",\"operationId\":\"violet-pilot-1\",\"recipeId\":\"violet-fox-finish\",\"recipeVersion\":1,\"quantity\":1,\"unitPrice\":\"10000000000000000000000000\",\"expiresAtMs\":1794672155519}"
+          }
+        }
+      ],
+      "successValueBase64": "IjEwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwIg==",
+      "failedReceipts": []
+    }
+  ],
+  "notes": [
+    "Contract views at the same finalized block.",
+    "FOXO metadata icon omitted from this snapshot.",
+    "Transaction outcomes verified separately at FINAL; zero failed outcome receipts in the included transactions."
+  ]
+}

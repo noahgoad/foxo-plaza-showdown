@@ -1,0 +1,19 @@
+{
+  "kind": "garment-region-recolor",
+  "color": "#4187ab",
+  "strength": 0.88,
+  "localY": [
+    0.425,
+    0.65
+  ],
+  "localZ": [
+    -1,
+    1
+  ],
+  "note": "Yellow shirt fabric recolor on the existing textured Fox mesh; source color gate excludes orange fur, purple gloves and white trim. No new clothing geometry. Hat and face lie outside the height mask.",
+  "sourceColorGate": {
+    "yellowHueMin": 0.46,
+    "yellowHueFull": 0.51,
+    "chromaMin": 0.1
+  }
+}

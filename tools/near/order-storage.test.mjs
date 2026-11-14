@@ -1,0 +1,24 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {fixture} from './crafting-wasm.test.mjs';
+test('tiny orders cannot allocate public storage without prepaid native fees',async()=>{
+  const call=await fixture(),owner='operator.testnet',buyer='bob.testnet',token='foxo.testnet';
+  call('new',{owner_id:owner,foxo_contract_id:token,network:'near-testnet',settlement_signer_id:owner},owner);
+  call('add_recipe',{recipe:{recipeId:'finish',version:1,sku:'finish',inputs:{alloy:1,core:0,catalyst:0},feeAtomic:'1'}},owner);
+  call('set_orders_enabled',{enabled:true},owner);
+  const fund=operationId=>call('ft_on_transfer',{sender_id:buyer,amount:'1',msg:JSON.stringify({action:'fund_order',operationId,recipeId:'finish',recipeVersion:1,quantity:1,unitPrice:'1',expiresAtMs:101*86400000})},token);
+  for(let i=0;i<100;i++)assert.equal(fund('tiny-'+i),'1');
+  assert.equal(call('get_order',{order_id:buyer+':tiny-0'}),null);
+  assert.throws(()=>call('deposit_order_storage',{},buyer,1n),/Insufficient/);
+  assert.equal(call('get_order_storage_credit',{account_id:buyer}),'0');
+  const charge=BigInt(call('get_order_storage_charge',{quantity:1}));
+  const registration=BigInt(call('get_order_storage_registration_charge',{account_id:buyer}));
+  call('deposit_order_storage',{},buyer,charge+registration);
+  assert.equal(fund('funded'),'0');
+  assert.equal(call('get_order_storage_credit',{account_id:buyer}),'0');
+  assert.equal(fund('next'),'1');
+  assert.equal(call('get_order_ledger',{}).escrow,'1');
+  call('close_order',{order_id:buyer+':funded'},buyer,1n);
+  assert.equal(call('get_order_credit',{account_id:buyer}),'1');
+  assert.equal(call('get_order_storage_credit',{account_id:buyer}),'0');
+});

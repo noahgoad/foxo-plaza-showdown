@@ -1,0 +1,13 @@
+{
+  "network": "near-testnet",
+  "signers": {
+    "settler": {
+      "accountId": "settler.xuancanh1.testnet",
+      "publicKey": "ed25519:A2dw6UEzNDPPpCcbNQ1GgkuF2k1ZvzqXTB5Vwe7cQLP9"
+    },
+    "career": {
+      "accountId": "career.xuancanh1.testnet",
+      "publicKey": "ed25519:8gx35Dj5ipEbi3hzYE159tZMJCsN2JF1AE5cx7JnvsZi"
+    }
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "campaignId": "fox-pilot-1-boss-ranking",
+  "mode": "boss",
+  "seasonStartMs": 1794614400000,
+  "additional": [
+    { "campaignId": "fox-pilot-1-hunt-ranking", "mode": "hunt", "seasonStartMs": 1794700800000 },
+    { "campaignId": "fox-pilot-1-control-ranking", "mode": "control", "seasonStartMs": 1794700800000 },
+    { "campaignId": "fox-pilot-1-trials-ranking", "mode": "trials", "seasonStartMs": 1794700800000 }
+  ]
+}

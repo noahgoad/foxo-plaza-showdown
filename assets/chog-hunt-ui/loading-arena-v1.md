@@ -1,0 +1,7 @@
+# Loading arena v1
+
+Generated using the built-in image_gen tool and applied to the loading screen.
+
+## Prompt
+
+Use case: stylized-concept. Asset type: full-screen loading background for CHOG WORLD DISORDER, a premium playful cartoon paintball chase game. Create a wide 16:9 landscape illustration, no text, no lettering, no logos, no characters. Stylized 3D cel-shaded paintball arena environment at twilight, dramatic low perspective from floor level across an abandoned training courtyard. Oversized angular inflatable cover blocks, rounded industrial barricades, a few stacked crates and pipes at the far LEFT and RIGHT edges. Thick glossy golden orange and vivid purple paint splashes stain the edges and foreground floor, playful clean polished console party-shooter art. Palette dark aubergine purple, violet, warm amber orange, muted lavender concrete. Strong graphic silhouettes, clean edges, atmospheric depth, restrained detail, no photorealistic grunge. IMPORTANT layout: broad quiet dark purple center spanning the middle 55% of canvas, unobstructed empty negative space for an overlaid orange/purple logo and progress bar. All visually busy props and bright paint concentrated in outer thirds and bottom corners. Dark readable central area. Soft warm side light, purple sky, no bright focal object in center. No UI, no frames, no tips, no progress bar, no guns or people. Entire canvas artwork, opaque background.

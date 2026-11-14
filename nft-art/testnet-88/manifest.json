@@ -1,0 +1,451 @@
+{
+  "network": "testnet",
+  "collection": {
+    "spec": "nft-1.0.0",
+    "name": "NEAR Fox",
+    "symbol": "NFOX"
+  },
+  "supply": 88,
+  "tokens": [
+    {
+      "token_id": "001",
+      "source": "001",
+      "metadata": "metadata/001.json"
+    },
+    {
+      "token_id": "002",
+      "source": "003",
+      "metadata": "metadata/002.json"
+    },
+    {
+      "token_id": "003",
+      "source": "004",
+      "metadata": "metadata/003.json"
+    },
+    {
+      "token_id": "004",
+      "source": "005",
+      "metadata": "metadata/004.json"
+    },
+    {
+      "token_id": "005",
+      "source": "007",
+      "metadata": "metadata/005.json"
+    },
+    {
+      "token_id": "006",
+      "source": "008",
+      "metadata": "metadata/006.json"
+    },
+    {
+      "token_id": "007",
+      "source": "009",
+      "metadata": "metadata/007.json"
+    },
+    {
+      "token_id": "008",
+      "source": "011",
+      "metadata": "metadata/008.json"
+    },
+    {
+      "token_id": "009",
+      "source": "012",
+      "metadata": "metadata/009.json"
+    },
+    {
+      "token_id": "010",
+      "source": "013",
+      "metadata": "metadata/010.json"
+    },
+    {
+      "token_id": "011",
+      "source": "015",
+      "metadata": "metadata/011.json"
+    },
+    {
+      "token_id": "012",
+      "source": "016",
+      "metadata": "metadata/012.json"
+    },
+    {
+      "token_id": "013",
+      "source": "018",
+      "metadata": "metadata/013.json"
+    },
+    {
+      "token_id": "014",
+      "source": "019",
+      "metadata": "metadata/014.json"
+    },
+    {
+      "token_id": "015",
+      "source": "020",
+      "metadata": "metadata/015.json"
+    },
+    {
+      "token_id": "016",
+      "source": "022",
+      "metadata": "metadata/016.json"
+    },
+    {
+      "token_id": "017",
+      "source": "023",
+      "metadata": "metadata/017.json"
+    },
+    {
+      "token_id": "018",
+      "source": "024",
+      "metadata": "metadata/018.json"
+    },
+    {
+      "token_id": "019",
+      "source": "026",
+      "metadata": "metadata/019.json"
+    },
+    {
+      "token_id": "020",
+      "source": "027",
+      "metadata": "metadata/020.json"
+    },
+    {
+      "token_id": "021",
+      "source": "028",
+      "metadata": "metadata/021.json"
+    },
+    {
+      "token_id": "022",
+      "source": "030",
+      "metadata": "metadata/022.json"
+    },
+    {
+      "token_id": "023",
+      "source": "031",
+      "metadata": "metadata/023.json"
+    },
+    {
+      "token_id": "024",
+      "source": "033",
+      "metadata": "metadata/024.json"
+    },
+    {
+      "token_id": "025",
+      "source": "034",
+      "metadata": "metadata/025.json"
+    },
+    {
+      "token_id": "026",
+      "source": "035",
+      "metadata": "metadata/026.json"
+    },
+    {
+      "token_id": "027",
+      "source": "037",
+      "metadata": "metadata/027.json"
+    },
+    {
+      "token_id": "028",
+      "source": "038",
+      "metadata": "metadata/028.json"
+    },
+    {
+      "token_id": "029",
+      "source": "039",
+      "metadata": "metadata/029.json"
+    },
+    {
+      "token_id": "030",
+      "source": "041",
+      "metadata": "metadata/030.json"
+    },
+    {
+      "token_id": "031",
+      "source": "042",
+      "metadata": "metadata/031.json"
+    },
+    {
+      "token_id": "032",
+      "source": "043",
+      "metadata": "metadata/032.json"
+    },
+    {
+      "token_id": "033",
+      "source": "045",
+      "metadata": "metadata/033.json"
+    },
+    {
+      "token_id": "034",
+      "source": "046",
+      "metadata": "metadata/034.json"
+    },
+    {
+      "token_id": "035",
+      "source": "048",
+      "metadata": "metadata/035.json"
+    },
+    {
+      "token_id": "036",
+      "source": "049",
+      "metadata": "metadata/036.json"
+    },
+    {
+      "token_id": "037",
+      "source": "050",
+      "metadata": "metadata/037.json"
+    },
+    {
+      "token_id": "038",
+      "source": "052",
+      "metadata": "metadata/038.json"
+    },
+    {
+      "token_id": "039",
+      "source": "053",
+      "metadata": "metadata/039.json"
+    },
+    {
+      "token_id": "040",
+      "source": "054",
+      "metadata": "metadata/040.json"
+    },
+    {
+      "token_id": "041",
+      "source": "056",
+      "metadata": "metadata/041.json"
+    },
+    {
+      "token_id": "042",
+      "source": "057",
+      "metadata": "metadata/042.json"
+    },
+    {
+      "token_id": "043",
+      "source": "058",
+      "metadata": "metadata/043.json"
+    },
+    {
+      "token_id": "044",
+      "source": "060",
+      "metadata": "metadata/044.json"
+    },
+    {
+      "token_id": "045",
+      "source": "061",
+      "metadata": "metadata/045.json"
+    },
+    {
+      "token_id": "046",
+      "source": "063",
+      "metadata": "metadata/046.json"
+    },
+    {
+      "token_id": "047",
+      "source": "064",
+      "metadata": "metadata/047.json"
+    },
+    {
+      "token_id": "048",
+      "source": "065",
+      "metadata": "metadata/048.json"
+    },
+    {
+      "token_id": "049",
+      "source": "067",
+      "metadata": "metadata/049.json"
+    },
+    {
+      "token_id": "050",
+      "source": "068",
+      "metadata": "metadata/050.json"
+    },
+    {
+      "token_id": "051",
+      "source": "069",
+      "metadata": "metadata/051.json"
+    },
+    {
+      "token_id": "052",
+      "source": "071",
+      "metadata": "metadata/052.json"
+    },
+    {
+      "token_id": "053",
+      "source": "072",
+      "metadata": "metadata/053.json"
+    },
+    {
+      "token_id": "054",
+      "source": "073",
+      "metadata": "metadata/054.json"
+    },
+    {
+      "token_id": "055",
+      "source": "075",
+      "metadata": "metadata/055.json"
+    },
+    {
+      "token_id": "056",
+      "source": "076",
+      "metadata": "metadata/056.json"
+    },
+    {
+      "token_id": "057",
+      "source": "078",
+      "metadata": "metadata/057.json"
+    },
+    {
+      "token_id": "058",
+      "source": "079",
+      "metadata": "metadata/058.json"
+    },
+    {
+      "token_id": "059",
+      "source": "080",
+      "metadata": "metadata/059.json"
+    },
+    {
+      "token_id": "060",
+      "source": "082",
+      "metadata": "metadata/060.json"
+    },
+    {
+      "token_id": "061",
+      "source": "083",
+      "metadata": "metadata/061.json"
+    },
+    {
+      "token_id": "062",
+      "source": "084",
+      "metadata": "metadata/062.json"
+    },
+    {
+      "token_id": "063",
+      "source": "086",
+      "metadata": "metadata/063.json"
+    },
+    {
+      "token_id": "064",
+      "source": "087",
+      "metadata": "metadata/064.json"
+    },
+    {
+      "token_id": "065",
+      "source": "088",
+      "metadata": "metadata/065.json"
+    },
+    {
+      "token_id": "066",
+      "source": "090",
+      "metadata": "metadata/066.json"
+    },
+    {
+      "token_id": "067",
+      "source": "091",
+      "metadata": "metadata/067.json"
+    },
+    {
+      "token_id": "068",
+      "source": "093",
+      "metadata": "metadata/068.json"
+    },
+    {
+      "token_id": "069",
+      "source": "094",
+      "metadata": "metadata/069.json"
+    },
+    {
+      "token_id": "070",
+      "source": "095",
+      "metadata": "metadata/070.json"
+    },
+    {
+      "token_id": "071",
+      "source": "097",
+      "metadata": "metadata/071.json"
+    },
+    {
+      "token_id": "072",
+      "source": "098",
+      "metadata": "metadata/072.json"
+    },
+    {
+      "token_id": "073",
+      "source": "099",
+      "metadata": "metadata/073.json"
+    },
+    {
+      "token_id": "074",
+      "source": "101",
+      "metadata": "metadata/074.json"
+    },
+    {
+      "token_id": "075",
+      "source": "102",
+      "metadata": "metadata/075.json"
+    },
+    {
+      "token_id": "076",
+      "source": "103",
+      "metadata": "metadata/076.json"
+    },
+    {
+      "token_id": "077",
+      "source": "105",
+      "metadata": "metadata/077.json"
+    },
+    {
+      "token_id": "078",
+      "source": "106",
+      "metadata": "metadata/078.json"
+    },
+    {
+      "token_id": "079",
+      "source": "108",
+      "metadata": "metadata/079.json"
+    },
+    {
+      "token_id": "080",
+      "source": "109",
+      "metadata": "metadata/080.json"
+    },
+    {
+      "token_id": "081",
+      "source": "110",
+      "metadata": "metadata/081.json"
+    },
+    {
+      "token_id": "082",
+      "source": "112",
+      "metadata": "metadata/082.json"
+    },
+    {
+      "token_id": "083",
+      "source": "113",
+      "metadata": "metadata/083.json"
+    },
+    {
+      "token_id": "084",
+      "source": "114",
+      "metadata": "metadata/084.json"
+    },
+    {
+      "token_id": "085",
+      "source": "116",
+      "metadata": "metadata/085.json"
+    },
+    {
+      "token_id": "086",
+      "source": "117",
+      "metadata": "metadata/086.json"
+    },
+    {
+      "token_id": "087",
+      "source": "118",
+      "metadata": "metadata/087.json"
+    },
+    {
+      "token_id": "088",
+      "source": "120",
+      "metadata": "metadata/088.json"
+    }
+  ]
+}

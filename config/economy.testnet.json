@@ -1,0 +1,71 @@
+{
+  "version": 1,
+  "designRevision": "2.1",
+  "network": "near-testnet",
+  "contracts": {
+    "collection": "fox.xuancanh1.testnet",
+    "token": "foxo.xuancanh1.testnet",
+    "claims": "claim.xuancanh1.testnet"
+  },
+  "budgetsFoxo": {
+    "match": "80000",
+    "faucet": "5000",
+    "staking": "15000"
+  },
+  "pilot": {
+    "seasonCount": 4,
+    "seasonDays": 28,
+    "seasonBudgetFoxo": "20000",
+    "fixedBps": 8000,
+    "rankingBps": 2000,
+    "fixedAwardFoxo": "5",
+    "reservationMinutes": 60,
+    "marketFeeBps": 250
+  },
+  "rewardWindows": {
+    "windowsPerDay": 6,
+    "windowHours": 4,
+    "baseSlotsPerWindow": 19,
+    "extraSlotDays": 8,
+    "maxAwardsPerAccountDay": 3,
+    "startWithinMinutes": 10,
+    "readyOnly": true,
+    "priority": "fewest_daily_awards_then_fifo",
+    "carryUnreservedWithinDay": true
+  },
+  "ranking": {
+    "modeBudgetsFoxo": {
+      "hunt": "1000",
+      "boss": "1000",
+      "control": "1000",
+      "trials": "1000"
+    },
+    "dailyCapPerModeFoxo": "6.25",
+    "targetNormalizedScore": 10,
+    "reviewHours": 24,
+    "enabledModes": ["boss", "hunt", "control", "trials"]
+  },
+  "quartermaster": {
+    "enabled": false,
+    "budgetFoxo": "0"
+  },
+  "deferred": {
+    "bundles": true,
+    "paidRentals": true,
+    "creatorPayouts": true,
+    "crossChain": true
+  },
+  "features": {
+    "nearRewards": true,
+    "passport": true,
+    "materials": true,
+    "crafting": true,
+    "orders": true,
+    "market": false,
+    "guilds": false,
+    "loans": false,
+    "pool": false,
+    "rentals": false,
+    "creators": false
+  }
+}

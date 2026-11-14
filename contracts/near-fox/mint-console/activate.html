@@ -1,0 +1,26 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><title>Fox Testnet Activation</title>
+<style>body{background:#191423;color:#fff;font:16px system-ui;margin:32px auto;padding:0 18px;max-width:900px}button{font:inherit;padding:10px 14px;margin:5px}pre{background:#272033;padding:16px;white-space:pre-wrap;overflow-wrap:anywhere}</style>
+<h1>Fox Testnet Activation</h1>
+<p>Operator xuancanh1.testnet · Review every transaction in Intear.</p>
+<button id="connect">Connect Intear</button><button id="refresh">Refresh finalized status</button>
+<h2>Boss Pool</h2>
+<p>Connect pool.xuancanh1.testnet to review the upgrade. After it finalizes, switch to xuancanh1.testnet to activate the campaign.</p>
+<div id="pool-actions"></div><p id="pool-status" role="status"></p>
+<p>For the Economy upgrade, connect the existing <strong>economy.xuancanh1.testnet</strong> account. If it is missing, import it inside Intear using the original recovery method, then reconnect here. Use <strong>xuancanh1.testnet</strong> for recipe registration.</p>
+<h2>Fox NFT Ownership</h2>
+<div id="fox-actions"></div><p id="fox-status" role="status"></p>
+<p><label>Optional Fox upgrade Wasm override <input id="fox-wasm" type="file" accept=".wasm"></label></p>
+<p><label>Pool eligibility account <input id="pool-player" placeholder="player.testnet"></label>
+<label>Boss match ID <input id="pool-match" placeholder="Match ID"></label></p>
+<p><label>Boss receipt prepared by the relay tool <input id="pool-receipt" type="file" accept=".json"></label></p>
+<p><label>Ranking campaign <input id="ranking-campaign" value="fox-pilot-1-boss-ranking"></label>
+<label>Mode <select id="ranking-mode"><option value="hunt">Trait Hunt</option><option value="boss" selected>Boss Battle</option><option value="control">Trait Control</option><option value="trials">Daily Trials</option></select></label>
+<label>Season starts (UTC) <input id="ranking-start" type="date" value="2026-11-14"></label>
+<label>Day index <input id="ranking-day" type="number" min="0" max="27" step="1"></label></p>
+<p><label>Quartermaster account funding (Testnet NEAR) <input id="quartermaster-near" inputmode="decimal" autocomplete="off" value="0.15"></label>
+<label>Quartermaster FOXO budget <input id="quartermaster-foxo" inputmode="decimal" autocomplete="off" value="10"></label></p>
+<p><label>Gas sponsor account funding (Testnet NEAR) <input id="sponsor-near" inputmode="decimal" autocomplete="off" value="0.15"></label></p>
+<p>Testnet pilot amounts are prefilled. Review each transaction in Intear.</p>
+<div id="actions"></div><pre id="review"></pre><button id="confirm" disabled>Confirm reviewed transaction</button>
+<pre id="status" role="status"></pre>
+<script type="module" src="./activate.js"></script></html>

@@ -1,0 +1,11 @@
+{
+  "name": "fox-economy-sandbox",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "near-workspaces": "5.0.0"
+  },
+  "overrides": {
+    "near-sandbox": "0.1.1"
+  }
+}

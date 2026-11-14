@@ -1,0 +1,148 @@
+Receipt: 7oL7nC4P3Bh7YgRhpK1sdo6pSCjgm7cNsGx3UZbbcemP
+	Log [token.test.near]: EVENT_JSON:{"standard":"nep141","version":"1.0.0","event":"ft_transfer","data":[{"old_owner_id":"test.near","new_owner_id":"alice.test.near","amount":"60000000000000000000000000"}]}
+Contract logs from token.test.near.ft_transfer({"receiver_id":"alice.test.near","amount":"60000000000000000000000000"}) call: [
+  'EVENT_JSON:{"standard":"nep141","version":"1.0.0","event":"ft_transfer","data":[{"old_owner_id":"test.near","new_owner_id":"alice.test.near","amount":"60000000000000000000000000"}]}'
+]
+Receipt: CX6AmPekzSNguDCADMKt5DkfgFGnQRK9TnTrH29u2CVa
+	Log [guild.test.near]: EVENT_JSON:{"data":[{"guild_id":"fox","leader":"alice.test.near"}],"event":"guild_create","standard":"fox_guild","version":"1.0.0"}
+Contract logs from guild.test.near.create_guild({"guild_id":"fox","governors":["alice.test.near","bob.test.near"],"threshold":2}) call: [
+  'EVENT_JSON:{"data":[{"guild_id":"fox","leader":"alice.test.near"}],"event":"guild_create","standard":"fox_guild","version":"1.0.0"}'
+]
+Receipt: BEiywMr3dHpCUhxdCWF9eyytrsE9NLrfMWBus6iJ467V
+	Log [guild.test.near]: EVENT_JSON:{"data":[{"project_id":"refund","terms_hash":"0d59988633e6d6a290d0e66ce318463c112ebbc1e9e4d4b0beb12ee7ef6ae07f"}],"event":"project_open","standard":"fox_guild","version":"1.0.0"}
+Contract logs from guild.test.near.open_project({"project_id":"refund","guild_id":"fox","deadline":1794477673974052900}) call: [
+  'EVENT_JSON:{"data":[{"project_id":"refund","terms_hash":"0d59988633e6d6a290d0e66ce318463c112ebbc1e9e4d4b0beb12ee7ef6ae07f"}],"event":"project_open","standard":"fox_guild","version":"1.0.0"}'
+]
+Receipts: E2NaegKg1DvGz2onstXqhcreik8gU3QLbz2K6YGb7qhy, EgFTqTUmUZTAJWfqMQoZLNYTuABmJRWQFsbrgUs46s8j, 3264cMh8Tq4AMAFZd8MpLsfpFJ5zqvik1RQCC8FRhmpy
+	Log [economy.test.near]: EVENT_JSON:{"data":[{"amounts":["10"],"memo":null,"new_owner_id":"guild.test.near","old_owner_id":"alice.test.near","token_ids":["alloy"]}],"event":"mt_transfer","standard":"nep245","version":"1.0.0"}
+Receipt: 58TY6U8kXsVN71wksE2g4sETH52JYxU3Yttrg6nThhLG
+	Log [economy.test.near]: EVENT_JSON:{"data":[{"amounts":["10"],"contributor":"alice.test.near","operation_id":"r1","project_id":"refund"}],"event":"contribute","standard":"fox_guild","version":"1.0.0"}
+Contract logs from economy.test.near.mt_batch_transfer_call({"receiver_id":"guild.test.near","token_ids":["alloy"],"amounts":["10"],"msg":"{\"project_id\":\"refund\",\"terms_hash\":\"0d59988633e6d6a290d0e66ce318463c112ebbc1e9e4d4b0beb12ee7ef6ae07f\",\"operation_id\":\"r1\"}"}) call: [
+  'EVENT_JSON:{"data":[{"amounts":["10"],"memo":null,"new_owner_id":"guild.test.near","old_owner_id":"alice.test.near","token_ids":["alloy"]}],"event":"mt_transfer","standard":"nep245","version":"1.0.0"}',
+  'EVENT_JSON:{"data":[{"amounts":["10"],"contributor":"alice.test.near","operation_id":"r1","project_id":"refund"}],"event":"contribute","standard":"fox_guild","version":"1.0.0"}'
+]
+Receipts: J7L51U9Ncd9VKAtqAeyhRbfcrSSBtvY8hDPn4S8ZHWJo, Ci7RE2say4dNnrQXjsRs2UwQk8fSAyrhymFZaLNuUeMY, C3wNgTNgUKLisuF81PUsFPxiGpMG6itXhQHD8sRwcHDc
+	Log [economy.test.near]: EVENT_JSON:{"data":[{"amounts":["1"],"memo":null,"new_owner_id":"guild.test.near","old_owner_id":"alice.test.near","token_ids":["alloy"]}],"event":"mt_transfer","standard":"nep245","version":"1.0.0"}
+Receipt: F6sQMFfdmFU9ioiGZxigRtvXCAPZyasm36oFh53iQcXT
+	Log [economy.test.near]: EVENT_JSON:{"data":[{"amounts":["1"],"memo":"MT refund","new_owner_id":"alice.test.near","old_owner_id":"guild.test.near","token_ids":["alloy"]}],"event":"mt_transfer","standard":"nep245","version":"1.0.0"}
+Contract logs from economy.test.near.mt_batch_transfer_call({"receiver_id":"guild.test.near","token_ids":["alloy"],"amounts":["1"],"msg":"{\"project_id\":\"refund\",\"terms_hash\":\"0d59988633e6d6a290d0e66ce318463c112ebbc1e9e4d4b0beb12ee7ef6ae07f\",\"operation_id\":\"r1\"}"}) call: [
+  'EVENT_JSON:{"data":[{"amounts":["1"],"memo":null,"new_owner_id":"guild.test.near","old_owner_id":"alice.test.near","token_ids":["alloy"]}],"event":"mt_transfer","standard":"nep245","version":"1.0.0"}',
+  'EVENT_JSON:{"data":[{"amounts":["1"],"memo":"MT refund","new_owner_id":"alice.test.near","old_owner_id":"guild.test.near","token_ids":["alloy"]}],"event":"mt_transfer","standard":"nep245","version":"1.0.0"}'
+]
+Receipt: B5A5SET3zig3HaP4e4XDfQmwx7mS41sPgALusiY1vRrM
+	Failure [guild.test.near]: Error: {"index":0,"kind":{"index":0,"kind":{"FunctionCallError":{"ExecutionError":"Smart contract panicked: Project not fully funded"}}}}
+Receipt: 7HcyZCxwmac12qooH4XTCJvC2GAYkukX4w7VBGyVeAB3
+	Failure [guild.test.near]: Error: {"index":0,"kind":{"index":0,"kind":{"FunctionCallError":{"ExecutionError":"Smart contract panicked: Only verified economy MT"}}}}
+Receipts: 2vNQusEz4aGtzLbeiLhqa95xJbdivVBq399hd6hn2fsF, BzZ8Fe1QSjqigGVnNVvsDHNGSFJf9zHKtHg1eoJ8ojLK, DvKN1jKnqvRintN3A8ZSDPaz7FZ4jwrs2JxQxCK16Z1z
+	Log [token.test.near]: EVENT_JSON:{"standard":"nep141","version":"1.0.0","event":"ft_transfer","data":[{"old_owner_id":"alice.test.near","new_owner_id":"guild.test.near","amount":"15000000000000000000000000"}]}
+Contract logs from token.test.near.ft_transfer_call({"receiver_id":"guild.test.near","amount":"15000000000000000000000000","msg":"{\"project_id\":\"refund\",\"terms_hash\":\"0d59988633e6d6a290d0e66ce318463c112ebbc1e9e4d4b0beb12ee7ef6ae07f\"}"}) call: [
+  'EVENT_JSON:{"standard":"nep141","version":"1.0.0","event":"ft_transfer","data":[{"old_owner_id":"alice.test.near","new_owner_id":"guild.test.near","amount":"15000000000000000000000000"}]}'
+]
+Receipt: EoxuqNiNJitULKkw7r6TuhYQBsMeATyfcn2SFhsaXR3P
+	Log [guild.test.near]: EVENT_JSON:{"data":[{"project_id":"refund","status":"cancelled"}],"event":"project_close","standard":"fox_guild","version":"1.0.0"}
+Contract logs from guild.test.near.cancel({"project_id":"refund"}) call: [
+  'EVENT_JSON:{"data":[{"project_id":"refund","status":"cancelled"}],"event":"project_close","standard":"fox_guild","version":"1.0.0"}'
+]
+Receipts: F3Rrn3uCBNw5mdPkzCxhjksRcJ6gG6ZbYMGVhau1ppEd, BFPCRxSDrrfaQETScrC69L62zv1TEv6mpUoaMvVEVZYg
+Receipt: B1c8EFB3LF2xqtyHe8kbMCYEAqMtcter7bA4zELWzxms
+	Log [guild.test.near]: EVENT_JSON:{"data":[{"attempt":1,"operation_id":"r1","success":false}],"event":"refund_result","standard":"fox_guild","version":"1.0.0"}
+Contract logs from guild.test.near.refund({"operation_id":"r1"}) call: [
+  'EVENT_JSON:{"data":[{"attempt":1,"operation_id":"r1","success":false}],"event":"refund_result","standard":"fox_guild","version":"1.0.0"}'
+]
+	Failure [guild.test.near]: Error: {"index":0,"kind":{"index":0,"kind":{"FunctionCallError":{"ExecutionError":"Smart contract panicked: MT transfers disabled"}}}}
+Receipt: E5FhkW6Sf8PFzkiR3BeTeQnuV7Dsn2wLCkymRYwgQtH5
+	Log [guild.test.near]: EVENT_JSON:{"data":[{"amounts":["10"],"memo":"guild-refund:r1:2","new_owner_id":"alice.test.near","old_owner_id":"guild.test.near","token_ids":["alloy"]}],"event":"mt_transfer","standard":"nep245","version":"1.0.0"}
+Receipt: E4ddJRLLV6MFGhLcnP7vQkJR1TYZ8JXHyxeBcmpE7jkw
+	Log [guild.test.near]: EVENT_JSON:{"data":[{"attempt":2,"operation_id":"r1","success":true}],"event":"refund_result","standard":"fox_guild","version":"1.0.0"}
+Contract logs from guild.test.near.refund({"operation_id":"r1"}) call: [
+  'EVENT_JSON:{"data":[{"amounts":["10"],"memo":"guild-refund:r1:2","new_owner_id":"alice.test.near","old_owner_id":"guild.test.near","token_ids":["alloy"]}],"event":"mt_transfer","standard":"nep245","version":"1.0.0"}',
+  'EVENT_JSON:{"data":[{"attempt":2,"operation_id":"r1","success":true}],"event":"refund_result","standard":"fox_guild","version":"1.0.0"}'
+]
+Receipt: XWhEFM1uM43Ex3kEDwe1rV4hBXSBXaRP6mx2TWgiSNZ
+	Log [guild.test.near]: EVENT_JSON:{"standard":"nep141","version":"1.0.0","event":"ft_transfer","data":[{"old_owner_id":"guild.test.near","new_owner_id":"alice.test.near","amount":"15000000000000000000000000","memo":"guild-fee-refund:refund"}]}
+Contract logs from guild.test.near.refund_fee({"project_id":"refund"}) call: [
+  'EVENT_JSON:{"standard":"nep141","version":"1.0.0","event":"ft_transfer","data":[{"old_owner_id":"guild.test.near","new_owner_id":"alice.test.near","amount":"15000000000000000000000000","memo":"guild-fee-refund:refund"}]}'
+]
+Receipt: H4BampD68sr8WDUbXtsGyquqgpb8waSWrd833YgdaszG
+	Failure [guild.test.near]: Error: {"index":0,"kind":{"index":0,"kind":{"FunctionCallError":{"ExecutionError":"Smart contract panicked: Refund pending or delivered"}}}}
+Receipt: vU6wk6wY9HP8F9vsKVj1TA6hhXt6UUCG9mBvKcDWRDc
+	Log [guild.test.near]: EVENT_JSON:{"data":[{"project_id":"commit","terms_hash":"83f7107794ad5592ef2e4a34694f9a284d2b25a656f70733568e1db1da19910b"}],"event":"project_open","standard":"fox_guild","version":"1.0.0"}
+Contract logs from guild.test.near.open_project({"project_id":"commit","guild_id":"fox","deadline":1794477673974052900}) call: [
+  'EVENT_JSON:{"data":[{"project_id":"commit","terms_hash":"83f7107794ad5592ef2e4a34694f9a284d2b25a656f70733568e1db1da19910b"}],"event":"project_open","standard":"fox_guild","version":"1.0.0"}'
+]
+Receipts: EJoEYgjBYxJKfDrMJjw22P7wSiEg1pgb7VuMn9m5HDRE, HDXQxezn2myXJJQxQjv3aoPMY17EkBW1Fcn4oTcALB9i, 7dbQeev7DXvLa6LtqxUBcKku6uy4V3GMz6NqRSBCNmcs
+	Log [economy.test.near]: EVENT_JSON:{"data":[{"amounts":["12","1","1"],"memo":null,"new_owner_id":"guild.test.near","old_owner_id":"alice.test.near","token_ids":["alloy","core","catalyst"]}],"event":"mt_transfer","standard":"nep245","version":"1.0.0"}
+Receipt: g49DN4htZZkFGuBPZJw3NeXPWxcfwLDhawKDYavQVt9
+	Log [economy.test.near]: EVENT_JSON:{"data":[{"amounts":["12","1","1"],"contributor":"alice.test.near","operation_id":"c0","project_id":"commit"}],"event":"contribute","standard":"fox_guild","version":"1.0.0"}
+Contract logs from economy.test.near.mt_batch_transfer_call({"receiver_id":"guild.test.near","token_ids":["alloy","core","catalyst"],"amounts":["12","1","1"],"msg":"{\"project_id\":\"commit\",\"terms_hash\":\"83f7107794ad5592ef2e4a34694f9a284d2b25a656f70733568e1db1da19910b\",\"operation_id\":\"c0\"}"}) call: [
+  'EVENT_JSON:{"data":[{"amounts":["12","1","1"],"memo":null,"new_owner_id":"guild.test.near","old_owner_id":"alice.test.near","token_ids":["alloy","core","catalyst"]}],"event":"mt_transfer","standard":"nep245","version":"1.0.0"}',
+  'EVENT_JSON:{"data":[{"amounts":["12","1","1"],"contributor":"alice.test.near","operation_id":"c0","project_id":"commit"}],"event":"contribute","standard":"fox_guild","version":"1.0.0"}'
+]
+Receipts: 2PbDGiWigNR7sUf5oFhhvRMwpe5N3FjdjoN3K1sCqxkW, GLcZw7pSm7iyicVRSAR3zfXo7t5czyoG35FTy4FZs6mL, HgtUVJmwzMp5mpuGTM6BySmTA9t5AvoCBuE2V5K3LxiW
+	Log [economy.test.near]: EVENT_JSON:{"data":[{"amounts":["12","1","1"],"memo":null,"new_owner_id":"guild.test.near","old_owner_id":"bob.test.near","token_ids":["alloy","core","catalyst"]}],"event":"mt_transfer","standard":"nep245","version":"1.0.0"}
+Receipt: DY19ygGwsMHBnq94Lm5foJQrVbPbtf4cvDQQLTCMvFX9
+	Log [economy.test.near]: EVENT_JSON:{"data":[{"amounts":["12","1","1"],"contributor":"bob.test.near","operation_id":"c1","project_id":"commit"}],"event":"contribute","standard":"fox_guild","version":"1.0.0"}
+Contract logs from economy.test.near.mt_batch_transfer_call({"receiver_id":"guild.test.near","token_ids":["alloy","core","catalyst"],"amounts":["12","1","1"],"msg":"{\"project_id\":\"commit\",\"terms_hash\":\"83f7107794ad5592ef2e4a34694f9a284d2b25a656f70733568e1db1da19910b\",\"operation_id\":\"c1\"}"}) call: [
+  'EVENT_JSON:{"data":[{"amounts":["12","1","1"],"memo":null,"new_owner_id":"guild.test.near","old_owner_id":"bob.test.near","token_ids":["alloy","core","catalyst"]}],"event":"mt_transfer","standard":"nep245","version":"1.0.0"}',
+  'EVENT_JSON:{"data":[{"amounts":["12","1","1"],"contributor":"bob.test.near","operation_id":"c1","project_id":"commit"}],"event":"contribute","standard":"fox_guild","version":"1.0.0"}'
+]
+Receipts: AtrjsPsENibzPHnLjV2EU2TUtndSck18e7JHAQXx3Xq1, Bdm22b6YQL81u1cVTjdx92oGnsPbaQE3LrFtG4Na4wMW, 89HxCHV9atGaLzBvpwg6qmS7cpEqJ8MQ5bV9o864pwSE
+	Log [economy.test.near]: EVENT_JSON:{"data":[{"amounts":["12"],"memo":null,"new_owner_id":"guild.test.near","old_owner_id":"carl.test.near","token_ids":["alloy"]}],"event":"mt_transfer","standard":"nep245","version":"1.0.0"}
+Receipt: C46AX13KA4ox28yuqTR1gjJqjXSdQZQDJFHqYfgfseqP
+	Log [economy.test.near]: EVENT_JSON:{"data":[{"amounts":["12"],"contributor":"carl.test.near","operation_id":"c2","project_id":"commit"}],"event":"contribute","standard":"fox_guild","version":"1.0.0"}
+Contract logs from economy.test.near.mt_batch_transfer_call({"receiver_id":"guild.test.near","token_ids":["alloy"],"amounts":["12"],"msg":"{\"project_id\":\"commit\",\"terms_hash\":\"83f7107794ad5592ef2e4a34694f9a284d2b25a656f70733568e1db1da19910b\",\"operation_id\":\"c2\"}"}) call: [
+  'EVENT_JSON:{"data":[{"amounts":["12"],"memo":null,"new_owner_id":"guild.test.near","old_owner_id":"carl.test.near","token_ids":["alloy"]}],"event":"mt_transfer","standard":"nep245","version":"1.0.0"}',
+  'EVENT_JSON:{"data":[{"amounts":["12"],"contributor":"carl.test.near","operation_id":"c2","project_id":"commit"}],"event":"contribute","standard":"fox_guild","version":"1.0.0"}'
+]
+Receipts: HsRtcUvwQTcQifPWqf2z8kdoRXnDBATgP226tSxDZfrj, 5ZcWio98A8ddkMxQW5DPWpQrpFzz5nQM8DwN9DXwAGug, CibGGm69gPxC66aYPXxyNEyJCMbZUxWP65rBRE8jdLDt
+	Log [economy.test.near]: EVENT_JSON:{"data":[{"amounts":["12"],"memo":null,"new_owner_id":"guild.test.near","old_owner_id":"dana.test.near","token_ids":["alloy"]}],"event":"mt_transfer","standard":"nep245","version":"1.0.0"}
+Receipt: CiVPCASHj1xpxYAEFqLoqKDJy2XmFCBw3hngsbrgoPGs
+	Log [economy.test.near]: EVENT_JSON:{"data":[{"amounts":["12"],"contributor":"dana.test.near","operation_id":"c3","project_id":"commit"}],"event":"contribute","standard":"fox_guild","version":"1.0.0"}
+Contract logs from economy.test.near.mt_batch_transfer_call({"receiver_id":"guild.test.near","token_ids":["alloy"],"amounts":["12"],"msg":"{\"project_id\":\"commit\",\"terms_hash\":\"83f7107794ad5592ef2e4a34694f9a284d2b25a656f70733568e1db1da19910b\",\"operation_id\":\"c3\"}"}) call: [
+  'EVENT_JSON:{"data":[{"amounts":["12"],"memo":null,"new_owner_id":"guild.test.near","old_owner_id":"dana.test.near","token_ids":["alloy"]}],"event":"mt_transfer","standard":"nep245","version":"1.0.0"}',
+  'EVENT_JSON:{"data":[{"amounts":["12"],"contributor":"dana.test.near","operation_id":"c3","project_id":"commit"}],"event":"contribute","standard":"fox_guild","version":"1.0.0"}'
+]
+Receipt: DyG1expvVYjqQgaiQQmPKi3tiAqcaNk9mgiJsqTgojnq
+	Failure [guild.test.near]: Error: {"index":0,"kind":{"index":0,"kind":{"FunctionCallError":{"ExecutionError":"Smart contract panicked: 15 FOXO fee required"}}}}
+Receipts: HozsCRNuzSGuV3hLGt4pPXZRqboiCiWbH1ZCJvodWYQP, BK3saKWprfmQnhARCLQdJJ6WQGzs8mLbRg7Na9WPQ7Ro, FRQeBrE6c2HmDPrhcVX12hBJMyFTLCi4v944ZDz5pCmb
+	Log [token.test.near]: EVENT_JSON:{"standard":"nep141","version":"1.0.0","event":"ft_transfer","data":[{"old_owner_id":"alice.test.near","new_owner_id":"guild.test.near","amount":"15000000000000000000000000"}]}
+Contract logs from token.test.near.ft_transfer_call({"receiver_id":"guild.test.near","amount":"15000000000000000000000000","msg":"{\"project_id\":\"commit\",\"terms_hash\":\"83f7107794ad5592ef2e4a34694f9a284d2b25a656f70733568e1db1da19910b\"}"}) call: [
+  'EVENT_JSON:{"standard":"nep141","version":"1.0.0","event":"ft_transfer","data":[{"old_owner_id":"alice.test.near","new_owner_id":"guild.test.near","amount":"15000000000000000000000000"}]}'
+]
+Receipts: ENkpVW6RuzQ5Q1drbvEDHrL1W5dS6799Mv8UNShQBiaX, 4iuQNpYAgazhBrk3GohA1axxhebqrJ52kcjpsbKYZtr1, 7fK3SVD4pjApxvpMufmj2EwdjB5UMgmhcjnY6QdFKpzh
+	Log [guild.test.near]: EVENT_JSON:{"standard":"nep141","version":"1.0.0","event":"ft_transfer","data":[{"old_owner_id":"guild.test.near","new_owner_id":"economy.test.near","amount":"15000000000000000000000000"}]}
+Receipt: 5jMDoPM1RJEhjeNtfzKUi34NXu8YZyyTNpNPLQiQpXrE
+	Log [guild.test.near]: EVENT_JSON:{"standard":"nep141","version":"1.0.0","event":"ft_transfer","data":[{"old_owner_id":"economy.test.near","new_owner_id":"guild.test.near","amount":"15000000000000000000000000","memo":"refund"}]}
+Contract logs from guild.test.near.commit({"project_id":"commit"}) call: [
+  'EVENT_JSON:{"standard":"nep141","version":"1.0.0","event":"ft_transfer","data":[{"old_owner_id":"guild.test.near","new_owner_id":"economy.test.near","amount":"15000000000000000000000000"}]}',
+  'EVENT_JSON:{"standard":"nep141","version":"1.0.0","event":"ft_transfer","data":[{"old_owner_id":"economy.test.near","new_owner_id":"guild.test.near","amount":"15000000000000000000000000","memo":"refund"}]}'
+]
+Receipts: DpLr1EhyihRy7DzRtnmSzeHkSmGkuxLfaRcwo4CyUcDb, FNoHJLZh6kA67JfDDxxkjDr9k7UJrDq59ADqxwc8QhKK, DqufdQiqfe525Qr8duJZmfFU6QZeEiUkq75GzLoJJrxz
+	Log [guild.test.near]: EVENT_JSON:{"standard":"nep141","version":"1.0.0","event":"ft_transfer","data":[{"old_owner_id":"guild.test.near","new_owner_id":"economy.test.near","amount":"15000000000000000000000000"}]}
+Receipt: CxEc6NGgnxtg1fbzWpLHhoR5AK6kMHxDS66YWtejLZSN
+	Log [guild.test.near]: EVENT_JSON:{"data":[{"amounts":["48","2","2"],"owner_id":"guild.test.near","token_ids":["alloy","core","catalyst"]}],"event":"mt_burn","standard":"nep245","version":"1.0.0"}
+	Log [guild.test.near]: EVENT_JSON:{"data":[{"accountId":"guild.test.near","amountAtomic":"15000000000000000000000000","feeAtomic":"15000000000000000000000000","guildContractId":"guild.test.near","inputs":{"alloy":48,"catalyst":2,"core":2},"projectId":"commit","termsHash":"83f7107794ad5592ef2e4a34694f9a284d2b25a656f70733568e1db1da19910b"}],"event":"guild_commit","standard":"fox_economy","version":"1.0.0"}
+Receipt: ApmwZw144ZuMMjAjvpfg7JPeWPEfRgAZU8WqKU2i2Tw3
+	Log [guild.test.near]: EVENT_JSON:{"data":[{"fee_atomic":"15000000000000000000000000","output":"guild-banner-v1","project_id":"commit","terms_hash":"83f7107794ad5592ef2e4a34694f9a284d2b25a656f70733568e1db1da19910b","transferable":false}],"event":"commit","standard":"fox_guild","version":"1.0.0"}
+Contract logs from guild.test.near.commit({"project_id":"commit"}) call: [
+  'EVENT_JSON:{"standard":"nep141","version":"1.0.0","event":"ft_transfer","data":[{"old_owner_id":"guild.test.near","new_owner_id":"economy.test.near","amount":"15000000000000000000000000"}]}',
+  'EVENT_JSON:{"data":[{"amounts":["48","2","2"],"owner_id":"guild.test.near","token_ids":["alloy","core","catalyst"]}],"event":"mt_burn","standard":"nep245","version":"1.0.0"}',
+  'EVENT_JSON:{"data":[{"accountId":"guild.test.near","amountAtomic":"15000000000000000000000000","feeAtomic":"15000000000000000000000000","guildContractId":"guild.test.near","inputs":{"alloy":48,"catalyst":2,"core":2},"projectId":"commit","termsHash":"83f7107794ad5592ef2e4a34694f9a284d2b25a656f70733568e1db1da19910b"}],"event":"guild_commit","standard":"fox_economy","version":"1.0.0"}',
+  'EVENT_JSON:{"data":[{"fee_atomic":"15000000000000000000000000","output":"guild-banner-v1","project_id":"commit","terms_hash":"83f7107794ad5592ef2e4a34694f9a284d2b25a656f70733568e1db1da19910b","transferable":false}],"event":"commit","standard":"fox_guild","version":"1.0.0"}'
+]
+Receipt: 4RCcWkPQ3iCL1bABrDznHWS1Jv48tgMuJ5ma9Yq3in2b
+	Log [guild.test.near]: EVENT_JSON:{"data":[{"guild_id":"fox"}],"event":"disband","standard":"fox_guild","version":"1.0.0"}
+Contract logs from guild.test.near.disband({"guild_id":"fox"}) call: [
+  'EVENT_JSON:{"data":[{"guild_id":"fox"}],"event":"disband","standard":"fox_guild","version":"1.0.0"}'
+]
+Receipt: Azv5FkLhuMDMM98BzwouftE895f5ghbL7CGE4pDTdfjX
+	Failure [guild.test.near]: Error: {"index":0,"kind":{"index":0,"kind":{"FunctionCallError":{"ExecutionError":"Smart contract panicked: No uncommitted refund"}}}}
+✔ guild canonical burn + exact 15 FOXO fee; failed commits and material/fee refunds conserve principal (152983.965835ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 1
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 157341.646393
