@@ -47,9 +47,9 @@ The browser renders the arena and handles player input. The relay runs the autho
 - **Boss Pool**. Qualify through a verified Boss clear, then stake FOXO and claim any accrued reward under the campaign rules. Pool records eligible clears, separates deposits from reward funding, and handles claims and withdrawals. The seven-day pilot window is independent of the five-minute match. No Fox NFT is staked.
 - **Access and reporting**. Connect via Intear; social onboarding and gas sponsorship are separate pilots. The relay verifies wallet signatures. The sponsorship pilot covers eligible Pool registration, and the indexer reads finalized events for reconciliation.
 
-## Hosting and verification
+## Hosting
 
-The public Vercel link forwards multiplayer requests to a relay with an authoritative simulation worker. The Railway deployment supports practice rooms with the host browser running the simulation. Plaza Cup Competition and reward settlement require an authoritative worker.
+The public Vercel link forwards multiplayer requests to a relay with an authoritative simulation worker. The Railway deployment supports practice rooms with the host browser running the simulation. Plaza Cup Competition and reward settlement require an authoritative worker. See the [16-part implementation plan](docs/foxo-top10-plan.md).
 
 ## The Testnet record
 
