@@ -36,7 +36,7 @@ export class ObjectiveRuntime {
   const nav=G.nav,nodes=nav?.nodes||[],chosen=[];
   const reachable=team=>{const start=nav.nearest(pads[team],1.2,true),seen=new Set(start<0?[]:[start]),queue=[...seen];for(let i=0;i<queue.length;i++){for(const e of nodes[queue[i]].nb){const n=nodes[e.to];if(e.type==='climb'||nav.valid&&!nav.valid[n.id]||seen.has(n.id)||n.zone>=0&&n.zone!==team)continue;seen.add(n.id);queue.push(n.id);}}return seen;},reach=[reachable(0),reachable(1)];
   const stations=[-1,0,1].map(k=>{const desired={x:mid.x-dz/l*k*12,z:mid.z+dx/l*k*12};let best=null,dist=Infinity;for(const n of nodes){if(nav.valid&&!nav.valid[n.id]||n.zone>=0||n.overWater||n.wet>0||!reach[0].has(n.id)||!reach[1].has(n.id)||chosen.some(p=>Math.hypot(p.x-n.x,p.z-n.z)<8))continue;const d=Math.hypot(n.x-desired.x,n.z-desired.z)+Math.abs(n.y-mid.y)*2;if(d<dist){best=n;dist=d;}}if(!best)throw Error('This map needs three safe, reachable objective stations');chosen.push(best);return {x:best.x,y:best.y,z:best.z};});
-  const challenge=this.session?.room.config.challenge||dailyChallenge();
+  const challenge=this.session?.room.config.challenge||match.opts.practiceCup?.challenge||dailyChallenge();
   this.core=createObjectiveState(match.mode,stations,challenge);this.core.roundId=this.session?.room.roundId||crypto.randomUUID();this.core.players=new Map();this.core.leave=id=>this.leavePlayer(id);
   if(match.mode==='trials'&&!this.session&&!match.opts.simulation){
    const layout=stations.map(({x,y,z})=>[x,y,z].map(v=>v.toFixed(2)).join(',')).join(';');
@@ -124,7 +124,7 @@ export class ObjectiveRuntime {
   return c.result;
  }
  async showResults(){if(this.resultsShown)return;this.resultsShown=true;const result=this.finish();if(this.session?.simulation)return;this.match.state='results';this.game.hud.setVisible(false);G.input.exitLock();
-  if(this.match.mode==='trials'&&!this.session?.room.verified){try{const nft=this.game.menus._identity?.nft,key='chog.daily.record:'+String(nft?.contract||nft?.collection||'guest')+':'+String(nft?.tokenId||'guest')+':'+result.challenge.id+':v'+result.version,old=JSON.parse(localStorage.getItem(key)||'null');if(!old||old.score<result.score)localStorage.setItem(key,JSON.stringify({score:result.score,completed:result.completed,verified:false,roundId:result.roundId}));}catch{}}
+  if(this.match.mode==='trials'&&!this.match.opts.practiceCup&&!this.session?.room.config.cup&&!this.session?.room.verified){try{const nft=this.game.menus._identity?.nft,key='chog.daily.record:'+String(nft?.contract||nft?.collection||'guest')+':'+String(nft?.tokenId||'guest')+':'+result.challenge.id+':v'+result.version,old=JSON.parse(localStorage.getItem(key)||'null');if(!old||old.score<result.score)localStorage.setItem(key,JSON.stringify({score:result.score,completed:result.completed,verified:false,roundId:result.roundId}));}catch{}}
   if(this.game.menus.showModeResults){this.game.menus.showModeResults(result,this);this.game.menus.show('results');}else{this.game.menus.showResults({mode:result.mode,win:result.winner===this.match.local.team,percents:result.scores,colors:G.teamHex,players:this.actors.map(a=>({name:a.name,team:a.team,weapon:a.weaponId,turf:Math.round(a.stats.turf),splats:a.stats.splats,deaths:a.stats.deaths,isSelf:a.isLocal})),mapName:this.game.mapDef.name});this.game.menus.show('results');}
  }
  async leave(){const mode=this.match.mode;await this.session?.leave();await this.game.quitToMenu();this.game.menus._lobbyKind=mode;this.game.menus.show('lobby',{force:true});}

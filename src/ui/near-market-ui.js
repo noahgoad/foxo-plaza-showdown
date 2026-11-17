@@ -80,6 +80,10 @@ export function openNearMarket(menu, back, host) {
     confirm.disabled = true;
     quote.textContent = '';
   }
+  async function confirmAction(text, run) {
+    if (host) return run();
+    review(text, run);
+  }
   function review(text, run) {
     if (!active()) return;
     quote.textContent = text;
@@ -125,6 +129,18 @@ export function openNearMarket(menu, back, host) {
     });
     if (typeof result?.status?.SuccessValue !== 'string') throw new Error('Wallet outcome unavailable. Refresh for finalized status.');
     if (!active()) throw new Error('Wallet or screen changed.');
+  }
+  async function signMarketBatch(setup, receiverId, method, args, deposit) {
+    if (!active()) throw new Error('Wallet or screen changed.');
+    const wallet = menu.chogWallet;
+    const transactions = [{
+      signerId: account, receiverId: market,
+      actions: setup.map(([name, input, cost]) => wallet.nearActions.functionCall(name, input, 30n * 10n ** 12n, BigInt(cost))),
+    }, {
+      signerId: account, receiverId,
+      actions: [wallet.nearActions.functionCall(method, args, GAS, BigInt(deposit))],
+    }];
+    return wallet.intear.signAndSendTransactions({ transactions });
   }
 
   function checkCharge(fresh, charge) {
@@ -202,7 +218,7 @@ export function openNearMarket(menu, back, host) {
   const fund = button('fox-market-fund', 'SET UP MARKET ACCOUNT', async () => {
     const snap = await snapshot();
     if (snap.accountState || !snap.enabled) return refresh();
-    review('Set up market credit storage · ' + near(snap.charge) + ' retained storage charge. Network gas is additional.', async () => {
+    await confirmAction('Set up market credit storage · ' + near(snap.charge) + ' retained storage charge. Network gas is additional.', async () => {
       await sign(market, 'fund_account', {}, snap.charge, fresh => {
         checkCharge(fresh, snap.charge);
         if (fresh.accountState) throw new Error('Market account is already set up.');
@@ -212,16 +228,16 @@ export function openNearMarket(menu, back, host) {
     });
   });
 
-  const list = button('fox-market-list', 'REVIEW LISTING', async () => {
+  const list = button('fox-market-list', 'LIST FOX', async () => {
     const id = tokenId(owned.value);
     const snap = await snapshot();
-    if (!snap.enabled || !snap.accountState) throw new Error('Set up your market account before listing.');
+    if (!snap.enabled || (!host && !snap.accountState)) throw new Error('Market account setup or trading is unavailable.');
     const current = await readTerms(snap, id);
     if (current.fox.owner_id !== account || current.listing?.status === 'pending') throw new Error('This Fox cannot be listed right now.');
     await requireIdleFox(id, account);
     const args = { account_id: account, token_id: id };
-    if (!await snap.mv('get_listing_slot', args)) {
-      review('Set up listing storage for Fox #' + id + ' · ' + near(snap.charge) + ' retained storage charge.', async () => {
+    if (!host && !await snap.mv('get_listing_slot', args)) {
+      await confirmAction('Set up listing storage for Fox #' + id + ' · ' + near(snap.charge) + ' retained storage charge.', async () => {
         await sign(market, 'fund_listing', { token_id: id }, snap.charge, async fresh => {
           checkCharge(fresh, snap.charge);
           if ((await readTerms(fresh, id)).fox.owner_id !== account || await fresh.mv('get_listing_slot', args)) {
@@ -237,16 +253,31 @@ export function openNearMarket(menu, back, host) {
     if (amount > ((1n << 128n) - 1n) / 10_000n) throw new Error('Price is outside the supported range.');
     const terms = { price_atomic: amount.toString(), career_revision: current.revision, expires_at_ns: String(BigInt(Date.now() + 86_400_000) * 1_000_000n) };
     const oldApproval = current.listing?.approval_id;
-    review('List Fox #' + id + ' · ' + describe(terms.price_atomic, terms.expires_at_ns) +
+    await confirmAction('List Fox #' + id + ' · ' + describe(terms.price_atomic, terms.expires_at_ns) +
       ' · Approval deposit up to ' + near(APPROVAL_DEPOSIT) + '. Fox stays in your wallet until sale.', async () => {
-      await sign(nft, 'nft_approve', { token_id: id, account_id: market, msg: JSON.stringify(terms) }, APPROVAL_DEPOSIT, async fresh => {
+      const approval = { token_id: id, account_id: market, msg: JSON.stringify(terms) };
+      const validate = async fresh => {
         const check = await readTerms(fresh, id);
-        if (!fresh.enabled || !fresh.accountState || check.fox.owner_id !== account || check.revision !== terms.career_revision ||
-            check.listing?.status === 'pending' || check.listing?.approval_id !== oldApproval || !await fresh.mv('get_listing_slot', args)) {
+        if (!fresh.enabled || check.fox.owner_id !== account || check.revision !== terms.career_revision ||
+            check.listing?.status === 'pending' || check.listing?.approval_id !== oldApproval) {
           throw new Error('Listing or career changed. Review again.');
         }
         await requireIdleFox(id, account);
+      };
+      if (host) {
+        await menu.chogWallet.prepareWallet();
+        const fresh = await snapshot();
+        await validate(fresh);
+        const setup = [];
+        if (!fresh.accountState) setup.push(['fund_account', {}, fresh.charge]);
+        if (!await fresh.mv('get_listing_slot', args)) setup.push(['fund_listing', { token_id: id }, fresh.charge]);
+        if (setup.length) await signMarketBatch(setup, nft, 'nft_approve', approval, APPROVAL_DEPOSIT);
+        else await sign(nft, 'nft_approve', approval, APPROVAL_DEPOSIT, validate);
+      } else await sign(nft, 'nft_approve', approval, APPROVAL_DEPOSIT, async fresh => {
+        await validate(fresh);
+        if (!fresh.accountState || !await fresh.mv('get_listing_slot', args)) throw new Error('Listing storage changed.');
       });
+      if (!active()) return;
       const finalized = await readTerms(await snapshot(), id);
       const row = finalized.listing;
       if (row?.seller_id !== account || row.status !== 'open' || row.approval_id === oldApproval ||
@@ -277,8 +308,8 @@ export function openNearMarket(menu, back, host) {
         h('p',null,'The Fox traits and recorded NFT career stay with this token. Match payouts belong to their original earners.'))));
     if (listing.status !== 'open') return;
     if (listing.seller_id === account) {
-      detail.append(button('fox-market-cancel', 'REVIEW CANCELLATION', async () => {
-        review('Cancel the listing for Fox #' + id + '. Network gas is additional.', async () => {
+      detail.append(button('fox-market-cancel', 'CANCEL LISTING', async () => {
+        await confirmAction('Cancel the listing for Fox #' + id + '. Network gas is additional.', async () => {
           await sign(market, 'cancel_listing', { token_id: id }, 0n, async fresh => {
             const row = await fresh.mv('get_listing', { token_id: id });
             if (!sameTerms(row, listing) || row.status !== 'open') throw new Error('Listing changed.');
@@ -290,15 +321,29 @@ export function openNearMarket(menu, back, host) {
     }
     try { requireBuyable(snap, { listing, fox, revision }); }
     catch (error) { detail.append(h('p', null, error.message)); return; }
-    detail.append(button('fox-market-buy', 'REVIEW PURCHASE', async () => {
+    detail.append(button('fox-market-buy', host ? 'BUY FOR ' + foxo(listing.price_atomic) : 'PREPARE PURCHASE', async () => {
       if (localStorage.getItem(key)) return recover();
+      if (host) await menu.chogWallet.prepareWallet();
       const fresh = await snapshot();
       requireBuyable(fresh, await readTerms(fresh, id), listing);
       await requireIdleFox(id, listing.seller_id);
-      if (!fresh.accountState) throw new Error('Set up your market account before buying.');
+      if (!host && !fresh.accountState) throw new Error('Set up your market account before buying.');
       const purchaseId = crypto.randomUUID();
       const draft = { purchaseId, listing, charge: fresh.charge };
-      review('Prepare purchase for Fox #' + id + ' · ' + describe(listing.price_atomic, listing.expires_at_ns) +
+      if (host) {
+        if (!active()) return;
+        const setup = [];
+        if (!fresh.accountState) setup.push(['fund_account', {}, fresh.charge]);
+        setup.push(['prepare_purchase', { purchase_id: purchaseId, token_id: id, approval_id: listing.approval_id,
+          price_atomic: listing.price_atomic, career_revision: listing.career_revision }, fresh.charge]);
+        localStorage.setItem(key, JSON.stringify(draft));
+        resume.disabled = false;
+        await signMarketBatch(setup, token, 'ft_transfer_call', { receiver_id: market, amount: listing.price_atomic,
+          msg: JSON.stringify({ purchase_id: purchaseId }) }, 1n);
+        if (active()) await recover();
+        return;
+      }
+      await confirmAction('Prepare purchase for Fox #' + id + ' · ' + describe(listing.price_atomic, listing.expires_at_ns) +
         ' · Purchase record storage ' + near(fresh.charge) + ' retained. FOXO payment requires a separate wallet confirmation.', async () => {
         localStorage.setItem(key, JSON.stringify(draft));
         resume.disabled = false;
@@ -365,19 +410,19 @@ export function openNearMarket(menu, back, host) {
     });
   }
 
-  const withdraw = button('fox-market-withdraw', 'REVIEW WITHDRAWAL', async () => {
+  const withdraw = button('fox-market-withdraw', 'WITHDRAW FOXO', async () => {
     const snap = await snapshot();
     const amount = snap.accountState?.credit;
     if (!amount || amount === '0' || snap.accountState.withdraw_pending !== '0') return refresh();
-    review('Withdraw ' + foxo(amount) + ' to ' + account + ' · Attach 1 yoctoNEAR.', async () => {
+    await confirmAction('Withdraw ' + foxo(amount) + ' to ' + account + ' · Attach 1 yoctoNEAR.', async () => {
       await sign(market, 'withdraw_credit', {}, 1n, async fresh => {
-        if (fresh.accountState?.credit !== amount || fresh.accountState.withdraw_pending !== '0') throw new Error('Available credit changed. Review again.');
+        if (fresh.accountState?.credit !== amount || fresh.accountState.withdraw_pending !== '0') throw new Error('Available credit changed. Refresh and try again.');
       });
-      await refresh('Withdrawal submitted. Refresh to check available and pending credit.');
+      await refresh('Withdrawal submitted. Check available and pending credit.');
     });
   });
   const resume = button('fox-market-resume', 'CHECK PURCHASE STATUS', recover);
-  const cancelPurchase = button('fox-market-cancel-purchase', 'REVIEW PURCHASE CANCELLATION', async () => {
+  const cancelPurchase = button('fox-market-cancel-purchase', 'CANCEL PURCHASE', async () => {
     const saved = JSON.parse(localStorage.getItem(key));
     if (!saved) return refresh();
     const args = { purchase_id: saved.purchaseId };
@@ -388,7 +433,7 @@ export function openNearMarket(menu, back, host) {
       }
     };
     await check(await snapshot());
-    review('Cancel unfunded purchase for Fox #' + saved.listing.token_id + ' · Purchase record storage remains charged.', async () => {
+    await confirmAction('Cancel unfunded purchase for Fox #' + saved.listing.token_id + ' · Purchase record storage remains charged.', async () => {
       await sign(market, 'cancel_purchase', args, 0n, check);
       await recover();
     });

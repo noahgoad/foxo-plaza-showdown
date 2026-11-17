@@ -27,10 +27,17 @@ export function openNearGuild(menu,back,host){
  const gid=input('guild-id','Guild ID'),pid=input('guild-project-id','Project ID');
  const field=(label,el)=>h('label',{class:'fox-order-field'},h('span',null,label),el);
  const review=h('p',{id:'guild-review',role:'status'}),details=h('div',{id:'guild-detail'});
- const button=(id,label,fn)=>menu._btn({id:'guild-'+id,label,cls:'iw-btn--small',accept:()=>run(fn)});
+ const button=(id,label,fn)=>menu._btn({id:'guild-'+id,label:host?label.replace(/^REVIEW /,''):label,cls:'iw-btn--small',accept:()=>run(fn)});
  const key='fox-guild-contribution:'+guildDeployment.accountId+':'+account;
  const read=()=>readGuildSnapshot({deployment:guildDeployment,economy:economyDeployment,token:NEAR_TESTNET.token,account,guildId:gid.value.trim(),projectId:pid.value.trim(),readCode:readNearAccountCode,view:viewNearContract});
- async function run(fn){if(busy||!active())return;busy=true;confirm.disabled=true;try{await fn();}catch(error){if(economyPanelActive(menu, host, modal))status.textContent=error.message||'Guild request failed.';}finally{busy=false;if(active())confirm.disabled=!prepared;}}
+ async function run(fn){
+  if(busy||!active())return;
+  busy=true;confirm.disabled=true;
+  if(host){prepared=null;review.textContent='';}
+  try{await fn();if(host&&prepared)await confirmPrepared();}
+  catch(error){if(economyPanelActive(menu,host,modal))status.textContent=error.message||'Guild request failed.';}
+  finally{busy=false;if(host)prepared=null;if(active())confirm.disabled=!prepared;}
+ }
  function stage(call,text,check){prepared={call,check};review.textContent=text+' Native attachment '+formatFoxo(call.deposit)+' NEAR ('+call.deposit+' yoctoNEAR); wallet network gas is additional. No action is signed until CONFIRM IN WALLET.';confirm.disabled=false;}
  const call=(method,args,deposit='0',receiverId=guildDeployment.accountId)=>({receiverId,method,args,deposit});
  async function stageAction(action,args,text,extra=()=>{}){
@@ -76,6 +83,18 @@ export function openNearGuild(menu,back,host){
      const missions=h('div',{class:'fox-feature-grid'});
      const projectId=pid.value.trim();
      const missionStatus=h('p',{role:'status'});
+     const rewardStatus=h('p',{role:'status'},'Checking FOXO campaign…');
+     const showReward=reward=>{
+      const messages={
+       unavailable:'FOXO campaign status unavailable.',
+       unfunded:'This project has no FOXO campaign.',
+       closed:'The FOXO campaign has closed.',
+       exhausted:'The FOXO campaign has used its remaining budget.',
+      };
+      rewardStatus.textContent=reward?.state==='funded'
+       ? formatFoxo(reward.perMissionAtomic)+' FOXO per eligible mission · '+formatFoxo(reward.remainingAtomic)+' FOXO remaining · Ends '+new Date(reward.expiresAt).toLocaleString()
+       : messages[reward?.state]||messages.unavailable;
+     };
      const requestMission=async(action,mode)=>{
       if(!identity.nearSession)throw Error('Sign in with Intear to track Guild missions.');
       const response=await fetch(nearRelayUrl()+'/near/guild/missions/'+action,{
@@ -85,6 +104,7 @@ export function openNearGuild(menu,back,host){
       const result=await response.json().catch(()=>null);
       guard();
       if(!response.ok||!Array.isArray(result?.missions))throw Error(result?.error||'Guild mission service unavailable.');
+      showReward(result.reward);
       return result.missions;
      };
      const missionLabels=new Map();
@@ -98,6 +118,7 @@ export function openNearGuild(menu,back,host){
       }
      };
      for(const [mode,label,objective] of [
+      ['hunt','TRAIT HUNT','Win and capture the carrier or collect a target trait. Career objective.'],
       ['boss','BOSS BATTLE','Win and break a shield, heal or protect an ally.'],
       ['control','TRAIT CONTROL','Win and help capture or defend a station.'],
       ['trials','DAILY TRIALS','Clear all eight beacons with the standard kit.'],
@@ -120,14 +141,26 @@ export function openNearGuild(menu,back,host){
       h('h3',{class:'iw-display'},'GUILD CONTRACTS'),
       h('p',null,'Materials needed · '+missing.map(([name,amount])=>amount+' '+name).join(' · ')),
       h('p',null,'Accept before starting a verified match. Return to check progress and contribute materials.'),
-      missions,missionStatus,button('mission-refresh','CHECK MISSION STATUS',refreshMissions)));
+      rewardStatus,missions,missionStatus,button('mission-refresh','CHECK MISSION STATUS',refreshMissions)));
      if(next.member&&identity.nearSession)void refreshMissions().catch(error=>{
-      if(active()&&missions.isConnected)missionStatus.textContent=error.message;
+      if(active()&&missions.isConnected){showReward(null);missionStatus.textContent=error.message;}
      });
+     else showReward(null);
     }
    }
    const amounts=GUILD_TOKENS.map(t=>input('guild-material-'+t,t+' contribution','0'));
-   details.append(...amounts.map((el,i)=>field(GUILD_TOKENS[i].toUpperCase(),el)),button('contribution-review','REVIEW MATERIAL CONTRIBUTION',async()=>{
+   const useInventory=button('contribute-inventory','USE AVAILABLE MATERIALS',async()=>{
+    const fresh=await read();guildGate('contribute',fresh);
+    const inventory=await fresh.read(economyDeployment.accountId,'get_inventory',{account_id:account});
+    guard();
+    for(const [index,token] of GUILD_TOKENS.entries()){
+     const remaining=BigInt(GUILD_TARGETS[index])-BigInt(fresh.project.totals[index]);
+     const available=BigInt(inventory.available[token]);
+     amounts[index].value=String(remaining<available?remaining:available);
+    }
+   });
+   useInventory.disabled=!next.member;
+   details.append(...amounts.map((el,i)=>field(GUILD_TOKENS[i].toUpperCase(),el)),useInventory,button('contribution-review','REVIEW MATERIAL CONTRIBUTION',async()=>{
     const fresh=await read();guildGate('contribute',fresh);
     let draft;const saved=localStorage.getItem(key);
     if(saved){draft=JSON.parse(saved);validateSaved(draft,fresh);}else draft=contributionDraft({guild:guildDeployment.accountId,economy:economyDeployment.accountId,account,projectId:pid.value.trim(),project:fresh.project,operationId:crypto.randomUUID(),amounts:amounts.map(el=>el.value.trim())});
@@ -157,31 +190,78 @@ export function openNearGuild(menu,back,host){
   const rebuilt=contributionDraft({guild:draft.guild,economy:draft.receiverId,account,projectId:draft.projectId,project:{...fresh.project,totals:['0','0','0']},operationId:draft.operationId,amounts});
   if(JSON.stringify(rebuilt)!==JSON.stringify(draft))throw new Error('Saved contribution is malformed.');
  }
- const confirm=button('confirm','CONFIRM IN WALLET',async()=>{
+ async function confirmPrepared(){
   const draft=prepared;if(!draft)return;await wallet.prepareWallet();guard();const fresh=await read();guard();
   const result=await draft.check(fresh);guard();
+  if(prepared!==draft)throw new Error('Guild details changed. Review again.');
   if(draft.call.kind==='contribute')localStorage.setItem(key,JSON.stringify(draft.call));
   if(result!=='confirmed'){
    status.textContent='Review the exact action in Intear.';
-   const c=draft.call;await wallet.intear.signAndSendTransaction({signerId:account,receiverId:c.receiverId,actions:[wallet.nearActions.functionCall(c.method,c.args,200n*10n**12n,BigInt(c.deposit))]});guard();
+   const c=draft.call;
+   const actions=[];
+   if(c.storageTopUp>0n)actions.push(wallet.nearActions.functionCall('fund_storage',{},20n*10n**12n,c.storageTopUp));
+   actions.push(wallet.nearActions.functionCall(c.method,c.args,200n*10n**12n,BigInt(c.deposit)));
+   const outcome=await wallet.intear.signAndSendTransaction({signerId:account,receiverId:c.receiverId,actions});guard();
+   const failure=[outcome?.status,...(outcome?.receipts_outcome??[]).map(row=>row.outcome?.status)].find(value=>value?.Failure);
+   if(failure){
+    const error=failure.Failure.ActionError?.kind?.FunctionCallError?.ExecutionError;
+    throw new Error(error||'The Guild transaction failed on Testnet.');
+   }
+  }
+  if(draft.call.method==='create_guild'){
+   let submitted;
+   for(let attempt=0;attempt<6;attempt++){
+    submitted=await read();guard();
+    if(submitted.guild)break;
+    if(attempt<5)await new Promise(resolve=>setTimeout(resolve,1500));
+    guard();
+   }
+   prepared=null;review.textContent='';
+   if(!submitted.guild)throw new Error('Guild creation is pending. Check the Guild ID before trying again.');
+   closeCreation();
+   workspace.hidden=false;
   }
   if(draft.call.kind==='contribute'){
    const current=await read(),row=await current.read(guildDeployment.accountId,'contribution',{operation_id:draft.call.operationId});guard();
    if(!contributionMatches(row,draft.call))throw new Error('Contribution is not confirmed at finality. Saved operation retained. Load and review it before retrying.');localStorage.removeItem(key);
   }
   await load();
- });confirm.disabled=true;
+ }
+ const confirm=button('confirm','CONFIRM IN WALLET',confirmPrepared);confirm.disabled=true;
  const storage=input('guild-storage','Native storage prepayment in yoctoNEAR','0');
  const governors=input('guild-governors','Governor accounts, comma separated'),threshold=input('guild-threshold','Governor approval threshold','2'),deadline=input('guild-deadline','Project deadline UTC ISO','');
  const role=input('guild-role','Manager role: leader or treasurer','treasurer'),target=input('guild-manager-target','New manager account');
  const search=h('section',{class:'near-market-section guild-lookup'},
   h('h3',{class:'iw-display'},'FIND YOUR GUILD'),
   h('div',{class:'near-market-search'},field('GUILD ID',gid),field('PROJECT ID (OPTIONAL)',pid),button('load','LOAD / REFRESH',load)));
- const management=h('details',{class:'near-market-section guild-management'},h('summary',null,'Guild management'),
- field('GOVERNORS (COMMA SEPARATED)',governors),field('APPROVAL THRESHOLD',threshold),button('create-review','REVIEW CREATE GUILD',async()=>{
+ const createReview=button('create-review',host?'CREATE GUILD':'REVIEW CREATE GUILD',async()=>{
+  if(host){
+   gid.value=createId.value.trim();
+   pid.value='';
+   governors.value=[account,...coGovernors.value.split(',').map(value=>value.trim()).filter(Boolean)].join(',');
+  }
   const id=guildIdentifier(gid.value.trim()),list=governors.value.split(',').map(s=>accountId(s.trim())),n=Number(threshold.value);if(list.length<2||list.length>16||new Set(list).size!==list.length||!list.includes(account)||!Number.isInteger(n)||n<2||n>list.length)throw new Error('Use 2–16 unique governors including this wallet and a valid threshold of at least 2.');
-  stage(call('create_guild',{guild_id:id,governors:list,threshold:n}),'Create guild '+id+' with governors '+list.join(', ')+' and approval threshold '+n+'. You become leader, treasurer and its first member. Native prepaid storage is required.',fresh=>{if(fresh.guild)throw new Error('Guild already exists.');});
- }),field('DEADLINE (UTC ISO)',deadline),button('open-review','REVIEW OPEN PROJECT',async()=>{
+  const creationCall=call('create_guild',{guild_id:id,governors:list,threshold:n});
+  const check=async fresh=>{
+   if(fresh.guild)throw new Error('Guild already exists.');
+   const credit=await fresh.read(guildDeployment.accountId,'storage_credit',{account_id:account});
+   if(!host&&BigInt(credit)===0n)throw new Error('Your Guild storage credit is 0 NEAR. Prepay Guild storage first.');
+   if(host){
+    const budget=10000000000000000000000n;
+    const available=BigInt(credit);
+    creationCall.storageTopUp=available<budget?budget-available:0n;
+   }
+  };
+  if(host){
+   prepared={call:creationCall,check};
+   try{await confirmPrepared();}finally{prepared=null;}
+   return;
+  }
+  stage(creationCall,'Create guild '+id+' with governors '+list.join(', ')+' and approval threshold '+n+'. You become leader, treasurer and its first member. Native prepaid storage is required.',check);
+ });
+ const management=h('details',{class:'near-market-section guild-management'},h('summary',null,'Guild management'),
+ !host?[field('GOVERNORS (COMMA SEPARATED)',governors),field('APPROVAL THRESHOLD',threshold),createReview]:null,
+ field('DEADLINE (UTC ISO)',deadline),button('open-review','REVIEW OPEN PROJECT',async()=>{
   const fresh=await read();guildGate('open_project',fresh);const ms=Date.parse(deadline.value);if(!Number.isSafeInteger(ms)||ms<=Date.now())throw new Error('Enter a future UTC deadline.');
   const id=guildIdentifier(pid.value.trim());stage(call('open_project_ms',{project_id:id,guild_id:gid.value.trim(),deadline_ms:ms}),'Open '+id+' for guild '+gid.value.trim()+': guild-banner-beacon-v2; targets 48 alloy + 2 core + 2 catalyst; fee payer '+account+' owes 15 FOXO separately; deadline '+new Date(ms).toISOString()+'. Uncommitted-only refunds. Output is nontransferable and guild-bound.',current=>{guildGate('open_project',current);if(current.project)throw new Error('Project already exists.');});
  }),field('MANAGER ROLE',role),field('NEW MANAGER ACCOUNT',target),button('governance-review','REVIEW GOVERNOR APPROVAL',()=>{
@@ -190,17 +270,38 @@ export function openNearGuild(menu,back,host){
   if(!/^[1-9]\d{0,30}$/.test(storage.value.trim()))throw new Error('Enter an exact positive native storage prepayment.');stage(call('fund_storage',{},storage.value.trim()),'Prepay guild contract storage. This native payment is not project principal, is consumed by storage growth and has no withdrawal API.',()=>{});
  }));
  if(!host) management.open=true;
+ const reviewPanel=h('section',{class:'near-market-section guild-review-panel'},
+   h('h3',{class:'iw-display'},'REVIEW TRANSACTION'),review,confirm);
+ reviewPanel.hidden=!!host;
  const workspace=h('div',{class:'guild-workspace fox-feature-stack'},
   h('div',{class:'fox-feature-grid'},
    h('div',{class:'fox-feature-stack'},search,h('section',{class:'near-market-section fox-feature-card'},
     h('h3',{class:'iw-display'},'MEMBERSHIP & PROJECTS'),details)),
    h('section',{class:'near-market-section fox-feature-card'},
     h('h3',{class:'iw-display'},'GUILD ADMINISTRATION'),management)),
-  h('section',{class:'near-market-section guild-review-panel'},
-   h('h3',{class:'iw-display'},'REVIEW TRANSACTION'),review,confirm));
+  reviewPanel);
+ const createId=input('guild-create-id','Guild ID'),coGovernors=input('guild-co-governors','Other governors');
+ const creation=h('section',{class:'guild-book guild-creation',hidden:true},
+  h('h2',{class:'guild-book-name iw-display'},'CREATE GUILD'),
+  h('div',{class:'guild-creation-fields'},
+   field('GUILD ID',createId),field('LEADER & TREASURER',h('strong',null,account)),
+   field('OTHER GOVERNORS',coGovernors),h('p',null,'Add at least one Testnet account. Separate multiple accounts with commas.'),
+   field('APPROVALS REQUIRED',threshold),
+   h('p',null,'The wallet review includes any required storage deposit, up to 0.01 Testnet NEAR, plus gas.')),
+  h('div',{class:'guild-creation-actions'},
+   button('cancel-create','CANCEL',async()=>closeCreation()),createReview));
+ function closeCreation(){
+  if(!host)return;
+  creation.hidden=true;
+  directory.hidden=false;
+  workspace.append(reviewPanel);
+  prepared=null;confirm.disabled=true;review.textContent='';status.textContent='';
+  menu._setFocus(directory.querySelector('[data-id="guild-tab-create-guild"]')||lookup,{snap:true});
+ }
+ let directory,lookup;
  if(host) {
   workspace.hidden=true;
-  const directory=guildDirectory(menu,{
+  directory=guildDirectory(menu,{
    readGuild:readDirectoryGuild,
    openGuild:id=>{workspace.hidden=false;gid.value=id;pid.value='';run(async()=>{
     await load();
@@ -208,13 +309,20 @@ export function openNearGuild(menu,back,host){
     if(project){pid.value=project;await load();}
     if(active()) workspace.scrollIntoView({block:'start'});
    });},
-   createGuild:()=>{workspace.hidden=false;management.open=true;gid.focus();gid.scrollIntoView({block:'nearest'});},
+   createGuild:()=>{
+    if(busy)return;
+    prepared=null;confirm.disabled=true;review.textContent='';status.textContent='';
+    createId.value=gid.value;
+    workspace.hidden=true;directory.hidden=true;creation.hidden=false;
+    creation.append(reviewPanel);
+    createId.focus();creation.scrollIntoView({block:'start'});
+   },
   });
-  const lookup=menu._btn({id:'guild-open-by-id',label:'OPEN BY ID',cls:'iw-btn--small',accept:()=>{
+  lookup=menu._btn({id:'guild-open-by-id',label:'OPEN BY ID',cls:'iw-btn--small',accept:()=>{
    workspace.hidden=false;gid.focus();gid.scrollIntoView({block:'nearest'});
   }});
   directory.querySelector('.guild-directory-toolbar').append(lookup);
-  body.append(directory,workspace);
+  body.append(directory,creation,workspace);
  } else body.append(workspace);
  for(const el of body.querySelectorAll('input'))el.addEventListener('input',()=>{prepared=null;confirm.disabled=true;review.textContent='';});
 }
@@ -227,5 +335,14 @@ async function readDirectoryGuild(id) {
  if(code.codeHash!==guildDeployment.codeHash)throw Error('Guild code verification failed.');
  const row=await viewNearContract(guildDeployment.accountId,'guild',{guild_id:id},{blockId:code.blockHash});
  if(row.blockHash!==code.blockHash)throw Error('Guild snapshot changed.');
- return row.value;
+ const guild=row.value;
+ if(!guild?.active || !Array.isArray(guild.projects))return guild;
+ const display=await Promise.all(guild.projects.slice(-8).map(async project_id=>{
+  const response=await viewNearContract(guildDeployment.accountId,'project',{project_id},{blockId:code.blockHash});
+  const project=response.value;
+  if(response.blockHash!==code.blockHash)throw Error('Guild snapshot changed.');
+  return project?.guild_id===id && project.status==='committed' && project.sku==='guild-banner-beacon-v2'
+   ? project_id : null;
+ })).catch(()=>null);
+ return {...guild,displayProjects:display?.filter(Boolean)??null};
 }

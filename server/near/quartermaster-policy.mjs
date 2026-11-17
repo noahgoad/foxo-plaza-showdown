@@ -24,6 +24,7 @@ export function quartermasterContext(context, config, now) {
   requirePolicy(context?.finalized === true && id(context.blockHash) && Number.isSafeInteger(context.blockHeight) &&
     context.blockHeight >= 0 && sources.has(context.source) && id(context.fundingId) && Array.isArray(context.skus),
   'Finalized registered context required');
+  if (context.source === 'Guild') requirePolicy(id(context.projectId), 'Guild project required');
   const budget = quartermasterAtomic(config.budgetAtomic);
   const available = quartermasterAtomic(context.availableBudgetAtomic);
   const seen = new Set();
@@ -41,6 +42,7 @@ export function quartermasterContext(context, config, now) {
   });
   return { finalized: true, blockHash: context.blockHash, blockHeight: context.blockHeight,
     source: context.source, fundingId: context.fundingId,
+    ...(context.source === 'Guild' ? { projectId: context.projectId } : {}),
     availableBudgetAtomic: String(budget < available ? budget : available), skus };
 }
 

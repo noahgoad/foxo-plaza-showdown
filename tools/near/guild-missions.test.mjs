@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
 import { DatabaseSync } from 'node:sqlite';
-import { createGuildMissions } from '../../server/near/guild-missions.mjs';
+import { createGuildMissions, qualifiesGuildMission } from '../../server/near/guild-missions.mjs';
 import { rankingMetricsHash } from '../../server/near/ranking-rubric.mjs';
 import { guildTermsHash } from '../../src/economy/near-guild.js';
 import { guildDeployment } from '../../assets/near-fox/guild-deployment.js';
@@ -43,4 +43,22 @@ test('Guild missions verify membership, match evidence and single use across pro
     assert.deepEqual((await mission(account,{projectId:'first'},'status')).data.missions[0],confirmed);
     assert.equal((await mission(account,{projectId:'second'},'status')).data.missions[0].status,'accepted');
   }finally{database.close();}
+});
+
+test('Trait Hunt requires authoritative win telemetry with a carrier or trait objective', () => {
+  const account = 'player.testnet';
+  const result = { matchId:'hunt-match', accountId:account, mode:'hunt', rulesVersion:'near-practice-1', won:true, left:false };
+  const resultHash = createHash('sha256').update(JSON.stringify(result)).digest('hex');
+  const finishedAt = 180_000;
+  const makeRow = (source, captures) => {
+    const metric = { matchId:result.matchId, accountId:account, mode:'hunt', source, resultHash, finishedAt,
+      signals:{ left:false, durationMs:60_000, activeMs:20_000, captures, traits:0, kills:20 } };
+    metric.metricsHash = rankingMetricsHash(metric);
+    return { match_id:result.matchId, result_hash:resultHash, metrics_hash:metric.metricsHash,
+      payload:JSON.stringify({...result,resultHash,finishedAt}), metric:JSON.stringify(metric) };
+  };
+  const terms = { account, mode:'hunt', acceptedAt:100_000, deadline:200_000 };
+  assert.equal(qualifiesGuildMission(makeRow('authoritative-simulation',1), terms)?.matchId, result.matchId);
+  assert.equal(qualifiesGuildMission(makeRow('authoritative-simulation',0), terms), null);
+  assert.equal(qualifiesGuildMission(makeRow('local',1), terms), null);
 });

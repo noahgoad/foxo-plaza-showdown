@@ -21,6 +21,17 @@
 .chog-hunt-results .iw-res__body{justify-content:flex-end}.chog-hunt-results .iw-res__btns{pointer-events:auto}.chog-hunt-results .iw-res__foot{justify-content:flex-end}
 .chog-hunt-results .iw-res__scrim{z-index:1;pointer-events:none;background:linear-gradient(#160b2633,transparent 25%,transparent 75%,#160b2688)}
 .chog-hunt-reward-host{position:absolute;inset:0;z-index:0}
+.foxo-hunt-recap{position:absolute;bottom:3%;left:4%;max-width:60%;z-index:1;margin:0;padding:.5rem .8rem;border-radius:.5rem;background:#221732;color:#fff;font-size:clamp(.75rem,1.1vw,1rem)}
+.foxo-hunt-recap p{margin:.2rem 0 .4rem}
+.foxo-replay-dialog{width:min(92vw,680px);padding:1rem;border:2px solid #ffae28;border-radius:1rem;background:#221732;color:#fff}
+.foxo-replay-dialog::backdrop{background:#080511cc}
+.foxo-replay-dialog canvas,.foxo-replay-dialog input{width:100%}
+.foxo-replay-dialog button{margin-right:.5rem;padding:.45rem .8rem;border:0;border-radius:.4rem;background:#ffae28;color:#181324;font:inherit;cursor:pointer}
+.foxo-hunt-lesson{position:absolute;top:18%;left:2%;max-width:min(22rem,40vw);padding:.5rem .85rem;border:1px solid #ffae28;border-radius:.65rem;background:#221732;color:#fff;pointer-events:auto}
+.foxo-hunt-lesson p{margin:.1rem 0 .4rem}
+.foxo-hunt-lesson button{border:0;border-radius:.35rem;padding:.3rem .55rem;background:#ffae28;color:#181324;cursor:pointer}
+.foxo-hunt-decoy{position:absolute;bottom:14%;right:3%;pointer-events:auto}
+.foxo-hunt-decoy-marker{position:absolute;top:0;left:0;padding:.25rem .45rem;border:2px dashed #ffae28;border-radius:.45rem;background:#221732;color:#fff;font-size:.72rem;font-weight:800;pointer-events:none}
 .chog-hunt-reward-stage{position:absolute;z-index:0}.chog-hunt-reward-stage .mythic-header,.chog-hunt-reward-stage .mythic-footer{display:none}
 .hunt-touch-open{display:none;pointer-events:auto;position:absolute;right:28px;bottom:160px;border:2px solid white;border-radius:50%;width:85px;height:85px;color:#231230;background:#ffb32e;font-weight:bold}
 @media(pointer:coarse){.hunt-touch-open{display:block}}
@@ -219,7 +230,7 @@ body:has(.chog-hunt-pause) :is(.iw-hud,.iw-hud-over,.hunt-ui,.hunt-flying-trait,
 .chog-raid-results .iw-xp{flex:1 1 340px;min-width:280px;width:auto}
 .chog-raid-results .iw-res__btns{flex-wrap:wrap;justify-content:flex-end;gap:16px}
 .chog-raid-results .iw-res__btns .iw-btn{height:46px;font-size:clamp(12px,1.2vw,17px);padding:10px 14px}
-.chog-raid-results .iw-btn__blob{border-radius:0;background:url('../assets/chog-hunt-ui/chog-sign-v1.png') center/100% 100% no-repeat}
+.chog-raid-results .iw-btn__blob{border-radius:0;background:url('../assets/near-fox/hunt-wanted-frame.webp') center/contain no-repeat}
 .chog-raid-results .iw-btn.is-focus{color:#fff}
 @media(prefers-reduced-motion:reduce){.chog-raid-result-sign{animation:none}}
 
@@ -230,7 +241,7 @@ body.chog-pause-cover .chog-raid-live{display:none!important}
 .chog-raid-skill__effect{font-size:12px;color:#ffd27b;line-height:1.3}.chog-raid-skill__feedback{font-size:12px;color:#aaff9c;min-height:16px;line-height:1.3}.chog-raid-skill__track{height:7px;overflow:hidden;background:#100a1c;border-radius:5px}.chog-raid-skill__track i{display:block;width:100%;height:100%;background:linear-gradient(90deg,#783ee8,#ffb52e);transform-origin:left;will-change:transform}
 .chog-raid-skill.is-activated{animation:chog-raid-activate .5s ease-out}.chog-raid-skill.is-active{border-color:#b8ff9b;box-shadow:0 0 14px #89ee5d55}
 @keyframes chog-raid-activate{0%{scale:.94;filter:brightness(1.8)}60%{scale:1.04}100%{scale:1;filter:brightness(1)}}
-.chog-raid-hud .iw-bb__embsplat,.chog-raid-hud .iw-spl__splat,.chog-original-hud .iw-bover :is(.iw-btc__splat,.iw-bph__splat,.iw-bend__splat){background:url('../assets/chog-hunt-ui/chog-sign-v1.png') center/contain no-repeat}
+.chog-raid-hud .iw-bb__embsplat,.chog-raid-hud .iw-spl__splat,.chog-original-hud .iw-bover :is(.iw-btc__splat,.iw-bph__splat,.iw-bend__splat){background:url('../assets/near-fox/hunt-wanted-frame.webp') center/contain no-repeat}
 .chog-raid-hud .iw-bb__embsplat svg,.chog-raid-hud .iw-spl__splat svg,.chog-original-hud .iw-bover :is(.iw-btc__splat,.iw-bph__splat,.iw-bend__splat) svg{display:none}
 @media(max-height:700px){.chog-raid-live .chog-raid-skill{bottom:65px;padding:9px;gap:6px;width:230px}.chog-raid-skill .iw-btn{font-size:12px;min-height:32px}}
 @media(prefers-reduced-motion:reduce){.chog-raid-skill.is-activated{animation:none}}
@@ -294,8 +305,8 @@ body.iw-dio-on .chog-raid-hud .iw-bhud{visibility:hidden}
 .chog-objective-skill{position:absolute;right:24px;bottom:100px;pointer-events:auto;max-width:220px;font-size:16px}
 .chog-objective-skill[hidden]{display:none}
 .chog-objective-skill.is-compact{padding:0;background:none;border:0;box-shadow:none;width:auto;max-width:32vw;display:block}
-.chog-objective-skill .iw-btn{position:relative;inset:auto;margin:0;min-height:44px;height:auto;padding:12px 16px;font-size:13px;max-width:100%}
-.chog-objective-skill .iw-btn__label{white-space:normal;line-height:1.3}
+:is(.chog-objective-skill,.foxo-hunt-decoy) .iw-btn{position:relative;inset:auto;margin:0;min-height:44px;height:auto;padding:12px 16px;font-size:13px;max-width:100%}
+:is(.chog-objective-skill,.foxo-hunt-decoy) .iw-btn__label{white-space:normal;line-height:1.3}
 
 /* Keep the existing pool panel usable with the NEAR action set. */
 .chog-raid-pool-modal .iw-modal__card{box-sizing:border-box}
@@ -307,3 +318,32 @@ body.iw-dio-on .chog-raid-hud .iw-bhud{visibility:hidden}
 .chog-raid-pool-actions .iw-btn{min-height:36px;height:auto;padding:8px 12px;flex-basis:190px}
 .chog-raid-pool-actions .iw-btn__label{white-space:normal;text-align:center}
 @media(max-width:600px){.chog-raid-pool-actions .iw-btn{flex-basis:130px}.chog-raid-pool-modal .iw-modal__btns .iw-btn{min-width:80px;min-height:36px;font-size:16px}}
+
+/* Keep live briefing content inside the illustrated Fox frame. */
+.foxo-hunt-board {
+  box-sizing: border-box;
+  aspect-ratio: 1;
+  background: url('../assets/near-fox/hunt-wanted-frame.webp') center / 100% 100% no-repeat;
+}
+.foxo-hunt-board .hunt-board-title {
+  top: 23%;
+  height: 11%;
+  background: none;
+  color: #fff4db;
+}
+.foxo-hunt-board.is-carrier .hunt-board-title { top: 22%; height: 15%; font-size: clamp(17px, 3.1vh, 32px); }
+.foxo-hunt-board .hunt-board-objective { top: 38%; margin: 0; color: #ffd48a; font-size: clamp(12px, 2.2vh, 22px); }
+.foxo-hunt-board .hunt-board-portrait { top: 34%; left: 31%; width: 38%; height: 38%; }
+.foxo-hunt-board .hunt-board-portrait img {
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  border: 3px solid #fff;
+  border-radius: 16px;
+}
+.foxo-hunt-board .hunt-board-name { top: 72%; height: 7%; background: none; font-size: clamp(16px, 3.5vh, 32px); }
+.foxo-hunt-board .hunt-board-nft { top: 79%; color: #ffd48a; font-size: clamp(12px, 2.6vh, 22px); }
+.foxo-hunt-board .hunt-board-traits { top: 43%; height: 40%; width: 58%; left: 21%; gap: 7px; }
+.foxo-hunt-board .hunt-board-trait { min-width: 0; border-color: #ffba39; }
+.foxo-hunt-board .hunt-board-trait span { max-width: 100%; overflow-wrap: anywhere; }

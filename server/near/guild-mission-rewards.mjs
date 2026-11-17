@@ -1,5 +1,5 @@
 import { createHash } from 'node:crypto';
-import { guildMissionUpgrade } from '../../assets/near-fox/economy-deployment.js';
+import { guildMissionCodeHashes } from '../../assets/near-fox/economy-deployment.js';
 
 export function createGuildMissionRewards({ database, economyId, signerId, rpc, transport }) {
   const pending = new Map();
@@ -11,11 +11,12 @@ export function createGuildMissionRewards({ database, economyId, signerId, rpc, 
       FROM near_guild_missions g JOIN near_results r
         ON g.match_id=r.match_id AND g.account_id=r.account_id
       WHERE g.account_id=? AND g.match_id IS NOT NULL AND length(g.project_id)<=48
+        AND g.mode IN ('boss','control','trials')
       ORDER BY g.completed_at DESC LIMIT 100`).all(account);
     if (!rows.length) return [];
 
     const code = await rpc('query',{request_type:'view_account',account_id:economyId,finality:'final'});
-    if (code.code_hash !== guildMissionUpgrade.codeHash || !code.block_hash) return [];
+    if (!guildMissionCodeHashes.includes(code.code_hash) || !code.block_hash) return [];
     const view = async (method_name,args) => {
       const result = await rpc('query',{request_type:'call_function',account_id:economyId,
         method_name,finality:'final',args_base64:Buffer.from(JSON.stringify(args)).toString('base64')});

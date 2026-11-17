@@ -20,7 +20,7 @@ export class HuntCore {
  active(id){const p=this.players.get(id);return this.phase==='playing'&&p&&!p.out&&!p.left&&p.stun<=0&&(p.recovering||0)<=0&&(p.roleBrief||0)<=0;}
  step(dt,{pendingShots}={}){
   dt=Math.max(0,Math.min(dt,1));if(this.phase==='finished')return;
-  if(this.phase==='briefing'){this.brief+=dt;if(this.brief>=HUNT.brief+HUNT.return+HUNT.dock){this.phase='playing';this.event('play');}return;}
+  if(this.phase==='briefing'){this.brief+=dt;if(this.brief>=HUNT.brief+HUNT.return+HUNT.dock){this.phase='playing';this.event('play',{id:this.holderId});}return;}
   if(this.phase==='ending'){this.endDelay-=dt;if(this.endDelay<=0)this.finish();return;}
   this.time=Math.max(0,this.time-dt);this.elapsed+=dt;this.invulnerable=Math.max(0,this.invulnerable-dt);for(const p of this.players.values()){p.stun=Math.max(0,p.stun-dt);p.recovering=Math.max(0,(p.recovering||0)-dt);p.roleBrief=Math.max(0,(p.roleBrief||0)-dt);}
   while(this.dropIndex<DROP_TIMES.length&&this.elapsed+1e-7>=DROP_TIMES[this.dropIndex]&&this.time>0){const at=DROP_TIMES[this.dropIndex++];this.event('drop-wave',{wave:this.dropIndex,at});}
@@ -58,7 +58,7 @@ export class HuntCore {
   if(chest.kind==='token'){this.award(id,chest.amountMilli);this.activity(id,'loot');}
   const traitMatched=chest.kind==='trait'&&this.traits.some(t=>t.id===chest.trait?.id&&t.category===chest.trait.category&&t.value===chest.trait.value)&&!this.found.has(chest.trait.id);
   if(traitMatched){this.found.add(chest.trait.id);this.activity(id,'traits');}
-  this.event('loot',{id,chestId:chest.id,kind:chest.kind,traitId:chest.trait?.id,traitMatched,amount:chest.amountMilli||0});
+  this.event('loot',{id,chestId:chest.id,kind:chest.kind,traitId:chest.trait?.id,traitMatched,traitCount:this.found.size,amount:chest.amountMilli||0});
   if(this.found.size===this.traits.length)this.end(id,'traits');return true;
  }
  addDrop(id,amount){if(this.drops.has(id)||!Number.isInteger(amount)||amount<1||amount>100)return false;this.drops.set(id,{amount,collected:null});return true;}

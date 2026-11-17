@@ -1,5 +1,6 @@
 import { h } from './ui-util.js';
 import { GLYPHS } from './ui-icons.js';
+import { guildLounge } from './foxo-guild-lounge.js';
 
 const guilds = [
   { id:'beacon-guard', name:'Beacon Guard', text:'Keep the plaza beacon lit.', level:8, xp:68, trophies:1840, raids:12, leader:'Beacon', officer:'Lamplight' },
@@ -21,8 +22,8 @@ const crest = guild => h('img',{class:'guild-crest',alt:'',src:new URL('../../as
 export function guildDirectory(menu, { openGuild, createGuild, readGuild }) {
   const name = h('div',{class:'guild-book-name iw-display'},'GUILD PROJECTS');
   const content = h('div',{class:'guild-book-content'});
-  const tabs = h('nav',{class:'guild-book-tabs','aria-label':'Guild sections'});
-  const menuTabs = ['Info','Members','Event Log','Inbox','Top Guilds'];
+  const tabs = h('nav',{class:'guild-book-tabs guild-directory-tabs','aria-label':'Guild sections'});
+  const menuTabs = ['Create Guild','Members','Event Log','Inbox','Lounge','Top Guilds'];
   const tabButtons = [];
   let selected, record, pending = false, unavailable = false, version = 0, tab = 'Top Guilds';
   const bind = (id,label,accept) => menu._btn({id,label,accept,cls:'iw-btn--small'});
@@ -31,19 +32,55 @@ export function guildDirectory(menu, { openGuild, createGuild, readGuild }) {
   const demoNotice = h('p',{class:'guild-demo-label'},'Demo standings');
   search.addEventListener('keydown',event=>{if(event.key!=='Escape')event.stopPropagation();});
   search.addEventListener('input',renderList);
-  const directory = h('div',null,h('div',{class:'guild-directory-toolbar'},search,bind('guild-directory-create','CREATE GUILD',createGuild)),demoNotice,list);
+  const directory = h('div',null,h('div',{class:'guild-directory-toolbar'},search),demoNotice,list);
 
-  async function select(guild) {
+  async function select(guild, row) {
     const request = ++version;
     selected=guild;record=null;pending=true;unavailable=false;
-    show('Info');
-    menu._setFocus?.(tabButtons[0],{snap:true});
+    const popupButton = (label, onclick) => h('button',{
+      type:'button',class:'iw-btn iw-btn--small',onclick,
+    },h('span',{class:'iw-btn__label'},label));
+    const body = h('div');
+    const close = popupButton('CLOSE',()=>dialog.close());
+    const dialog = h('dialog',{class:'guild-info-dialog','aria-labelledby':'guild-popup-title'},
+      h('div',{class:'guild-info-dialog__actions'},close),body);
+    dialog.addEventListener('keydown',event=>event.stopPropagation());
+    dialog.addEventListener('close',()=>{
+      dialog.remove();
+      if(row.isConnected && !row.closest('[hidden]')) row.focus();
+    },{once:true});
+    function renderInfo() {
+      const demo = !record && !pending && !unavailable;
+      const label = demo ? h('p',{class:'guild-demo-label'},'Demo guild') : null;
+      const state=pending?'Checking Testnet…':unavailable?'Testnet status unavailable.':record?.active?'Active on Testnet':record?'Guild archived':'';
+      const overview = demo ? [
+        ['Guild members','3'],['Join type','Open'],['Language','English'],['Required Lv.','None'],
+      ] : record ? [['Leader',record.leader],['Treasurer',record.treasurer],['Projects',String(record.projects.length)]] : [];
+      body.replaceChildren(h('div',{class:'guild-book-info'},
+        h('div',{class:'guild-book-crest-panel'},crest(selected),
+          demo?h('div',{class:'guild-trophy-panel'},icon('crown'),h('strong',null,number(selected.trophies)),h('span',null,'Trophies')):null,
+          record?popupButton('VIEW PROJECTS',()=>{dialog.close();openGuild(selected.id);}):null),
+        h('div',{class:'guild-info-main'},
+          h('header',{class:'guild-info-heading'},
+            h('div',{class:'guild-info-title'},h('h3',{class:'iw-display',id:'guild-popup-title'},selected.name),label),
+            demo?progress(selected):null,
+            demo?h('p',{class:'guild-info-leader'},h('span',null,'Guild Leader'),h('strong',null,selected.leader)):null,
+            h('p',{class:'guild-info-description'},selected.text),
+            state?h('p',{role:'status'},state):null),
+          h('div',{class:'guild-info-facts'},
+            overview.length?facts(overview):null,
+            demo?facts([['Rank',String(guilds.indexOf(selected)+1)],['Successful raids',String(selected.raids)]]):null))));
+    }
+    renderInfo();
+    row.closest('.guild-book').append(dialog);
+    dialog.showModal();
+    close.focus();
     try {
       const result = await readGuild(guild.id);
       if (request===version) record=result;
     }
     catch { if (request===version) unavailable=true; }
-    if(request===version){pending=false;if(tab!=='Top Guilds')show(tab);}
+    if(request===version){pending=false;if(dialog.open && dialog.isConnected)renderInfo();}
   }
 
   function renderList() {
@@ -51,10 +88,10 @@ export function guildDirectory(menu, { openGuild, createGuild, readGuild }) {
     for(const node of list.querySelectorAll('[data-nav]')) menu._binds.delete(node);
     const rows=guilds.filter(guild=>guild.name.toLowerCase().includes(query)||guild.id.includes(query)).map(guild=>{
       const rank=guilds.indexOf(guild)+1;
-      const row=h('button',{type:'button',class:'guild-book-row guild-standing-row','aria-label':'View '+guild.name},
+      const row=h('button',{type:'button',class:'guild-book-row guild-standing-row','aria-label':'View '+guild.name,'aria-haspopup':'dialog'},
         h('b',{class:'guild-rank-badge',data:{rank}},String(rank)),crest(guild),h('strong',null,guild.name),
         progress(guild),h('span',{class:'guild-trophies'},icon('crown'),number(guild.trophies)));
-      menu._bind(row,{id:'guild-card-'+guild.id,accept:()=>{void select(guild);}});
+      menu._bind(row,{id:'guild-card-'+guild.id,accept:()=>{void select(guild,row);}});
       return row;
     });
     list.replaceChildren(...(rows.length ? rows : [h('p',null,'No guilds match this search.')]));
@@ -77,25 +114,11 @@ export function guildDirectory(menu, { openGuild, createGuild, readGuild }) {
     if(!selected) { content.replaceChildren(h('p',null,'Select a guild from Top Guilds.')); return; }
     const demo = !record && !pending && !unavailable;
     const label = demo ? h('p',{class:'guild-demo-label'},'Demo guild') : null;
-    if(tab==='Info') {
-      const state=pending?'Checking Testnet…':unavailable?'Testnet status unavailable.':record?.active?'Active on Testnet':record?'Guild archived':'';
-      const overview = demo ? [
-        ['Guild members','3'],['Join type','Open'],['Language','English'],['Required Lv.','None'],
-      ] : record ? [['Leader',record.leader],['Treasurer',record.treasurer],['Projects',String(record.projects.length)]] : [];
-      content.replaceChildren(h('div',{class:'guild-book-info'},
-        h('div',{class:'guild-book-crest-panel'},crest(selected),
-          demo?h('div',{class:'guild-trophy-panel'},icon('crown'),h('strong',null,number(selected.trophies)),h('span',null,'Trophies')):null,
-          record?bind('guild-open-selected','VIEW PROJECTS',()=>openGuild(selected.id)):null),
-        h('div',{class:'guild-info-main'},
-          h('header',{class:'guild-info-heading'},
-            h('div',{class:'guild-info-title'},h('h3',{class:'iw-display'},selected.name),label),
-            demo?progress(selected):null,
-            demo?h('p',{class:'guild-info-leader'},h('span',null,'Guild Leader'),h('strong',null,selected.leader)):null,
-            h('p',{class:'guild-info-description'},selected.text),
-            state?h('p',{role:'status'},state):null),
-          h('div',{class:'guild-info-facts'},
-            overview.length?facts(overview):null,
-            demo?facts([['Rank',String(guilds.indexOf(selected)+1)],['Successful raids',String(selected.raids)]]):null))));
+    if(tab==='Lounge') {
+      content.replaceChildren(guildLounge({
+        guild:selected, badge:crest(selected), record, identity:menu._identity, button:bind,
+        enter:mode=>{menu._lobbyKind=mode;menu._go('lobby');},
+      }));
       return;
     }
     if(tab==='Members') {
@@ -127,7 +150,7 @@ export function guildDirectory(menu, { openGuild, createGuild, readGuild }) {
   }
 
   for(const label of menuTabs) {
-    const button=bind('guild-tab-'+label.toLowerCase().replaceAll(' ','-'),label,()=>show(label));
+    const button=bind('guild-tab-'+label.toLowerCase().replaceAll(' ','-'),label,label==='Create Guild'?createGuild:()=>show(label));
     tabButtons.push(button);
     tabs.append(button);
   }

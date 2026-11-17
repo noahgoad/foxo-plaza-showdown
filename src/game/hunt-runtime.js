@@ -7,10 +7,14 @@ import {G,on,emit} from '../core/ctx.js';
 import {HuntCore,HUNT} from './hunt-core.js';
 import {PLAYER} from '../config.js';
 import {ChestReward} from './chog-world-chests.js';
-import {objectiveFromNft,objectiveForModel} from './chog-objectives.js';
+import {objectiveFromNft} from './chog-objectives.js';
+import {nearHuntObjective} from './near-hunt-objectives.js';
 import {HuntMatchUI} from '../ui/hunt-match-ui.js';
 import {mountMythicReward} from '../ui/mythic-reward-view.js';
 import {huntSpawnPlan} from './hunt-spawns.js';
+import {huntCaptureHighlight,huntReplayEvent} from './foxo-event-schema.js';
+import {openHuntReplay,shareHuntReplay} from '../ui/foxo-replay-ui.js';
+import {placeHuntDecoy} from './foxo-event-rules.js';
 
 // Local six-actor authority. The legacy turf relay is deliberately not used.
 export class HuntRuntime {
@@ -18,13 +22,20 @@ export class HuntRuntime {
   this.match=match;this.game=game;this.session=match.opts.huntRoom||null;this.world=game.worldChests;this.ledger=game.menus.chogWallet.gameLedger();
   const identity=game.menus._identity;this.rewardNft=identity?.nft?{...identity.nft}:null;this.rewardTokenId=this.rewardNft?.tokenId;
   this.actors=match.actors;this.actors.forEach((a,i)=>a.huntId='hunt-'+i);this.local=match.local.huntId;
-  const objectives=new Map(this.actors.map(a=>{const row=match.opts.roster?.find(p=>p.nid===a.nid);return [a.huntId,row?.objectiveNft||(a.isLocal?objectiveFromNft(identity?.nft):null)||objectiveForModel(a.character.nftId)];}));
+  const objectives=new Map(this.actors.map((actor, slot)=>{
+   const row=match.opts.roster?.find(player=>player.nid===actor.nid);
+   const equipped=actor.isLocal?objectiveFromNft(identity?.nft):null;
+   return [actor.huntId,row?.objectiveNft||equipped||nearHuntObjective(slot)];
+  }));
   const canCarry=a=>!!objectives.get(a.huntId)&&(this.session?match.opts.roster.find(p=>p.nid===a.nid)?.canCarry===true:a.isLocal?identity?.kind==='wallet'&&!!identity.nft:!a.isLocal);const carriers=this.actors.filter(canCarry);if(!carriers.length)throw Error('No eligible Carrier.');
   const initial=carriers[Math.floor(Math.random()*carriers.length)],objective=objectives.get(initial.huntId);
   this.world.resetForMatch({traits:objective.traits});
   this.core=new HuntCore({players:this.actors.map(a=>({id:a.huntId,name:a.name,canCarry:canCarry(a),balance:this.session?(match.opts.roster.find(p=>p.nid===a.nid)?.balance||0):a.isLocal?this.ledger.balance:0})),traits:objective.traits,objective,
    holderId:initial.huntId,duration:match.duration,roundId:this.session?.room.roundId||this.world.roundId});
   this.holds=new Map();this.delays=new Map();this.bots=new Map();this.rewards=[];this.skill=botSkill(this.session?.room.verified?Math.max(1,...match.opts.roster.filter(p=>!p.bot).map(p=>p.level||1)):Math.max(this.ledger.progress.level,game.profile.level||1));this.skill={...botSkill(64),level:this.skill.level,tier:'EXPERT'};this.airdrops=new HuntAirdrops(this,sources);
+  this.replayEvents=[];
+  this.replayFrames=[];
+  this.nextReplayTick=0;
   this.spawnPlan=huntSpawnPlan(G.level,[...this.core.players.values()],this.core.holderId);
   this.roles();
   for(const spawn of this.spawnPlan){const a=this.actor(spawn.id);
@@ -34,6 +45,14 @@ export class HuntRuntime {
   this.ui=new HuntMatchUI(this);this.session?.bind(this);G.rig.follow(match.local,true);G.rig.yaw=match.local.yaw;G.rig.pitch=-.12;
  }
  actor(id){return this.actors.find(a=>a.huntId===id);}
+ deployDecoy(){
+  if(this.session||!this.match.opts.decoyHunt)return false;
+  const next=placeHuntDecoy({now:this.core.elapsed*1000,readyAt:this.decoy?.readyAt,
+   active:this.core.active(this.local),hunter:this.core.role(this.local)==='hunter',position:this.match.local.pos});
+  if(!next)return false;
+  this.decoy={...next,position:new THREE.Vector3(next.position.x,next.position.y,next.position.z)};
+  this.ui.message('DECOY SIGNAL ACTIVE · 6s');return true;
+ }
  respawn(a){const p=huntSpawnPlan(G.level,[...this.core.players.values()],this.core.holderId).find(p=>p.id===a.huntId);a.respawn({position:new THREE.Vector3(p.x,p.y,p.z),yaw:p.yaw});a.huntSpawn=new THREE.Vector3(p.x,p.y,p.z);this.delays.delete(a.huntId);}
  roles(){for(const a of this.actors){a.team=this.core.role(a.huntId)==='carrier'?0:1;a.color.copy(G.teamColors[a.team]);}this.holds.clear();}
  zero(a){a.intent.move.set(0,0,0);for(const k of ['jump','fire','squid','sub','special'])a.intent[k]=false;a.fireBuffer=0;}
@@ -149,6 +168,8 @@ export class HuntRuntime {
      }
      target=b.chest?.chest.group.position;b.mode='trait-search';
     }
+   }else if(!enemy&&this.decoy?.endsAt>this.core.elapsed*1000&&a.pos.distanceTo(this.decoy.position)>2){
+    target=this.decoy.position;b.mode='track-decoy';
    }else if(enemy||b.lastSeen&&b.seenAge<9){
     const centre=enemy?.pos||b.lastSeen,range=a.weapon.kind==='charger'?13:a.weapon.kind==='blaster'?7:9;
     // Every hunter takes its own approach; never read an unseen carrier's live position.
@@ -160,7 +181,7 @@ export class HuntRuntime {
     target=b.patrol;
    }
    const drops=this.airdrops.entries.filter(d=>d.phase==='grounded'&&!d.openedBy).map(d=>({d,dist:a.pos.distanceTo(d.group.position)})).filter(x=>x.dist<skill.lootRadius).sort((x,y)=>x.dist-y.dist);
-   if(drops.length&&(!enemy||a.pos.distanceTo(enemy.pos)>14)&&(!carrier||!target)){target=drops[0].d.group.position;b.mode='supply';}
+  if(b.mode!=='track-decoy'&&drops.length&&(!enemy||a.pos.distanceTo(enemy.pos)>14)&&(!carrier||!target)){target=drops[0].d.group.position;b.mode='supply';}
    b.target=target?.clone();b.repath=0;
   }
   const target=b.target;if(!target)return;
@@ -194,6 +215,11 @@ export class HuntRuntime {
   if(this.session){if(!this.session.room.go){this.ui.root.hidden=true;this.game.hud.setVisible(false);return;}this.ui.root.hidden=false;if(!this.session.isHost){this.session.replica.update(dt);return;}this.session.replica.hostInputs(dt);}
   if(this.clearShots){G.projectiles.clear();this.clearShots=false;}
   const previous=this.core.time;this.core.step(dt,{pendingShots:G.projectiles.list.some(p=>p.huntEpoch===this.core.epoch&&!p.ghost&&p.owner?.huntId&&p.age<p.life)});this.match.time=this.core.time;
+  if(this.match.opts.decoyHunt){
+   const pressed=!!G.input.down('KeyQ');
+   if(pressed&&!this.decoyKeyDown)this.deployDecoy();
+   this.decoyKeyDown=pressed;
+  }
   if(previous>60&&this.core.time<=60){this.game.hud.banner('one_minute');G.audio?.play('one_minute');this.game._playMusic('battle_final');}
   if(Math.ceil(previous)!==Math.ceil(this.core.time)&&this.core.time>0&&this.core.time<=10){this.game.hud.countdown(Math.ceil(this.core.time));G.audio?.play('final_count');}
   this.handleEvents(this.core.drain());
@@ -211,6 +237,15 @@ export class HuntRuntime {
     this.core.recordRankingActivity(a.huntId,dt);
   }
   this.match.separateActors();
+  if(!this.session?.simulation&&this.core.phase==='playing'){
+   const tick=Math.floor(this.core.elapsed*1000);
+   if(tick>=this.nextReplayTick&&this.replayFrames.length<1600){
+    this.nextReplayTick=tick+200;
+    this.replayFrames.push({tick,carrier:this.core.holderId,positions:this.actors.map(a=>({
+     id:a.huntId,x:a.pos.x,z:a.pos.z,active:a.alive&&!this.core.players.get(a.huntId)?.out
+    }))});
+   }
+  }
   if(!this.session?.simulation)this.hold(this.match.local,dt,!!G.input.down('KeyE')||this.ui.touchHold);
   if(this.core.phase==='playing'||this.core.phase==='ending')this.airdrops.update(dt);
   for(const r of this.rewards)r.reward.update(dt);this.rewards=this.rewards.filter(r=>{if(!r.reward.done)return true;r.parent.removeFromParent();return false;});
@@ -218,11 +253,15 @@ export class HuntRuntime {
  }
  handleEvents(events){
   for(const e of events){
+   if(!this.session||this.session.isHost){
+    const transition=huntReplayEvent(e,this.core,this.replayEvents.length);
+    if(transition)this.replayEvents.push(transition);
+   }
    if(e.type==='balance'&&e.id===this.local&&!this.session?.room.verified){try{this.ledger.creditMatch(this.core.roundId,e.earned);this.core.players.get(this.local).balance=this.ledger.balance;}catch(error){this.ui.message(error.message);}}
    if(e.type==='play'&&this.core.epoch===0){this.game.hud.banner('go','MISSION START');G.audio?.play('go_horn');}
    if(e.type==='end'){this.game.hud.banner('timesup',e.winner===this.local?'MISSION COMPLETE':'MISSION FAILED');G.audio?.play('times_up');}
    if(e.type==='environment-death'&&this.session&&!this.session.isHost){const a=this.actor(e.id);if(a?.alive)a.splat(null,'water');}
-   if(e.type==='capture'){const victim=this.actor(e.old);if(victim?.alive&&this.core.players.get(e.old)?.outReason==='captured')victim.splat(this.actor(e.id),'hunt-captured');if(e.id===this.local&&!e.disconnect){this.ui.message('CARRIER CAPTURED · +1 credit');this.ui.coinGain(1000);}this.roles();this.bots.clear();this.clearShots=true;this.delays.set(e.old,.45);this.ui.briefing({announce:e.id===this.local});}
+   if(e.type==='capture'){const victim=this.actor(e.old);if(victim?.alive&&this.core.players.get(e.old)?.outReason==='captured')victim.splat(this.actor(e.id),'hunt-captured');if(e.id===this.local&&!e.disconnect){this.ui.message(`CARRIER CAPTURED · ${e.found.length}/${this.core.traits.length} TRAITS INHERITED`);this.ui.coinGain(1000);}this.roles();this.bots.clear();this.clearShots=true;this.delays.set(e.old,.45);this.ui.briefing({announce:e.id===this.local});}
    if(e.type==='exhausted')this.delays.set(e.id,.45);
    if(e.type==='drop-wave')this.airdrops.spawn(e.wave);
    if(e.type==='loot'&&e.kind==='trait'&&e.traitMatched&&e.id===this.local)this.ui.flyTrait(e.traitId,this.world.entries.find(c=>c.id===e.chestId).chest.group.position);
@@ -250,7 +289,33 @@ export class HuntRuntime {
      if(verified){if(!await this.claim())throw Error('Could not collect rewards. Try again.');data.balanceAfter=rewards.balance;}
    },onComplete:()=>this.ui.showRewardSummary()});if(this.disposed){view?.dispose();return;}this.resultsView=view;
    view.panel.classList.add('chog-hunt-reward-stage');menu._scr.el.querySelector('[data-id="rematch"]').disabled=false;
+   const nearSession=menu._identity?.nearSession;
+   if(this.session?.room.nearAuthoritative&&nearSession){
+    const link=h('input',{type:'url',readonly:true,hidden:true,'aria-label':'Public replay link'});
+    const share=menu._btn({id:'hunt-share-replay',label:'PUBLISH REPLAY',cls:'iw-btn--small',accept:async()=>{
+     share.disabled=true;
+     try{
+      link.value=await shareHuntReplay(this.core.roundId,nearSession);
+      if(!link.isConnected)return;
+      link.hidden=false;
+      link.focus();
+      link.select();
+     }catch(error){menu.toast(error.message);}
+     finally{share.disabled=false;}
+    }});
+    menu._scr.el.append(h('aside',{class:'foxo-hunt-recap'},share,link));
+   }
+   const highlight=huntCaptureHighlight(this.replayEvents);
+   if(this.replayFrames.length){
+    const actor=this.actor(highlight?.actorSessionId);
+    const recap=h('aside',{class:'foxo-hunt-recap'});
+    if(highlight?.type==='carrier_changed')recap.append(h('p',null,`${actor?.name||'Hunter'} captured the Carrier and inherited ${highlight.payload.traitCount}/${this.core.traits.length} traits.`));
+    recap.append(menu._btn({id:'hunt-watch-replay',label:'WATCH REPLAY',cls:'iw-btn--small',accept:()=>{
+     this.replayDialog=openHuntReplay({frames:this.replayFrames,events:this.replayEvents,players:[...this.core.players.values()],highlight});
+    }}));
+    menu._scr.el.append(recap);
+   }
   }catch(error){this.ui.fallbackResults(error.message);}
  }
- dispose(){this.disposed=true;this.shotVisualOff?.();for(const [name,{original,wrapped}]of this.nativeFire)if(G.projectiles[name]===wrapped)G.projectiles[name]=original;this.resultsView?.dispose();this.ui.dispose();this.airdrops.dispose();for(const r of this.rewards){r.reward.dispose();r.parent.removeFromParent();}}
+ dispose(){this.disposed=true;this.replayDialog?.close();this.shotVisualOff?.();for(const [name,{original,wrapped}]of this.nativeFire)if(G.projectiles[name]===wrapped)G.projectiles[name]=original;this.resultsView?.dispose();this.ui.dispose();this.airdrops.dispose();for(const r of this.rewards){r.reward.dispose();r.parent.removeFromParent();}}
 }

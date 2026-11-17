@@ -13,6 +13,33 @@ const context = { finalized: true, blockHash: 'block-1', blockHeight: 1, availab
 const proposal = { sku: 'finish-a', quantity: 3, priceAtomic: '5', reason: 'stock below registered target',
   expiresAtMs: 2000, policyVersion: 'pilot-1' };
 
+test('Guild orders require funding proof for the approved project before accessing escrow', async t => {
+  const database = new DatabaseSync(':memory:');
+  t.after(() => database.close());
+  const guild = { ...context, source: 'Guild', projectId: 'plaza-banner' };
+  const approval = {
+    operationId: 'guild-order', fundingId: guild.fundingId, projectId: guild.projectId, source: 'Guild',
+    amountAtomic: '15', proposalHash: createHash('sha256').update(JSON.stringify(proposal)).digest('hex'),
+  };
+  let reserved;
+  let fundedProject = 'another-project';
+  const service = createQuartermaster({ database, config, now: () => 1000,
+    verifyGuildFunding: async request => ({ ...request, finalized: true, projectId: fundedProject, budgetAtomic: '100' }),
+    orders: {
+      reserve: async request => { reserved = request; return { status: 'UNKNOWN' }; },
+      reconcile: async () => ({ status: 'UNKNOWN' }),
+      publish: async () => {},
+    },
+  });
+  const request = { operationId: approval.operationId, proposal, context: guild, approval };
+  await assert.rejects(service.execute(request), /Guild project funding/);
+  assert.equal(reserved, undefined);
+  fundedProject = guild.projectId;
+  await service.execute(request);
+  assert.equal(reserved.projectId, guild.projectId);
+  await assert.rejects(service.execute({ ...request, approval: { ...approval, projectId: 'another-project' } }), /Approved Guild project/);
+});
+
 test('policy uses finalized registered stock and keeps exact prices within funded limits', () => {
   const result = deterministicQuartermasterProposal(context, config, 1000);
   assert.equal(result.quantity, 3);

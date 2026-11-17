@@ -1,6 +1,6 @@
 import { readFile } from 'node:fs/promises';
 import { createProfessionService } from './professions.mjs';
-import { economyDeployment, guildMissionUpgrade } from '../../assets/near-fox/economy-deployment.js';
+import { economyDeployment, guildMissionCodeHashes } from '../../assets/near-fox/economy-deployment.js';
 import { createFixedTransactionTransport } from './transaction-transport.mjs';
 import { createMaterialService } from './material-service.mjs';
 import { testnetRequest } from './testnet-rpc.mjs';
@@ -39,7 +39,7 @@ export async function bootstrapMaterials({ database, config, environment = proce
   const materials = createMaterialService({database,economyId,signerId,rpc,prepare:transport.prepare,
     broadcast:transport.broadcast,canReplace:transport.canReplace,verifyDeployment});
   const professions = createProfessionService({ database, ...transport,
-    verifyDeployment: async () => [economyDeployment.professionCodeHash, guildMissionUpgrade.codeHash].includes(await verifyDeployment()),
+    verifyDeployment: async () => [economyDeployment.professionCodeHash, ...guildMissionCodeHashes].includes(await verifyDeployment()),
     view: async (method_name, args) => {
       const response = await rpc('query', { request_type: 'call_function', account_id: economyId,
         method_name, finality: 'final', args_base64: Buffer.from(JSON.stringify(args)).toString('base64') });

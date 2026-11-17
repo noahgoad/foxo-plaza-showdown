@@ -416,17 +416,17 @@
 .chog-original-hud :is(.iw-bn--go,.iw-bn--timesup) .iw-bn__text{font-size:clamp(28px,7vw,100px)}
 .chog-original .chog-hunt-results .iw-res__title{font-size:clamp(28px,5.5vw,84px)}
 
-/* The same CHOG sign used by the Settings heading backs match titles. */
+/* FOXO artwork backs match titles. */
 .chog-original-hud .iw-bn__splat,.chog-original .chog-hunt-results .iw-res__splat{
- background:url('../assets/chog-hunt-ui/chog-sign-v1.png') center / contain no-repeat;clip-path:none;
+ background:url('../assets/near-fox/hunt-wanted-frame.webp') center / contain no-repeat;clip-path:none;
 }
 .chog-original-hud .iw-bn__splat svg,.chog-original .chog-hunt-results .iw-res__splat svg{display:none}
-.chog-original-hud :is(.iw-bn--go,.iw-bn--timesup) .iw-bn__splat{left:50%;top:50%;width:72%;height:240%;background-size:100% 100%;animation:none;rotate:0deg;translate:-50% -50%}
+.chog-original-hud :is(.iw-bn--go,.iw-bn--timesup) .iw-bn__splat{left:50%;top:50%;width:72%;height:240%;background-size:contain;animation:none;rotate:0deg;translate:-50% -50%}
 .chog-original-hud .iw-bn__splat.b,.chog-original-hud .iw-bn__burst{display:none}
 .chog-original .chog-hunt-results .iw-res__splat{display:none}
 .chog-original .chog-hunt-results .iw-res__head{top:calc(var(--u)*7)}
 .chog-original .chog-hunt-results .iw-res__title{position:relative;isolation:isolate}
-.chog-original .chog-hunt-results .iw-res__title::before{content:'';position:absolute;z-index:-1;left:50%;top:50%;width:72%;height:240%;transform:translate(-50%,-50%);background:url('../assets/chog-hunt-ui/chog-sign-v1.png') center / 100% 100% no-repeat}
+.chog-original .chog-hunt-results .iw-res__title::before{content:'';position:absolute;z-index:-1;left:50%;top:50%;width:72%;height:240%;transform:translate(-50%,-50%);background:url('../assets/near-fox/hunt-wanted-frame.webp') center / contain no-repeat}
 /* The title has its sign; controls remain separate, with no lower information panel. */
 .chog-original-hud .chog-hunt-exhausted .iw-spl__card{bottom:7%;width:min(90vw,650px);padding:25px 30px;display:flex;flex-direction:column;gap:26px;background:none;clip-path:none;isolation:isolate}
 .chog-original-hud .chog-hunt-exhausted .iw-spl__text{position:relative;align-items:center;width:100%;padding:22px 0;isolation:isolate}
@@ -442,7 +442,7 @@
 .chog-pause-cover .chog-original .iw-head__blob{background:none;clip-path:none}
 
 .chog-original-hud .chog-hunt-exhausted .iw-spl__by{position:relative;isolation:isolate}
-.chog-original-hud .chog-hunt-exhausted .iw-spl__by::before{content:'';position:absolute;z-index:-1;left:50%;top:50%;width:72%;height:300%;transform:translate(-50%,-50%);background:url('../assets/chog-hunt-ui/chog-sign-v1.png') center / 100% 100% no-repeat}
+.chog-original-hud .chog-hunt-exhausted .iw-spl__by::before{content:'';position:absolute;z-index:-1;left:50%;top:50%;width:72%;height:300%;transform:translate(-50%,-50%);background:url('../assets/near-fox/hunt-wanted-frame.webp') center / contain no-repeat}
 
 /* Keep the result subtitle readable above the enlarged decorative sign. */
 .chog-original .chog-hunt-results .iw-res__meta{position:relative;z-index:1}
@@ -452,9 +452,9 @@
 .chog-original .chog-quickplay .chog-quick-heading{position:relative;left:auto;top:auto;display:flex;flex-direction:row;gap:0}
 .chog-original .chog-quick-heading .iw-head__title{rotate:-3deg;font-size:calc(var(--u)*4.2)}
 
-/* CHOG match art: retain native timing/layout hooks without the ink silhouettes. */
+/* Use FOXO artwork on existing match animations. */
 .chog-original-hud :is(.iw-spl__splat,.iw-kcard__splat,.iw-lu__vsplat,.iw-call__ribbon){
- background:url('../assets/chog-hunt-ui/chog-sign-v1.png') center/contain no-repeat;
+ background:url('../assets/near-fox/hunt-wanted-frame.webp') center/contain no-repeat;
  clip-path:none;
 }
 .chog-original-hud :is(.iw-spl__splat,.iw-kcard__splat,.iw-lu__vsplat) > svg{display:none}
@@ -462,7 +462,7 @@
 .chog-original-hud .chog-recovery .iw-spl__text{align-items:center;text-align:center}
 .chog-original-hud .chog-recovery .iw-spl__by{background:none;rotate:0;padding:.25em 0;font-family:var(--font-display);font-size:calc(var(--u)*3.4);letter-spacing:.02em;-webkit-text-stroke:5px #15121c;paint-order:stroke fill;text-shadow:0 3px 0 #15121c}
 .chog-original-hud .iw-kcard__splat{height:170%;scale:1;rotate:0}
-.chog-original-hud .iw-call__ribbon{background:url('../assets/chog-hunt-ui/chog-sign-v1.png') center/100% 100% no-repeat!important}
+.chog-original-hud .iw-call__ribbon{background:url('../assets/near-fox/hunt-wanted-frame.webp') center/contain no-repeat!important}
 .chog-original-hud :is(.iw-kill i,.iw-bn__drop,.iw-bend__drop){display:none}
 .chog-original-hud .iw-feed__icon{background:#ed1748;color:#fff!important;border-radius:3px;clip-path:polygon(14% 0,86% 0,100% 14%,100% 86%,86% 100%,14% 100%,0 86%,0 14%)}
 .chog-original-hud .iw-feed__icon svg{width:92%;height:92%}
@@ -757,6 +757,118 @@
   .chog-original .chog-mode-screen .iw-head__title { font-size: min(calc(var(--u) * 4.2), 8vw); }
 }
 
+.chog-original .foxo-mode-carousel__stage {
+  position: absolute;
+  inset: calc(var(--u) * 9 + var(--sat)) calc(var(--sar) + 2vw) calc(var(--sab) + 3vh) calc(var(--sal) + 2vw);
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  grid-template-rows: auto minmax(0, 1fr);
+  align-items: center;
+  gap: clamp(8px, 1.4vw, 24px);
+  max-width: 1480px;
+  margin-inline: auto;
+  pointer-events: auto;
+}
+.foxo-mode-carousel__tabs {
+  grid-column: 2;
+  grid-row: 1;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px;
+}
+.foxo-mode-carousel__stage > .foxo-mode-arrow,
+.foxo-mode-carousel__stage > .foxo-mode-hero { grid-row: 2; }
+.foxo-mode-carousel__tabs .iw-btn { margin: 0; font-size: clamp(9px, 1.15vw, 16px); }
+.foxo-mode-carousel__tabs .iw-btn[aria-pressed="true"] {
+  --bg: #ffb334;
+  color: #221535;
+}
+.foxo-mode-hero {
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  align-items: end;
+  height: min(100%, 720px);
+  min-height: 0;
+  overflow: hidden;
+  border: 2px solid #fff;
+  border-radius: clamp(14px, 2vw, 30px);
+  background: #211631;
+  box-shadow: 0 8px 0 #100b1b, 0 18px 48px #09051388;
+}
+.foxo-mode-hero__art, .foxo-mode-hero::after { position: absolute; inset: 0; width: 100%; height: 100%; }
+.foxo-mode-hero__art { object-fit: cover; z-index: -2; }
+.foxo-mode-hero::after {
+  content: '';
+  z-index: -1;
+  background: radial-gradient(ellipse at bottom left,#181020 0%,#181020bb 22%,transparent 72%),
+              linear-gradient(0deg,#18102099,transparent 46%);
+}
+.foxo-mode-hero__content { padding: clamp(12px, 3vw, 52px); }
+.foxo-mode-hero__copy h2 {
+  margin: 0;
+  font-size: clamp(20px, min(5.4vw, 10vh), 96px);
+  line-height: .98;
+  color: #fff;
+  -webkit-text-stroke: .11em #15101d;
+  paint-order: stroke fill;
+}
+.foxo-mode-hero__copy p { margin: .6em 0; font-size: clamp(12px, 1.45vw, 22px); color: #fff; }
+.foxo-mode-hero__actions { display: flex; flex-wrap: wrap; gap: clamp(5px, 1vw, 16px); }
+.foxo-mode-hero__actions .iw-btn { margin: 0; }
+.foxo-mode-arrow {
+  display: grid;
+  place-items: center;
+  width: clamp(28px, 4.4vw, 70px);
+  aspect-ratio: 1;
+  padding: 0;
+  color: #231535;
+  background: #ffb334;
+  border: 2px solid #fff;
+  border-radius: 50%;
+  box-shadow: 0 0 0 3px #16101e, 0 5px 0 3px #16101e;
+  cursor: pointer;
+}
+.foxo-mode-arrow i { display: grid; width: 52%; }
+.foxo-mode-arrow svg { width: 100%; height: auto; }
+.foxo-mode-arrow[aria-label="Previous mode"] i { transform: rotate(180deg); }
+.foxo-mode-arrow:is(:hover, .is-focus) { background: #fff; box-shadow: 0 0 0 3px #17101e, 0 0 0 6px #ffb334; }
+
+.chog-original .foxo-cup-grid .chog-mode-cards {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: stretch;
+  top: calc(var(--u) * 9 + var(--sat));
+  bottom: auto;
+  left: 50%;
+  width: min(950px, 94%);
+  transform: translateX(-50%);
+  box-sizing: border-box;
+  padding: clamp(10px, 1.5vw, 24px);
+  gap: clamp(8px, 1.5vw, 22px);
+  overflow: visible;
+}
+.chog-original .foxo-cup-grid .iw-hubcard {
+  grid-template-columns: auto minmax(0, 1fr);
+  min-width: 0;
+  min-height: clamp(72px, 15vh, 144px);
+  gap: clamp(6px, 1vw, 16px);
+}
+.chog-original .foxo-cup-grid .iw-hubcard__title { font-size: clamp(15px, 2.2vw, 34px); }
+.chog-original .foxo-cup-grid .iw-hubcard__go { display: none; }
+.foxo-cup-entries ol {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 4px 20px;
+  margin: 8px 0;
+  padding-inline-start: 1.3em;
+  overflow-wrap: anywhere;
+}
+.foxo-cup-entries p { margin: 6px 0; }
+@media (max-width: 600px) {
+  .chog-original .foxo-cup-grid .iw-hubcard { grid-template-columns: minmax(0, 1fr); }
+}
 .chog-original .near-crafting-panel .iw-modal__card { width: min(960px, 94vw); }
 .near-crafting-panel .iw-modal__btns .iw-btn { flex: 0 1 auto; }
 .near-crafting-stock,.near-crafting-cost { display:flex; flex-wrap:wrap; gap:8px; }
@@ -893,6 +1005,13 @@
   background:var(--tex-squids, none),#21152e; text-shadow:0 2px #140e1f;
 }
 .guild-book-tabs { display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); gap:5px; padding:0 12px; border-bottom:2px solid #a385bc69; }
+.guild-directory-tabs { grid-template-columns:repeat(6,minmax(0,1fr)); }
+[data-lounge-layout="banner"] .fox-feature-grid { grid-template-columns:minmax(0, 1fr); }
+[data-lounge-layout="banner"] .guild-crest { width:clamp(110px, 22vw, 260px); height:auto; }
+[data-lounge-layout="compact"] .guild-crest { width:42px; height:42px; }
+@media (max-width: 600px) {
+  .guild-directory-tabs { grid-template-columns:repeat(3,minmax(0,1fr)); }
+}
 .guild-book-tabs .iw-btn {
   --tilt:0deg; min-width:0; width:100%; min-height:38px; padding:5px; border:2px solid #a385bc69;
   justify-content:center; text-align:center;
@@ -915,6 +1034,20 @@ button.guild-book-row { cursor:pointer; }
 .guild-book-row + .guild-book-row { margin-top:6px; }
 .guild-directory-list { display:block; }
 .guild-crest { width:100%; aspect-ratio:1; object-fit:contain; }
+.guild-info-dialog {
+  box-sizing: border-box;
+  width: min(760px, calc(100% - 32px));
+  max-height: 85dvh;
+  overflow: auto;
+  padding: clamp(14px, 3vw, 28px);
+  border: 2px solid #fff;
+  border-radius: 22px;
+  color: #fff;
+  background: #211830;
+  box-shadow: 0 8px 0 #100b1b, 0 18px 48px #09051388;
+}
+.guild-info-dialog::backdrop { background: #100b1bb8; }
+.guild-info-dialog__actions { display: flex; justify-content: flex-end; margin-bottom: 12px; }
 .guild-book-info {
   display:grid; grid-template-columns:minmax(160px,1fr) minmax(0,3fr);
   align-items:start; gap:clamp(20px,4vw,68px); width:100%; padding-block:clamp(12px,3vh,38px);
@@ -1088,4 +1221,31 @@ button.guild-book-row { cursor:pointer; }
   .fox-feature-grid,.fox-workshop-grid { grid-template-columns:minmax(0,1fr); }
   .fox-passport-layout { grid-template-columns:minmax(0,1fr); }
   .fox-passport-portrait { grid-template-columns:72px minmax(0,1fr); align-items:center; }
+}
+
+.near-economy-content .guild-book[hidden] { display:none; }
+.near-economy-content.near-game-panel .guild-creation {
+  max-width:960px;
+  margin:0 auto;
+  gap:16px;
+}
+.guild-creation-fields {
+  display:grid;
+  grid-template-columns:minmax(120px, .65fr) minmax(0, 1.35fr);
+  align-items:center;
+  gap:12px 24px;
+  padding:clamp(16px, 3vw, 38px);
+  border:1px solid #a385bc69;
+  border-radius:18px;
+  background:linear-gradient(145deg,#34264f,#1a1327);
+}
+.guild-creation-fields .fox-order-field { display:contents; }
+.guild-creation-fields .fox-order-field > span { color:#ffd48a; }
+.guild-creation-fields .fox-order-field > strong { overflow-wrap:anywhere; }
+.guild-creation-fields p { grid-column:2; margin:0; font-size:.875em; }
+.guild-creation-actions { display:flex; justify-content:center; flex-wrap:wrap; gap:14px; }
+.guild-creation .guild-review-panel:not(:has(#guild-review:not(:empty))) { display:none; }
+@media(max-width:600px){
+  .guild-creation-fields { grid-template-columns:minmax(0,1fr); gap:9px; }
+  .guild-creation-fields p { grid-column:auto; }
 }

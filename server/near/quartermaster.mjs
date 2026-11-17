@@ -6,7 +6,7 @@ import { QUARTERMASTER_DEFAULTS, deterministicQuartermasterProposal, quartermast
 const digest = value => createHash('sha256').update(JSON.stringify(value)).digest('hex');
 const operation = value => typeof value === 'string' && /^[a-zA-Z0-9_.:-]{1,96}$/.test(value);
 
-export function createQuartermaster({ database, config: suppliedConfig = {}, now = Date.now, provider, orders } = {}) {
+export function createQuartermaster({ database, config: suppliedConfig = {}, now = Date.now, provider, orders, verifyGuildFunding } = {}) {
   const config = Object.fromEntries(Object.entries(QUARTERMASTER_DEFAULTS)
     .map(([key, value]) => [key, suppliedConfig[key] ?? value]));
   if (!database) throw new Error('Quartermaster needs a durable database');
@@ -68,11 +68,29 @@ export function createQuartermaster({ database, config: suppliedConfig = {}, now
     if (approval?.operationId !== operationId || approval?.fundingId !== context.fundingId ||
       approval?.source !== context.source || approval?.amountAtomic !== checked.totalAtomic ||
       approval?.proposalHash !== digest(checked.proposal)) throw new Error('Reviewed order approval required');
+    const projectId = checked.context.projectId;
+    if (checked.context.source === 'Guild') {
+      if (context.projectId !== projectId || approval.projectId !== projectId) {
+        throw new Error('Approved Guild project does not match funded order');
+      }
+      if (!existing) {
+        const proof = await verifyGuildFunding?.({
+          projectId, fundingId: checked.context.fundingId, blockHash: checked.context.blockHash,
+          sku: checked.proposal.sku, quantity: checked.proposal.quantity,
+          amountAtomic: checked.totalAtomic,
+        });
+        if (proof?.finalized !== true || proof.projectId !== projectId ||
+            proof.fundingId !== checked.context.fundingId || proof.blockHash !== checked.context.blockHash ||
+            quartermasterAtomic(proof.budgetAtomic) < quartermasterAtomic(checked.context.availableBudgetAtomic)) {
+          throw new Error('Finalized Guild project funding is unavailable');
+        }
+      }
+    }
     if (!orders || !['reserve', 'reconcile', 'publish'].every(name => typeof orders[name] === 'function')) {
       throw new Error('Funded orders adapter required');
     }
     const terms = { operationId, proposal: checked.proposal, totalAtomic: checked.totalAtomic,
-      source: context.source, fundingId: context.fundingId };
+      source: context.source, fundingId: context.fundingId, ...(projectId ? { projectId } : {}) };
     const requestHash = digest(terms);
     let row;
     let created = false;

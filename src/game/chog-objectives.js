@@ -16,17 +16,18 @@ export function nearFoxGameplayTraits(attributes){
 export function objectiveFromNft(nft){
  if(!Array.isArray(nft?.attributes))return null;
  const original=nft.attributes.filter(a=>typeof a.trait_type==='string'&&typeof a.value==='string'&&!absent.has(a.value.trim().toLowerCase()));
- const available=nft.contract==='fox.xuancanh1.testnet'?nearFoxGameplayTraits(original):original;
+ const isNearFox=nft.contract==='fox.xuancanh1.testnet';
+ const available=isNearFox?nearFoxGameplayTraits(original):original;
  let selected=categories.map(category=>available.find(a=>a.trait_type===category)).filter(Boolean);
  // The ten Genesis without wearable groups still have real identity traits.
  if(!selected.length)selected=['Skin','Mouth','Aura','Form','Base','Tier'].map(category=>available.find(a=>a.trait_type===category)).filter(Boolean).slice(0,4);
  if(!selected.length)return null;
  const sourceId=String(nft.sourceId||nft.name?.match(/#(\d+)/)?.[1]||'');
- const portrait=cachedPortraits.has(sourceId)?sourceId:null;
+ const portrait=!isNearFox&&cachedPortraits.has(sourceId)?sourceId:null;
  const image=typeof nft.image==='string'?nft.image.replace('ipfs://',imageGateway):null;
  if(!image||!/^https:\/\//.test(image))return null;
  return {tokenId:nft.tokenId??null,sourceId:nft.sourceId??null,name:nft.name||'FOX',image,traits:selected.map(a=>{
-  const category=a.trait_type,value=a.value,key=category+':'+value,legacy=itemIcons.get(key);
+  const category=a.trait_type,value=a.value,key=category+':'+value,legacy=isNearFox?null:itemIcons.get(key);
   return {id:category.toLowerCase()+':'+encodeURIComponent(value),category,value,name:value,image,portrait,icon:legacy||null};
  })};
 }

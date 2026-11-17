@@ -1,5 +1,8 @@
 import { accountId, atomic, FOXO_SCALE, MAX_ATOMIC } from './schema.js';
 
+export const MATERIAL_ORDER_PRODUCTS = Object.freeze(['alloy', 'core', 'catalyst'].map(recipeId =>
+  Object.freeze({ recipeId, version: 0, label: recipeId[0].toUpperCase() + recipeId.slice(1) })));
+
 export function orderFillQuote(unitPrice, feeBps) {
   if (!Number.isInteger(feeBps) || feeBps < 0 || feeBps > 10000) throw new Error('Invalid marketplace fee');
   const gross = atomic(unitPrice);
@@ -21,7 +24,8 @@ export function fundOrderDraft({ token, economy, buyer, operationId, recipe, qua
   accountId(buyer);
   if (!/^[a-zA-Z0-9-]{1,64}$/.test(operationId)) throw new Error('Invalid order operation.');
   if (!/^[a-zA-Z0-9_./:-]{1,48}$/.test(recipe?.recipeId || '') ||
-      !Number.isSafeInteger(recipe.version) || recipe.version < 1 || recipe.version > 0xffffffff) {
+      !Number.isSafeInteger(recipe.version) || recipe.version < 0 || recipe.version > 0xffffffff ||
+      (recipe.version === 0 && !MATERIAL_ORDER_PRODUCTS.some(product => product.recipeId === recipe.recipeId))) {
     throw new Error('Choose a published recipe.');
   }
   if (!Number.isSafeInteger(quantity) || quantity < 1 || quantity > 100) throw new Error('Enter a quantity from 1 to 100.');

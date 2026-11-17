@@ -277,7 +277,12 @@ pub(crate) fn record_cosmetic_mint(owner: &AccountId, item: &str) {
 }
 
 impl Economy {
-    fn mt_move(
+    pub(crate) fn material_order_buyer_ready(&self, buyer: &AccountId) -> bool {
+        read_state().is_some_and(|state| state.finalized && state.enabled)
+            && registrations().contains_key(buyer)
+    }
+
+    pub(crate) fn mt_move(
         &mut self,
         sender: &AccountId,
         receiver: &AccountId,
@@ -334,7 +339,7 @@ impl Economy {
         }
     }
 
-    fn mt_assert_enabled(&self) {
+    pub(crate) fn mt_assert_enabled(&self) {
         require!(
             read_state().is_some_and(|state| state.finalized && state.enabled),
             "MT transfers disabled"

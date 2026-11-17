@@ -3,6 +3,7 @@ import {dailyChallenge} from './game/objective-rules.js';
 import {BossRaidRuntime} from './game/boss-raid-runtime.js';
 import {prepareAirdrops} from './game/hunt-airdrops.js';
 import { HuntRuntime } from './game/hunt-runtime.js';
+import { foxoProductEvent } from './game/foxo-product-telemetry.js';
 import { mountMythicReward } from './ui/mythic-reward-view.js';
 import { prepareGameChogs, CHOG_MAIN_WEAPONS } from './game/chog-roster.js';
 import { assertHuntLaunch, assertHuntIdentity } from './game/hunt-policy.js';
@@ -142,6 +143,10 @@ class Game {
     try { const { DioramaOverlay } = await import('./ui/diorama.js'); this.diorama = new DioramaOverlay(this.hud ? this.hud.el : this.uiRoot); } catch (e) { console.error('[inkwave] diorama', e); this.diorama = null; }
     this.hud?.setVisible(false);
     this.menus?.show('loading');
+    if (!this.simulation && location.hash.startsWith('#hunt-replay=')) {
+      import('./ui/foxo-replay-ui.js').then(module => module.openSharedHuntReplay(location.hash))
+        .catch(() => this.menus?.toast('Match replay is unavailable.'));
+    }
     this.bootMarks = [];
     const progress = async (p, label) => { this.bootMarks.push([label, Math.round(performance.now() - t0)]); if(this.simulation){document.body.dataset.chogBoot=label;console.info('CHOG BOOT '+label);} this.menus?.setLoading(p, label); await nextFrame(); };
     await progress(0.05, 'Mixing ink…');
@@ -149,11 +154,14 @@ class Game {
     // renderer / scene
     this.R = new (this.simulation?SimulationRenderer:Renderer)(app, this.settings);
     G.renderer = this.R.renderer;
+    let softwareRenderer = false;
     // Device capability probe. Reported before anything heavy runs so it arrives even when a later step dies, and it
     // is the only way to see a phone's real limits without a console on that phone.
     try {
       const gl = this.R.renderer.getContext();
       const dbg = gl.getExtension('WEBGL_debug_renderer_info');
+      softwareRenderer = /swiftshader|llvmpipe|software rasterizer/i.test(
+        dbg ? gl.getParameter(dbg.UNMASKED_RENDERER_WEBGL) : gl.getParameter(gl.RENDERER));
       const get = (k) => { const v = gl.getParameter(gl[k]); return Array.isArray(v) ? v.length : v; };
       window.__beacon?.('gpu', JSON.stringify({
         renderer: dbg ? gl.getParameter(dbg.UNMASKED_RENDERER_WEBGL) : gl.getParameter(gl.RENDERER),
@@ -253,7 +261,7 @@ class Game {
     this.murals = this.simulation ? new THREE.Texture() : await createMuralTexture();
     // Authoritative workers never render; skip GPU-only surface baking.
     this.texlib=null;
-    if(!this.simulation)try {
+    if (!this.simulation && !softwareRenderer && this.settings.quality !== 'low') try {
       const { createTextureLibrary } = await import('./world/texlib.js');
       this.texlib = await createTextureLibrary(G.renderer, { size: (q.paintAtlas >= 4096 ? 512 : 256) * this.memK });
     } catch (e) { console.error('[inkwave] texture library failed — procedural fallback', e); this.texlib = null; }
@@ -307,7 +315,7 @@ class Game {
     // attract match — a few hitches instead of a dead context. ?lazycompile forces this path on a desktop that has
     // the extension, so it can still be exercised without a phone.
     const parallelCompile = !!G.renderer.getContext().getExtension('KHR_parallel_shader_compile');
-    if (!this.simulation && parallelCompile && !params.has('lazycompile')) {
+    if (!this.simulation && !softwareRenderer && parallelCompile && !params.has('lazycompile')) {
       try { await G.renderer.compileAsync(scene, camera); } catch { G.renderer.compile(scene, camera); }
     } else {
       console.info('[inkwave] compiling shaders lazily (no KHR_parallel_shader_compile)');
@@ -315,7 +323,7 @@ class Game {
     for (const m of this._warmMeshes || []) { G.scene.remove(m); }
     this._warmMeshes?.[0]?.geometry.dispose(); this._warmMeshes = null;
     await progress(0.93, 'Warming up…');
-    if(!this.simulation)for (let i = 0; i < 3; i++) { this._frame(1 / 60); await nextFrame(); }
+    if (!this.simulation && !softwareRenderer) for (let i = 0; i < 3; i++) { this._frame(1 / 60); await nextFrame(); }
     await progress(1, 'Ready!');
     await new Promise((r) => setTimeout(r, 250));
 
@@ -611,7 +619,7 @@ class Game {
     if (s === 'loadout') this.showcase.hide();
     else if (s !== 'results') { if (this.showcase.mode === 'loadout') this.showcase.hide(); }
     if (G.mode === 'menu') {
-      if (s === 'title' || s === 'main' || s === 'setup' || s === 'settings' || s === 'howto' || s === 'credits' || s === 'loadout' || s === 'locker' || s === 'online' || s === 'chooseModes' || s === 'lobby') {
+      if (s === 'title' || s === 'main' || s === 'setup' || s === 'settings' || s === 'howto' || s === 'credits' || s === 'loadout' || s === 'locker' || s === 'online' || s === 'chooseModes' || s === 'plazaCup' || s === 'lobby') {
         if (this._musicTrack !== (s === 'title' ? 'title' : 'menu')) this._playMusic(s === 'title' ? 'title' : 'menu');
       }
     }
@@ -748,6 +756,12 @@ class Game {
     on('match:count', ({ n }) => { this.hud?.countdown(n); G.audio?.play('final_count'); });
     on('match:state', ({ state, match }) => {
       if (match.attract || match !== this.match) return;
+      if (state === 'playing' && !match.telemetryStarted) {
+        match.telemetryStarted = true;
+        const details = {identity:this.menus?._identity,context:match.opts.huntRoom?'online':'practice',mode:match.mode};
+        foxoProductEvent('match_started',details);
+        if(match.opts.huntTutorial)foxoProductEvent('tutorial_started',details);
+      }
       if(match.hunt){if(state==='playing'){this.rig.follow(match.local,true);this._playMusic('battle');}return;}
       if (state === 'intro') this._intro();
       if (state === 'playing') {
@@ -888,7 +902,10 @@ class Game {
       mode: ['control','trials'].includes(o.mode) ? o.mode : o.mode === 'hunt' ? 'hunt' : o.practice ? 'turf' : o.mode === 'zones' ? 'zones' : o.mode === 'boss' ? 'boss' : 'turf',
     };
     if(opts.mode==='trials'){opts.mapId='tidewater';opts.time='day';opts.difficulty='normal';}
-    opts.duration = opts.mode==='control'?240:opts.mode==='trials'?(o.huntRoom?.room.config.challenge||dailyChallenge()).duration:opts.mode === 'hunt' ? (o.duration || 300) : opts.mode === 'zones' ? (o.duration || ZONES.duration) : opts.mode === 'boss' ? (o.duration || BOSS_MODE.duration)
+    if(opts.mode==='trials'&&!o.huntRoom&&o.practiceCup)opts.practiceCup=o.practiceCup;
+    if(opts.mode==='hunt'&&!o.huntRoom&&o.huntTutorial)opts.huntTutorial=true;
+    if(opts.mode==='hunt'&&!o.huntRoom&&o.decoyHunt)opts.decoyHunt=true;
+    opts.duration = opts.mode==='control'?240:opts.mode==='trials'?(o.huntRoom?.room.config.challenge||opts.practiceCup?.challenge||dailyChallenge()).duration:opts.mode === 'hunt' ? (o.duration || 300) : opts.mode === 'zones' ? (o.duration || ZONES.duration) : opts.mode === 'boss' ? (o.duration || BOSS_MODE.duration)
       : Math.min(MATCH.maxDuration, o.duration || this.settings.matchLength || MATCH.defaultDuration);
     if (!practice) this.lastMatchOpts = opts;
     G.audio?.init?.();
@@ -926,6 +943,9 @@ class Game {
       attract: false, practice, assetAudit, duration: opts.duration, mode: opts.mode, difficulty: opts.difficulty, weapon: opts.mode==='trials'?'shooter':this.profile.weapon || 'shooter', sub: this._subFor(this.profile.weapon), special: this._specialFor(this.profile.weapon),
       playerName: this.profile.name || 'Player', CharacterClass: this.CharacterClass, rig: this.rig, input: this.input,
       raidSkill:o.raidSkill,workshopSkill:o.workshopSkill,
+      practiceCup:opts.practiceCup,
+      huntTutorial:opts.huntTutorial,
+      decoyHunt:opts.decoyHunt,
       huntRoom:o.huntRoom,roster:o.huntRoom?.room.roster,myId:o.huntRoom?.simulation?o.huntRoom.room.roster[0].owner:o.huntRoom?.id,host:true,
       autopilot: params.has('autopilot'), style: this.profile.style || null, noBots: ['hunt','boss','control','trials'].includes(opts.mode)?false:mapNoBots(map.id),   // (devstage: a solo walk)
     }));

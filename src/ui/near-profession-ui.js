@@ -1,5 +1,5 @@
 import { viewNearContract, readNearAccountCode } from './near-testnet-assets.js';
-import { economyDeployment, guildMissionUpgrade } from '../../assets/near-fox/economy-deployment.js';
+import { economyDeployment, guildMissionCodeHashes } from '../../assets/near-fox/economy-deployment.js';
 
 export async function watchProfessionUnlock(menu, result) {
   const identity = menu._identity;
@@ -8,7 +8,7 @@ export async function watchProfessionUnlock(menu, result) {
   const contract = economyDeployment.accountId;
   const active = () => menu._results === result && menu._identity === identity && identity.address === account;
   try {
-    if (![economyDeployment.professionCodeHash,guildMissionUpgrade.codeHash].includes((await readNearAccountCode(contract)).codeHash)) return;
+    if (![economyDeployment.professionCodeHash,...guildMissionCodeHashes].includes((await readNearAccountCode(contract)).codeHash)) return;
     for (let attempt = 0; attempt < 10 && active(); attempt++) {
       const { value } = await viewNearContract(contract, 'get_profession_progress', { account_id: account });
       if (!active()) return;

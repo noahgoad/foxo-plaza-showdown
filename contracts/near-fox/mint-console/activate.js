@@ -13,10 +13,11 @@ import rankingRubric from '../../../config/ranking-rubrics.testnet.json';
 import rankingSeasons from '../../../config/ranking-pilot.testnet.json';
 import catalogue from '../../../assets/near-fox/catalogue.v2.json' with {type:'json'};
 import { validateCatalogue } from '../../../assets/near-fox/catalogue.js';
-import { catalogueUpgrade, professionUpgrade, guildMissionUpgrade } from '../../../assets/near-fox/economy-deployment.js';
+import { catalogueUpgrade, professionUpgrade, guildMissionUpgrade, materialOrdersUpgrade, guildMissionCodeHashes } from '../../../assets/near-fox/economy-deployment.js';
 import economyProfessionWasm from './economy-professions-reviewed.wasm?url';
 import economyCatalogueWasm from './economy-catalogue-reviewed.wasm?url';
 import guildMissionWasm from './economy-guild-mission-reviewed.wasm?url';
+import materialOrdersWasm from './economy-material-orders-reviewed.wasm?url';
 import { onchainPilotRecipe } from '../../../assets/near-fox/economy-catalogue.js';
 
 const operator=manifest.operatorId, economy='economy.'+operator, passport='passport.'+operator, token=manifest.tokenId;
@@ -114,6 +115,8 @@ async function refresh(){
     'Upgrade existing Economy state with producer license enforcement.');
   reviewEconomyUpgrade('Review Guild mission rewards upgrade', guildMissionUpgrade, guildMissionWasm,
     'Enable separate Guild mission reward entitlements using existing Economy state.');
+  reviewEconomyUpgrade('Review material orders upgrade', materialOrdersUpgrade, materialOrdersWasm,
+    'Enable escrowed buy orders for Alloy, Core and Catalyst. This deploy action does not fund any order.');
   const guildCampaignInput = (label, placeholder) => {
     const field=document.createElement('label');
     const input=document.createElement('input');
@@ -165,7 +168,7 @@ async function refresh(){
       const [code,latest,existing,ledger]=await Promise.all([
         rpc('query',{request_type:'view_account',account_id:economy,finality:'final'}),getProject(),
         query(economy,'get_campaign',{campaign_id:campaignId}),query(economy,'get_ledger')]);
-      if(code.code_hash!==guildMissionUpgrade.codeHash)throw Error('Deploy the Guild mission upgrade first.');
+      if(!guildMissionCodeHashes.includes(code.code_hash))throw Error('Deploy the Guild mission upgrade first.');
       if(existing||latest?.status!=='open'||latest.terms_hash!==project.terms_hash||closes<=Date.now())throw Error('Guild project or campaign state changed.');
       if(BigInt(ledger.rewardAvailable)<budget)throw Error('Insufficient unallocated FOXO in Economy. Use Review Guild reward funding first.');
     };
@@ -180,7 +183,7 @@ async function refresh(){
       .map(({recipeId,recipeVersion,sku,inputs,feeAtomic})=>({recipeId,version:recipeVersion,sku,inputs,feeAtomic}));
     const check=async()=>{
       const state=await rpc('query',{request_type:'view_account',account_id:economy,finality:'final'});
-      if(![catalogueUpgrade.codeHash,professionUpgrade.codeHash,guildMissionUpgrade.codeHash].includes(state.code_hash))throw Error('Deploy the producer-license upgrade first.');
+      if(![catalogueUpgrade.codeHash,professionUpgrade.codeHash,...guildMissionCodeHashes].includes(state.code_hash))throw Error('Deploy the producer-license upgrade first.');
       const existing=await Promise.all(recipes.map(recipe=>query(economy,'get_recipe',{
         recipe_id:recipe.recipeId,recipe_version:recipe.version,
       })));
@@ -256,6 +259,82 @@ async function refresh(){
     await check();
     choose('Quartermaster FOXO funding',token,[call('ft_transfer',{receiver_id:spec.accountId,amount:String(amount)},1n)],
       'Send '+value+' FOXO from the operator to the dedicated Quartermaster buyer. This does not open an order.',check);
+  });
+  button('Review Quartermaster material registration',async()=>{
+    const buyer=pilotKeys.quartermaster.accountId;
+    const check=async()=>{
+      const code=await rpc('query',{request_type:'view_account',account_id:economy,finality:'final'});
+      if(code.code_hash!==materialOrdersUpgrade.codeHash)throw Error('Finalize the material orders upgrade first.');
+      if(await query(economy,'storage_balance_of',{account_id:buyer}))throw Error('Quartermaster material storage is already registered.');
+      return (await query(economy,'storage_balance_bounds')).min;
+    };
+    const minimum=await check();
+    choose('Quartermaster material registration',economy,[call('storage_deposit',{
+      account_id:buyer,registration_only:true,
+    },BigInt(minimum))],'Register the dedicated buyer to receive Alloy, Core and Catalyst. Uses only the Economy storage minimum.',
+    async()=>{if(await check()!==minimum)throw Error('Storage minimum changed. Review again.');});
+  });
+  const materialOrderQuantity=guildCampaignInput('Quartermaster material order quantity','Units');
+  materialOrderQuantity.value='1';
+  const buyer=pilotKeys.quartermaster.accountId;
+  async function materialOrderStorageQuote(quantity){
+    const [code,ready,charge,credit,registration]=await Promise.all([
+      rpc('query',{request_type:'view_account',account_id:economy,finality:'final'}),
+      query(economy,'can_fund_material_order',{account_id:buyer}),
+      query(economy,'get_order_storage_charge',{quantity}),
+      query(economy,'get_order_storage_credit',{account_id:buyer}),
+      query(economy,'get_order_storage_registration_charge',{account_id:buyer}),
+    ]);
+    if(code.code_hash!==materialOrdersUpgrade.codeHash)throw Error('Economy material order code changed.');
+    if(!ready)throw Error('Register Quartermaster material storage first.');
+    const missing=BigInt(charge)-BigInt(credit);
+    return missing>0n?missing+BigInt(registration):0n;
+  }
+  function reviewedMaterialQuantity(){
+    const quantity=Number(materialOrderQuantity.value);
+    if(!Number.isInteger(quantity)||quantity<1||quantity>100)throw Error('Enter an order quantity from 1 to 100.');
+    return quantity;
+  }
+  button('Review Quartermaster order NEAR top-up',async()=>{
+    const quantity=reviewedMaterialQuantity();
+    const check=async()=>{
+      const deposit=await materialOrderStorageQuote(quantity);
+      const state=await rpc('query',{request_type:'view_account',account_id:buyer,finality:'final'});
+      const liquid=BigInt(state.amount);
+      const floor=deposit+unit/100n;
+      return deposit>0n&&liquid<floor?floor-liquid:0n;
+    };
+    const topUp=await check();
+    if(!topUp)throw Error('Quartermaster has enough NEAR for the selected quantity.');
+    choose('Quartermaster order NEAR top-up',buyer,[action.transfer(topUp)],
+      'Top up the buyer for storage on a '+quantity+'-unit material order and leave 0.01 Testnet NEAR for gas.',
+      async()=>{if(await check()!==topUp)throw Error('Quartermaster NEAR top-up changed. Review again.');});
+  });
+  button('Review Quartermaster order storage',async()=>{
+    if(connected?.accountId!==buyer)throw Error('Connect '+buyer+' to prepay its order storage.');
+    const quantity=reviewedMaterialQuantity();
+    const deposit=await materialOrderStorageQuote(quantity);
+    if(!deposit)throw Error('Order storage is already prepaid for this quantity.');
+    const state=await rpc('query',{request_type:'view_account',account_id:buyer,finality:'final'});
+    if(BigInt(state.amount)<deposit+unit/100n)throw Error('Top up Quartermaster NEAR first.');
+    review={economyStorageOnly:true,transaction:{signerId:buyer,receiverId:economy,actions:[call('deposit_order_storage',{},deposit)]},
+      beforeSign:async()=>{if(await materialOrderStorageQuote(quantity)!==deposit)throw Error('Storage quote changed. Review again.');},
+      afterSign:async result=>{
+        const hash=result?.transaction?.hash??result?.transaction_outcome?.id;
+        const reference=hash?' Transaction: '+hash:'';
+        elements.review.textContent='Transaction submitted. Checking finalized order storage…'+reference;
+        for(let attempt=0;attempt<6;attempt++){
+          const remaining=await materialOrderStorageQuote(quantity).catch(()=>null);
+          if(remaining===0n){
+            elements.review.textContent='Quartermaster order storage confirmed on Testnet.'+reference;
+            return;
+          }
+          if(attempt<5)await new Promise(resolve=>setTimeout(resolve,1500));
+        }
+        elements.review.textContent='Still waiting for finalized order storage. Use Refresh finalized status before signing again.'+reference;
+      }};
+    elements.review.textContent='Prepay '+deposit+' yoctoNEAR of order storage for '+quantity+' units. Charged storage is a fee. Unused credit stays available for later orders.';
+    elements.confirm.disabled=false;
   });
   button('Review Quartermaster order',async()=>{
     if(connected?.accountId!==operator)throw Error('Connect '+operator+' to approve the Quartermaster order.');
@@ -622,7 +701,7 @@ async function verifyCode(){
     const expected=pins[account_id];
     const observed=await rpc('query',{request_type:'view_account',account_id,block_id:header.hash});
     if(observed.block_hash!==header.hash||(observed.code_hash!==expected&&
-        !(account_id===economy&&[catalogueUpgrade.codeHash,professionUpgrade.codeHash,guildMissionUpgrade.codeHash].includes(observed.code_hash))&&
+        !(account_id===economy&&[catalogueUpgrade.codeHash,professionUpgrade.codeHash,...guildMissionCodeHashes].includes(observed.code_hash))&&
         !(account_id===poolDeployment.accountId&&observed.code_hash===poolDeployment.upgradeCodeHash)))throw Error('Code changed for '+account_id);
   }));
 }
@@ -662,7 +741,7 @@ elements.refresh.onclick=()=>run(async()=>{review=null;await refresh();});
 elements.confirm.onclick=()=>run(async()=>{
   const selected=review;if(!selected)throw Error('Choose an operation first.');
   review=null;
-  if(!selected.poolOnly&&!selected.foxOnly)await verifyCode();
+  if(!selected.poolOnly&&!selected.foxOnly&&!selected.economyStorageOnly)await verifyCode();
   if(selected.authorize){await selected.authorize();return;}
   await selected.beforeSign?.();
   if(connected?.accountId!==selected.transaction.signerId)throw Error('Switch Intear to '+selected.transaction.signerId+' before signing.');
@@ -675,6 +754,7 @@ elements.confirm.onclick=()=>run(async()=>{
     return;
   }
   if(typeof result?.status?.SuccessValue!=='string')throw Error('Outcome unknown. Refresh finalized status.');
+  if(selected.afterSign)await selected.afterSign(result);
   await refresh();
 });
 renderPoolActions();

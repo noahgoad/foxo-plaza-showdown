@@ -6,11 +6,11 @@ Six Foxes drop into the seaside plaza. In **Trait Hunt**, they have five minutes
 
 [Open the game](https://foxo-plaza.vercel.app/) · [Run locally](#run-locally) · [Inspect the Testnet evidence](#the-testnet-record)
 
-*Boss Battle captured in a shortened local demo.*
+*Boss Battle captured in a shortened local demo. Use the public link above for the current build.*
 
 ## Enter the Plaza
 
-**Pick a match.** Choose **Play** for Quick Play, **Online** to create or join a private room, or **Boss Battle** to fight Hullbreaker. **Choose Mode** opens Trait Control, Daily Trials, Skill Workshop, and Fox Economy.
+**Pick a match.** Choose **Play** for Quick Play, **Online** to create or join a private room, or **Boss Battle** to fight Hullbreaker. **Choose Mode** uses a gameplay-preview carousel with direct mode tabs for Trait Control, Daily Trials, Plaza Cup, Decoy Hunt Practice, Skill Workshop, and Fox Economy.
 
 **Bring a Fox.** Connect **Intear** on **NEAR Testnet**. **My NFT** shows the Foxes in your wallet and lets you equip one. If eligible, use **Claim** to get a starter Fox and 10 testnet FOXO while inventory lasts.
 
@@ -23,7 +23,11 @@ Six Foxes drop into the seaside plaza. In **Trait Hunt**, they have five minutes
 - **Boss Battle · Hullbreaker**. Fight through three phases. Fox trait roles help break shields, protect the squad, or heal allies. Verified results feed Fox career progression; eligible clears can qualify the player for Boss Pool.
 - **Trait Control**. Two teams of three compete to capture and hold three stations. Control results have their own ranking campaign.
 - **Daily Trials**. Race the clock and activate eight beacons. Trial results feed a separate leaderboard and can count toward crafting licenses.
-- **Skill Workshop**. Build and equip a Fox ability for Boss Battle within a point budget. Boss progression opens skill options. Workshop is a loadout screen.
+- **Plaza Cup**. Practice the three-run beacon course solo or enter Competition with a verified NEAR session. Competition records completed rounds on the relay and ranks total time.
+- **Decoy Hunt Practice**. Learn how to deploy false Carrier signals and distract rival Hunters in a 90-second match.
+- **Skill Workshop**. Build and equip a Fox ability for Boss Battle within a point budget. Boss progression opens skill options. Workshop is a loadout screen and includes six starting presets. Passport lets players compare Fox traits and inspect their Boss role.
+
+Guided Hunt teaches the Carrier objective in a short practice match. Private-room hosts can switch between Hunt, Boss, and Control before starting while keeping the party together. Trait Hunt supports a replay timeline and local clip or frame export. Public replay sharing requires participant consent and an authoritative recording.
 
 Guest practice uses in-game credits. Testnet rewards require an eligible relay result and campaign funding.
 
@@ -39,9 +43,13 @@ The browser renders the arena and handles player input. The relay runs the autho
 - **Match rewards and ranking**. Complete eligible matches, then claim any confirmed FOXO reward from the game. The relay simulates matches and submits authorized results. Economy applies campaign limits, records entitlements, and tracks claim payouts. Ranking campaigns have separate settlement from fixed match rewards.
 - **Crafting and equipment**. Earn Alloy, Core, and Catalyst, unlock recipe licenses through eligible play, and spend materials and FOXO to craft. Economy stores versioned recipes, inventory, and fees, with a NEP-245 interface for materials and crafted items. The game reads item ownership before applying supported cosmetic equipment.
 - **Markets and buy orders**. Browse and list cosmetics or Fox NFTs, place buy orders, and withdraw available proceeds to your wallet. Economy handles cosmetic listings and escrowed buy orders. The separate Market contract handles Fox NFT listings and settlement in FOXO. Quartermaster is a pilot buyer with its own funded order.
-- **Guild projects**. Contribute materials to a shared project and earn access to its guild banner. Guild Contracts connect missions to supported game modes. Guild records contributions and project completion. The Economy upgrade adds a separate path for funded mission rewards; upgrading or funding the contract does not prove a mission campaign or payout.
+- **Guilds**. Browse Top Guilds, open a Guild profile, or use the Create Guild tab. The Guild Lounge brings together events, RSVPs, trophies, and contracts. Contribute materials to a shared project and earn access to its guild banner. Guild Contracts connect missions to supported game modes. Guild records contributions and project completion. The Economy upgrade adds a separate path for funded mission rewards; upgrading or funding the contract does not prove a mission campaign or payout.
 - **Boss Pool**. Qualify through a verified Boss clear, then stake FOXO and claim any accrued reward under the campaign rules. Pool records eligible clears, separates deposits from reward funding, and handles claims and withdrawals. The seven-day pilot window is independent of the five-minute match. No Fox NFT is staked.
 - **Access and reporting**. Connect via Intear; social onboarding and gas sponsorship are separate pilots. The relay verifies wallet signatures. The sponsorship pilot covers eligible Pool registration, and the indexer reads finalized events for reconciliation.
+
+## Hosting and verification
+
+The public Vercel link forwards multiplayer requests to a relay with an authoritative simulation worker. The Railway deployment supports practice rooms with the host browser running the simulation. Plaza Cup Competition and reward settlement require an authoritative worker.
 
 ## The Testnet record
 

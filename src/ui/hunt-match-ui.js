@@ -4,7 +4,6 @@ import {G} from '../core/ctx.js';
 import {h, colorVars} from './ui-util.js';
 import {HUNT} from '../game/hunt-core.js';
 import {formatChog} from '../game/hunt-ledger.js';
-const art=name=>new URL('../../assets/chog-briefing-ui/v1/'+name,import.meta.url).href;
 const icon=trait=>trait.icon?new URL('../../assets/chog-traits/icons/'+trait.icon+'.png',import.meta.url).href:trait.portrait?new URL('../../assets/chog-testnet/objective-portraits/'+trait.portrait+'.webp',import.meta.url).href:trait.image;
 const stunArt=new URL('../../assets/chog-status-ui/stun-v1.png',import.meta.url).href;
 const coinArt=new URL('../../assets/near-fox/foxo-token-icon.png',import.meta.url).href;
@@ -20,6 +19,18 @@ export class HuntMatchUI {
   this.holdButton.onpointerdown=e=>{e.preventDefault();this.touchHold=true;this.holdButton.setPointerCapture(e.pointerId);};
   for(const type of ['pointerup','pointercancel','lostpointercapture'])this.holdButton.addEventListener(type,()=>this.touchHold=false);
   this.root.append(this.holdButton);
+  if(runtime.match.opts.decoyHunt){
+   this.decoyButton=this.menu._btn({id:'hunt-deploy-decoy',label:'Q · DEPLOY DECOY',cls:'iw-btn--primary iw-btn--small',accept:()=>this.r.deployDecoy()});
+   this.decoyLabel=this.decoyButton.querySelector('.iw-btn__label');
+   this.decoyControl=h('div',{class:'chog-original foxo-hunt-decoy',hidden:true},this.decoyButton);
+   this.decoyMarker=h('span',{class:'foxo-hunt-decoy-marker',hidden:true,'aria-hidden':true},'DECOY');
+   this.root.append(this.decoyControl,this.decoyMarker);
+  }
+  if(runtime.match.opts.huntTutorial){
+   this.lesson=h('aside',{class:'foxo-hunt-lesson','aria-label':'Practice tips'},
+    h('p',{role:'status'}),h('button',{type:'button',onclick:()=>{this.lesson.remove();this.lesson=null;}},'HIDE TIPS'));
+   this.root.append(this.lesson);
+  }
   this.buyButton=this.menu._btn({id:'hunt-buy-ammo',label:'BUY 3 AMMO',sub:'3 credits · Practice balance',cls:'iw-btn--primary iw-btn--wide',accept:()=>{if(!this.r.buy())this.message('Not enough game balance, or purchase limit reached.');}});
   this.exitButton=this.menu._btn({id:'hunt-exit-room',label:'EXIT ROOM',cls:'iw-btn--small chog-wallet-action iw-btn--primary',accept:()=>this.r.leave()});
   colorVars(this.exitButton,'a','#ffac28');
@@ -36,10 +47,10 @@ export class HuntMatchUI {
  briefing({announce=true}={}){
   this.noticeTime=announce?0:HUNT.brief+HUNT.return+HUNT.dock;
   this.intro?.remove();this.intro=null;this.introReturning=false;this.board?.remove();const carrier=this.core.role(this.r.local)==='carrier',target=this.r.actor(this.core.holderId);
-  this.board=h('section',{class:'hunt-board '+(carrier?'is-carrier':''),'aria-label':carrier?'You are the target':'Wanted target'},h('img',{class:'hunt-board-bg',src:art('board.png'),alt:''}),h('h1',{class:'hunt-board-title'},carrier?'YOU ARE\nTHE TARGET':'WANTED'));
+  this.board=h('section',{class:'hunt-board foxo-hunt-board '+(carrier?'is-carrier':''),'aria-label':carrier?'You are the target':'Wanted target'},h('h1',{class:'hunt-board-title'},carrier?'YOU ARE\nTHE TARGET':'WANTED'));
   if(carrier){this.board.append(h('h2',{class:'hunt-board-objective'},`${this.core.objective?.name||'FOX'} · FIND ${this.core.traits.length} TRAITS`));
    const traits=h('div',{class:'hunt-board-traits'});for(const t of this.core.traits)traits.append(h('div',{class:'hunt-board-trait'},h('img',{src:icon(t),alt:t.name}),h('span',null,t.value),h('b',null,this.core.found.has(t.id)?'✓':'')));this.board.append(traits);
-  }else this.board.append(h('div',{class:'hunt-board-portrait'},h('img',{src:this.core.objective?.image||playerAvatar(target),alt:target.name}),h('img',{class:'hunt-image-border',src:art('image-frame.png'),alt:''})),h('strong',{class:'hunt-board-name'},target.name),h('span',{class:'hunt-board-nft'},this.core.objective?.name||'FOX'));
+  }else this.board.append(h('div',{class:'hunt-board-portrait'},h('img',{src:this.core.objective?.image||playerAvatar(target),alt:target.name})),h('strong',{class:'hunt-board-name'},target.name),h('span',{class:'hunt-board-nft'},this.core.objective?.name||'FOX'));
   if(carrier&&announce){
    this.intro=h('div',{class:'hunt-trait-intro','aria-label':`Target traits for ${this.core.objective?.name||'FOX'}`});
    for(const t of this.core.traits)this.intro.append(h('div',{class:'hunt-intro-card'},h('img',{src:icon(t),alt:t.name}),h('span',null,t.value)));
@@ -89,6 +100,21 @@ export class HuntMatchUI {
  }
  update(dt){
   const c=this.core,p=c.players.get(this.r.local),carrier=c.role(this.r.local)==='carrier';
+  if(this.decoyButton){
+   const remaining=Math.ceil(Math.max(0,(this.r.decoy?.readyAt||0)-c.elapsed*1000)/1000);
+   this.decoyControl.hidden=carrier||p.out||c.phase!=='playing';
+   this.decoyButton.disabled=remaining>0;
+   this.decoyLabel.textContent=remaining?`DECOY · ${remaining}s`:'Q · DEPLOY DECOY';
+   this.decoyMarker.hidden=!this.r.decoy||this.r.decoy.endsAt<=c.elapsed*1000||c.phase!=='playing';
+   if(!this.decoyMarker.hidden)this.position(this.decoyMarker,this.r.decoy.position,1.2);
+  }
+  if(this.lesson){
+   const text=carrier?'Open matching chests to restore all target traits. Hold E near a chest.':
+    c.elapsed<8?'WASD to move. Aim with the mouse and shoot with left click.':
+    'Hit the Carrier once to take their role and any traits they have collected.';
+   const status=this.lesson.querySelector('p');
+   if(status.textContent!==text)status.textContent=text;
+  }
   if(c.phase!=='finished')this.hud.updateRuntime(dt,this.r);
   this.noticeTime+=dt;
   if(this.intro&&this.noticeTime>=HUNT.brief&&!this.introReturning){
@@ -123,5 +149,5 @@ export class HuntMatchUI {
   if(this.r.resultsView?.stage.t>=6.4&&!this.rewardSummary)this.showRewardSummary();
   if(this.countup){const up=this.countup;up.time=Math.min(1.2,up.time+dt);up.node.textContent=`${formatChog(Math.round(up.total*(1-(1-up.time/1.2)**3)))} credits`;}
  }
- dispose(){this.hud.endHuntRuntime();this.inventory.classList.remove('chog-hunt-trait-inventory','is-trait-column','is-column-ready');this.menu._binds.delete(this.buyButton);this.menu._binds.delete(this.exitButton);this.intro?.remove();this.rewardSummary?.remove();this.root.remove();for(const f of this.flights){f.anim.cancel();f.node.remove();}}
+ dispose(){this.hud.endHuntRuntime();this.inventory.classList.remove('chog-hunt-trait-inventory','is-trait-column','is-column-ready');this.menu._binds.delete(this.buyButton);this.menu._binds.delete(this.exitButton);if(this.decoyButton)this.menu._binds.delete(this.decoyButton);this.intro?.remove();this.rewardSummary?.remove();this.root.remove();for(const f of this.flights){f.anim.cancel();f.node.remove();}}
 }

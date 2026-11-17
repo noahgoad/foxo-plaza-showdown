@@ -18,11 +18,17 @@ export const guildMissionUpgrade = Object.freeze({
   codeHash: 'nYApJ15WBCFP6H7jzmKBrUPj6oTFrd7u1qVT7NKdN8r',
   sha256: '0baa612b83e6cde0d3d353a1aab763d31a33a19b7a0ad14e7a1c162f8ba6c71b',
 });
+export const materialOrdersUpgrade = Object.freeze({
+  previous: guildMissionUpgrade.codeHash,
+  codeHash: 'FbpebAid3X2Dq2WAuoYPwd6zf1EnPpa2obDKLATbSPo6',
+  sha256: 'd8ef3d8710b1fe30253f6ac62206d594d11fe34e4cfe64d91786deab2f5c7991',
+});
+export const guildMissionCodeHashes = Object.freeze([guildMissionUpgrade.codeHash, materialOrdersUpgrade.codeHash]);
 export const economyDeployment = Object.freeze({
   "accountId": "economy.xuancanh1.testnet",
   "codeHash": "7LWg81dHFSDaiH56vpLZ3hVuABFRCWTFvx6Es7Dysvfn",
   upgradeCodeHash: catalogueUpgrade.codeHash,
   professionCodeHash: professionUpgrade.codeHash,
-  acceptedCodeHashes: Object.freeze([catalogueUpgrade.previous, catalogueUpgrade.codeHash, professionUpgrade.codeHash, guildMissionUpgrade.codeHash]),
+  acceptedCodeHashes: Object.freeze([catalogueUpgrade.previous, catalogueUpgrade.codeHash, professionUpgrade.codeHash, ...guildMissionCodeHashes]),
   recipes: Object.freeze([pilotRecipe])
 });

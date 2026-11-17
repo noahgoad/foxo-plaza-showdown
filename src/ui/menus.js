@@ -26,11 +26,11 @@ import {
 import { bossSilhouette, bossEmblem, BOSS_GLYPH, BOSS_NAME, BOSS_EPITHET } from './boss-art.js';
 import { WhatsNew } from './news.js';
 
-const SCREENS = ['loading', 'title', 'main', 'mode', 'chooseModes', 'foxEconomy', 'economyCosmetics', 'economyNfts', 'economyOrders', 'economyGuild', 'economyActivity', 'economyRanking', 'nearBossPool', 'foxPassport', 'skillWorkshop', 'crafting', 'loadout', 'setup', 'locker', 'settings', 'howto', 'credits', 'pause', 'results', 'online', 'lobby'];
+const SCREENS = ['loading', 'title', 'main', 'mode', 'chooseModes', 'plazaCup', 'foxEconomy', 'economyCosmetics', 'economyNfts', 'economyOrders', 'economyGuild', 'economyActivity', 'economyRanking', 'nearBossPool', 'foxPassport', 'skillWorkshop', 'crafting', 'loadout', 'setup', 'locker', 'settings', 'howto', 'credits', 'pause', 'results', 'online', 'lobby'];
 // Transitions that get the full-screen ink wipe (the rest use staggered pop-ins).
 const WIPES = new Set(['loading>title', 'title>main', 'results>main', 'pause>main', 'results>null', 'pause>title', 'online>lobby', 'lobby>online', 'lobby>main', 'results>lobby', 'pause>online']);
 // Pushes/pops between these get the light ink swipe (decorative — the swap itself is immediate).
-const LIGHT = new Set(['main', 'mode', 'chooseModes', 'foxEconomy', 'economyCosmetics', 'economyNfts', 'economyOrders', 'economyGuild', 'economyActivity', 'economyRanking', 'nearBossPool', 'foxPassport', 'skillWorkshop', 'crafting', 'loadout', 'setup', 'locker', 'settings', 'howto', 'credits', 'pause', 'online', 'lobby']);
+const LIGHT = new Set(['main', 'mode', 'chooseModes', 'plazaCup', 'foxEconomy', 'economyCosmetics', 'economyNfts', 'economyOrders', 'economyGuild', 'economyActivity', 'economyRanking', 'nearBossPool', 'foxPassport', 'skillWorkshop', 'crafting', 'loadout', 'setup', 'locker', 'settings', 'howto', 'credits', 'pause', 'online', 'lobby']);
 // ?netmock=1 → an offline stand-in for G.net (src/net/mock.js) so the online screens work without the relay
 const NETMOCK = typeof location !== 'undefined' && new URLSearchParams(location.search).get('netmock') === '1';
 // room codes (the session generates them from this set: no O/0, I/1)
@@ -567,7 +567,7 @@ export class Menus {
     if (this._stack.length > 1) {
       this._sfx('ui_back');
       this.show(this._stack[this._stack.length - 2], { pop: true, back: true });
-    } else if (['mode', 'chooseModes', 'foxEconomy', 'economyCosmetics', 'economyNfts', 'economyOrders', 'economyGuild', 'economyActivity', 'economyRanking', 'nearBossPool', 'foxPassport', 'skillWorkshop', 'crafting', 'loadout', 'setup', 'locker', 'settings', 'howto', 'credits', 'online'].includes(this.current)) {
+    } else if (['mode', 'chooseModes', 'plazaCup', 'foxEconomy', 'economyCosmetics', 'economyNfts', 'economyOrders', 'economyGuild', 'economyActivity', 'economyRanking', 'nearBossPool', 'foxPassport', 'skillWorkshop', 'crafting', 'loadout', 'setup', 'locker', 'settings', 'howto', 'credits', 'online'].includes(this.current)) {
       this._sfx('ui_back'); // opened directly by the engine: fall back to the main menu
       this.show('main', { back: true });
     }

@@ -1,7 +1,9 @@
 import { economyPanel, economyPanelActive } from './near-economy-page.js';
 import {h} from './ui-util.js';
 import {NEAR_TESTNET,nearRelayUrl,viewNearContract,nearFoxProfile} from './near-testnet-assets.js';
-import {accountId} from '../economy/schema.js';
+import {accountId} from '../economy/schema.js';import {objectiveFromNft} from '../game/chog-objectives.js';
+import {raidRole} from '../game/boss-raid-rules.js';
+
 
 // Passport career/usage records are server managed. Ownership alone is read from NEAR.
 export function openNearPassport(menu,nft,back=()=>menu._closeModal(),host) {
@@ -61,7 +63,39 @@ export function openNearPassport(menu,nft,back=()=>menu._closeModal(),host) {
     content.setAttribute('aria-labelledby','passport-tab-'+selected);
     if(!data){content.append(note('Loading passport…'));return;}
     const identity=data.identity,career=data.career;
-    if(selected==='identity'){
+    if(selected==='identity'){      const objective=objectiveFromNft(nft);
+      const role=raidRole(objective);
+      if(objective?.traits.length){
+        const traitSection=h('section',{class:'near-market-section'},
+          h('h3',{class:'iw-display'},'BOSS BATTLE'),
+          row('TRAIT POWER',role.name),note(role.description));
+        for(const trait of objective.traits)traitSection.append(row(trait.category,trait.value));
+        const comparison=h('div',{role:'status'});
+        const foxId=h('input',{type:'text',inputmode:'numeric',maxlength:'3',placeholder:'Fox ID (001–088)','aria-label':'Fox ID to compare'});
+        foxId.addEventListener('keydown',event=>{if(event.key!=='Escape')event.stopPropagation();});
+        const compare=button('compare','COMPARE FOX',()=>run(async()=>{
+          const id=Number(foxId.value.trim());
+          if(!/^\d{1,3}$/.test(foxId.value.trim())||id<1||id>88)throw Error('Enter a Fox ID from 001 to 088.');
+          comparison.replaceChildren();
+          const tokenId=String(id).padStart(3,'0');
+          const {value}=await viewNearContract(NEAR_TESTNET.nft,'nft_token',{token_id:tokenId});
+          guard();
+          if(value?.token_id!==tokenId)throw Error('This Fox is unavailable.');
+          const other=nearFoxProfile(value);
+          const otherObjective=objectiveFromNft(other);
+          if(!otherObjective)throw Error('This Fox has no gameplay trait data.');
+          const otherRole=raidRole(otherObjective);
+          comparison.append(row(other.name,otherRole.name),note(otherRole.description));
+          const left=new Map(objective.traits.map(trait=>[trait.category,trait.value]));
+          const right=new Map(otherObjective.traits.map(trait=>[trait.category,trait.value]));
+          for(const category of new Set([...left.keys(),...right.keys()])){
+            comparison.append(row(category,`${left.get(category)??'—'} → ${right.get(category)??'—'}`));
+          }
+        }));
+        traitSection.append(foxId,compare,comparison);
+        content.append(traitSection);
+      }
+
       content.append(row('FOX',identity.name||nft.name||'#'+key.tokenId),row('COLLECTION',key.collectionId),row('TOKEN',key.tokenId),row('CURRENT OWNER',identity.ownerId),row('OWNERSHIP BLOCK',identity.blockHeight),note('Ownership comes from a NEAR Testnet read. Playing or lending usage does not transfer the NFT.'));
     }else if(selected==='career'){
       content.append(row(career.source==='near-testnet'?'FINALIZED MATCHES':'SERVER-CONFIRMED MATCHES',career.finalized?.matches??0),row(career.source==='near-testnet'?'FINALIZED XP':'SERVER-CONFIRMED XP',career.finalized?.xp??0),row('PENDING SERVER MATCHES',career.pending?.matches??0),note(career.source==='near-testnet'?'NEAR Testnet career at finalized block '+career.blockHeight+'.':'Local server career records. Finalized chain history becomes available after Passport activation.'));

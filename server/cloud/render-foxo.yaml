@@ -1,0 +1,22 @@
+services:
+  - type: web
+    name: foxo-plaza-relay
+    runtime: docker
+    plan: free
+    region: singapore
+    dockerfilePath: ./server/cloud/Dockerfile.foxo
+    healthCheckPath: /health
+    autoDeployTrigger: off
+    envVars:
+      - key: NEAR_GAME_ORIGINS
+        value: https://foxo-plaza.vercel.app
+      - key: NEAR_GAME_URL
+        value: https://foxo-plaza.vercel.app/
+      - key: NEAR_AUTHORITATIVE_RESULTS
+        value: "1"
+      - key: NEAR_PRACTICE_ONLY
+        value: "1"
+      - key: CHOG_DATABASE_URL
+        sync: false
+      - key: CHOG_DATABASE_AUTH_TOKEN
+        sync: false

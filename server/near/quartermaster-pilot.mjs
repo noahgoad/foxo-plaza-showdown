@@ -1,7 +1,7 @@
 import { createHash, randomBytes } from 'node:crypto';
 import { readFile } from 'node:fs/promises';
 import { KeyPair, InMemorySigner, keyStores, transactions, utils } from 'near-api-js';
-import { economyDeployment, guildMissionUpgrade } from '../../assets/near-fox/economy-deployment.js';
+import { economyDeployment, guildMissionUpgrade, materialOrdersUpgrade } from '../../assets/near-fox/economy-deployment.js';
 import { NEAR_TESTNET } from '../../src/ui/near-testnet-assets.js';
 import { verifyNearMessage } from '../near-wallet-auth.mjs';
 import { createFundedQuartermasterOrders, quartermasterStorageDeposit } from './quartermaster-orders.mjs';
@@ -99,6 +99,7 @@ export async function bootstrapQuartermasterPilot({ database, keyFile, origin, r
   const orders = createFundedQuartermasterOrders({database,economyId:economy,economyCodeHash:economyDeployment.codeHash,
     economyUpgradeCodeHash:economyDeployment.upgradeCodeHash, economyProfessionCodeHash:economyDeployment.professionCodeHash,
     economyGuildMissionCodeHash:guildMissionUpgrade.codeHash,
+    economyMaterialOrdersCodeHash:materialOrdersUpgrade.codeHash,
     tokenId:token,buyerId:buyer,catalogue:[{...recipe,recipeVersion:recipe.version,enabled:true,transferability:'tradable'}],
     prepare,broadcast,rpc});
   const maxTtlMs = 86_400_000;

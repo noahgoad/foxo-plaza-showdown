@@ -1,4 +1,5 @@
 import {accountId,atomic} from '../../src/economy/schema.js';
+import {createEconomyDemandLedger} from './economy-demand-ledger.mjs';
 
 const payoutStages = {
   reward_reserved: 0,
@@ -30,8 +31,14 @@ export function createEconomyReadModels({database,network='near-testnet',contrac
       const fixedTotals={held:0n,released:0n,settled:0n};
       const add=(key,amount)=>totals[key]=(atomic(totals[key])+atomic(amount)).toString();
       const payouts=new Map();
+      const hasPublishedOrders=database.prepare("SELECT 1 FROM sqlite_schema WHERE type='table' AND name='near_quartermaster_public_orders'").get();
+      const publishedOrders=hasPublishedOrders
+        ? database.prepare('SELECT order_id AS orderId, source FROM near_quartermaster_public_orders').all()
+        : [];
+      const demand=createEconomyDemandLedger(publishedOrders);
       for(const row of events.all(...scope)) {
         const data=JSON.parse(row.data);
+        demand.record(row.event,data,row.amount_atomic);
         if(row.event==='reward_funded')add('rewardFunding',row.amount_atomic);
         else if(row.event==='reward_paid')add('rewardPaid',row.amount_atomic);
         else if(['craft_fee_collected','guild_commit'].includes(row.event))add('craftingFees',row.amount_atomic);
@@ -57,7 +64,7 @@ export function createEconomyReadModels({database,network='near-testnet',contrac
       return {network,contractId,status:!cursor?'UNAVAILABLE':age===null||age>30000||behindHead?'SYNCING':'SYNCED',
         cursor:cursor?{height:cursor.height,hash:cursor.hash}:null,lastSyncAtMs:sync?.synced_at_ms??null,ageMs:age,
         fixedOutstandingAtomic:(fixedTotals.held-fixedTotals.released-fixedTotals.settled).toString(),
-        cumulativeEventTotals:totals,rewardOperations:[...payouts.values()],spendAuthorization:false};
+        cumulativeEventTotals:totals,demandTotals:demand.snapshot(),rewardOperations:[...payouts.values()],spendAuthorization:false};
     },
   };
 }

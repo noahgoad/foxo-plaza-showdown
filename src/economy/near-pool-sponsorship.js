@@ -46,6 +46,15 @@ export async function sponsorPoolRegistration({ relay, session, wallet, account,
   let result;
   try { result = await request('submit', { delegate }); }
   catch { result = await request('submit', { delegate }); }
+  guard();
+  for (let attempt = 0; result.status === 'PENDING' && attempt < 5; attempt++) {
+    await new Promise(resolve => setTimeout(resolve, 1500));
+    guard();
+    // Poll the same reservation. A delayed receipt must not create another key or charge.
+    const latest = await request('status', { id: result.id }).catch(() => null);
+    guard();
+    if (latest) result = latest;
+  }
   if (result.status === 'FAILED') throw Error('Sponsored registration failed on Testnet. Refresh the Pool position.');
   if (result.status === 'REJECTED') throw Error('Sponsored registration expired before inclusion. Try again.');
   if (result.status !== 'FINALIZED') throw Error('Sponsored registration is pending. Use Refresh to check the Pool position.');

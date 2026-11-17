@@ -1,10 +1,18 @@
 import { nearWorkshopProgress } from '../../src/economy/specializations.js';
 import { NEAR_TESTNET } from '../../src/ui/near-testnet-assets.js';
 
-export function createFoxPassportRoutes({ passport, usage, nearAuth, fixedRewards, economyIndex, quartermaster, quartermasterOrders, gasSponsor, gasEligibility, rankingStatus, guildMissions }) {
+export function createFoxPassportRoutes({ passport, usage, nearAuth, fixedRewards, economyIndex, quartermaster, quartermasterOrders, gasSponsor, gasEligibility, rankingStatus, guildMissions, guildCommunity }) {
   return async ({ method, url, headers, body }) => {
     const path = new URL(url, 'http://relay.local');
     const result = (status, data) => ({ status, data });
+    const communityAction = /^\/near\/guild\/community\/(layout|save-layout|events|rsvp)$/.exec(path.pathname)?.[1];
+    if (communityAction && guildCommunity) {
+      if (method === 'GET' && communityAction === 'layout') return guildCommunity('layout', null, {guildId:path.searchParams.get('guildId')});
+      if (method === 'POST' && communityAction !== 'layout') {
+        const account = nearAuth.account(body?.nearSession, headers.origin);
+        return guildCommunity(communityAction, account, body);
+      }
+    }
     if (method === 'POST' && guildMissions && ['/near/guild/missions/accept','/near/guild/missions/status'].includes(path.pathname)) {
       const account = nearAuth.account(body?.nearSession, headers.origin);
       return guildMissions(account, body, path.pathname.endsWith('/accept') ? 'accept' : 'status');
@@ -42,7 +50,9 @@ export function createFoxPassportRoutes({ passport, usage, nearAuth, fixedReward
       return result(200, await gasSponsor.submit(body.delegate, { accountId, issuedAtMs: now, expiresAtMs: now + 60_000 }));
     }
     if (method === 'GET' && path.pathname === '/near/orders/quartermaster') {
-      const orders = quartermasterOrders?.list().map(({ orderId, source }) => ({ orderId, source })) ?? [];
+      const orders = quartermasterOrders?.list().map(({ orderId, source, projectId }) => ({
+        orderId, source, ...(projectId ? { projectId } : {}),
+      })) ?? [];
       return result(200, { enabled: quartermaster?.enabled === true,
         budgetFoxo: quartermaster?.budgetFoxo ?? '0', orders });
     }

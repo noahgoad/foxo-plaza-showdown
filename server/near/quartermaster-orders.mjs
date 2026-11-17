@@ -1,5 +1,6 @@
 import {createHash} from 'node:crypto';
 import {accountId,atomic} from '../../src/economy/schema.js';
+import {MATERIAL_ORDER_PRODUCTS} from '../../src/economy/near-orders.js';
 const digest=value=>createHash('sha256').update(JSON.stringify(value)).digest('hex');
 const encoded=value=>Buffer.from(JSON.stringify(value)).toString('base64');
 const identifier=value=>typeof value==='string'&&/^[\w-]{1,64}$/.test(value);
@@ -7,8 +8,11 @@ const identifier=value=>typeof value==='string'&&/^[\w-]{1,64}$/.test(value);
 export function readPublishedQuartermasterOrders(database) {
   const table = database.prepare("SELECT 1 FROM sqlite_schema WHERE type='table' AND name='near_quartermaster_public_orders'");
   if (!table.get()) return [];
-  return database.prepare(`SELECT order_id AS orderId, source FROM near_quartermaster_public_orders
-    ORDER BY rowid DESC LIMIT 50`).all();
+  return database.prepare(`SELECT order_id AS orderId, source, receipt_json FROM near_quartermaster_public_orders
+    ORDER BY rowid DESC LIMIT 50`).all().map(({receipt_json,...row})=>{
+    const {projectId}=JSON.parse(receipt_json);
+    return projectId ? {...row,projectId} : row;
+  });
 }
 
 export function quartermasterStorageDeposit({ charge, credit, registration }) {
@@ -17,9 +21,10 @@ export function quartermasterStorageDeposit({ charge, credit, registration }) {
 }
 
 /** Called only after Quartermaster's reviewed funding approval. No key is owned by this adapter. */
-export function createFundedQuartermasterOrders({database,economyId,economyCodeHash,economyUpgradeCodeHash,economyProfessionCodeHash,economyGuildMissionCodeHash,tokenId,buyerId,catalogue,prepare,broadcast,rpc,now=Date.now}) {
+export function createFundedQuartermasterOrders({database,economyId,economyCodeHash,economyUpgradeCodeHash,economyProfessionCodeHash,economyGuildMissionCodeHash,economyMaterialOrdersCodeHash,tokenId,buyerId,catalogue,prepare,broadcast,rpc,now=Date.now}) {
   for(const id of [economyId,tokenId,buyerId])accountId(id);
   const recipes=new Map(catalogue.filter(item=>item.enabled===true&&item.transferability==='tradable').map(item=>[item.sku,item]));
+  const materials=new Map(MATERIAL_ORDER_PRODUCTS.map(item=>[item.recipeId,{recipeId:item.recipeId,recipeVersion:item.version}]));
   database.exec(`CREATE TABLE IF NOT EXISTS near_quartermaster_transactions (
     operation_id TEXT PRIMARY KEY, terms_hash TEXT NOT NULL, transaction_hash TEXT NOT NULL UNIQUE,
     signed_bytes TEXT NOT NULL, draft_json TEXT NOT NULL
@@ -32,13 +37,16 @@ export function createFundedQuartermasterOrders({database,economyId,economyCodeH
   async function codeBlock() {
     if(typeof economyCodeHash!=='string'||!economyCodeHash)throw Error('Verified Quartermaster deployment hash required');
     const account=await rpc('query',{request_type:'view_account',account_id:economyId,finality:'final'});
-    if(!account.code_hash||![economyCodeHash,economyUpgradeCodeHash,economyProfessionCodeHash,economyGuildMissionCodeHash].includes(account.code_hash)||
+    if(!account.code_hash||![economyCodeHash,economyUpgradeCodeHash,economyProfessionCodeHash,economyGuildMissionCodeHash,economyMaterialOrdersCodeHash].includes(account.code_hash)||
       typeof account.block_hash!=='string')throw Error('Quartermaster economy code mismatch');
     return account.block_hash;
   }
   function draft(terms) {
-    const {proposal}=terms,recipe=recipes.get(proposal?.sku);
+    const {proposal}=terms;
+    const recipe=terms.source==='Guild' && materials.has(proposal?.sku)
+      ? materials.get(proposal.sku) : recipes.get(proposal?.sku);
     if(!identifier(terms.operationId)||!identifier(terms.fundingId)||!['Sponsored','Guild'].includes(terms.source)||!recipe)throw Error('Unsupported funded Quartermaster order');
+    if(terms.source==='Guild' && !identifier(terms.projectId))throw Error('Guild project is required for the order');
     if(!Number.isSafeInteger(proposal.quantity)||proposal.quantity<1||proposal.quantity>100 ||
       !Number.isSafeInteger(proposal.expiresAtMs)||proposal.expiresAtMs<=now())throw Error('Expired or invalid Quartermaster order');
     const price=atomic(proposal.priceAtomic),amount=price*BigInt(proposal.quantity);
@@ -79,20 +87,21 @@ export function createFundedQuartermasterOrders({database,economyId,economyCodeH
       const reviewed=draft(terms);
       if(typeof prepare!=='function'||typeof broadcast!=='function')throw Error('Funded order signing transport unavailable');
       if((await rpc('status',[]))?.chain_id!=='testnet')throw Error('Quartermaster network mismatch');
-      // Quote is checked against the immutable onchain recipe before any signing.
-      const recipe=recipes.get(terms.proposal.sku);
       const blockId=await codeBlock();
-      const view=await rpc('query',{request_type:'call_function',account_id:economyId,method_name:'get_recipe',args_base64:encoded({recipe_id:recipe.recipeId,recipe_version:recipe.recipeVersion}),block_id:blockId});
-      if(view.block_hash!==blockId)throw Error('Quartermaster quote finality mismatch');
-      const actual=JSON.parse(Buffer.from(view.result).toString('utf8'));
-      if(actual?.sku!==recipe.sku||actual.recipeId!==recipe.recipeId||actual.version!==recipe.recipeVersion)throw Error('Quartermaster recipe mismatch');
       const read=async(method,args)=>{
         const result=await rpc('query',{request_type:'call_function',account_id:economyId,method_name:method,args_base64:encoded(args),block_id:blockId});
-        if(result.block_hash!==blockId||!Array.isArray(result.result))throw Error('Quartermaster storage quote unavailable');
-        return atomic(JSON.parse(Buffer.from(result.result).toString('utf8')));
+        if(result.block_hash!==blockId||!Array.isArray(result.result))throw Error('Quartermaster quote finality mismatch');
+        return JSON.parse(Buffer.from(result.result).toString('utf8'));
       };
+      const {recipeId,recipeVersion}=JSON.parse(reviewed.args.msg);
+      if(recipeVersion===0){
+        if(await read('can_fund_material_order',{account_id:buyerId})!==true)throw Error('Quartermaster must register material inventory first.');
+      }else{
+        const actual=await read('get_recipe',{recipe_id:recipeId,recipe_version:recipeVersion});
+        if(actual?.sku!==terms.proposal.sku||actual.recipeId!==recipeId||actual.version!==recipeVersion)throw Error('Quartermaster recipe mismatch');
+      }
       const [charge,credit]=await Promise.all([read('get_order_storage_charge',{quantity:terms.proposal.quantity}),read('get_order_storage_credit',{account_id:buyerId})]);
-      if(credit<charge)throw Error('Quartermaster native order storage is not funded. Operator review required.');
+      if(atomic(credit)<atomic(charge))throw Error('Quartermaster native order storage is not funded. Operator review required.');
       const signed=await prepare({signerId:buyerId,receiverId:tokenId,method:'ft_transfer_call',args:reviewed.args,gas:'50000000000000',deposit:'1'});
       if(!/^[1-9A-HJ-NP-Za-km-z]{32,44}$/.test(signed?.transactionHash??'')||!/^[A-Za-z0-9+/]{1,16384}={0,2}$/.test(signed?.signedTransaction??''))throw Error('Invalid prepared order transaction');
       database.prepare('INSERT OR IGNORE INTO near_quartermaster_transactions VALUES(?,?,?,?,?)').run(terms.operationId,hash,signed.transactionHash,signed.signedTransaction,JSON.stringify(reviewed));
@@ -107,7 +116,8 @@ export function createFundedQuartermasterOrders({database,economyId,economyCodeH
       const row=find.get(terms.operationId);
       if(!row||row.terms_hash!==digest(Object.fromEntries(Object.entries(terms).filter(([key])=>key!=='receipt'))))throw Error('Publication terms changed');
       const proof=await confirm(terms,row);if(proof.status!=='FINALIZED')throw Error('Funded order is not finalized');
-      database.prepare('INSERT OR IGNORE INTO near_quartermaster_public_orders VALUES(?,?,?,?,?,?)').run(terms.operationId,row.terms_hash,terms.source,terms.fundingId,proof.orderId,JSON.stringify(proof));
+      const receipt=terms.projectId?{...proof,projectId:terms.projectId}:proof;
+      database.prepare('INSERT OR IGNORE INTO near_quartermaster_public_orders VALUES(?,?,?,?,?,?)').run(terms.operationId,row.terms_hash,terms.source,terms.fundingId,proof.orderId,JSON.stringify(receipt));
     },
     list:()=>database.prepare('SELECT operation_id AS operationId,source,funding_id AS fundingId,order_id AS orderId,receipt_json FROM near_quartermaster_public_orders ORDER BY rowid').all().map(({receipt_json,...row})=>({...row,receipt:JSON.parse(receipt_json)})),
   };

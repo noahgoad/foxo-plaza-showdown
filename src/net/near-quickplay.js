@@ -20,14 +20,19 @@ export async function startNearQuickPlay(menus, options, createSession, isCurren
     menus.huntRoom=session;
     await session.enter(undefined,{poll:false});
     guard();
-    await session.settings(options.mapId,options.time,options.mode);
+    if(options.cup)await session.settings(options.mapId,options.time,options.mode,{cup:true,cupDay:options.cupDay});
+    else await session.settings(options.mapId,options.time,options.mode);
     guard();
     await session.start();
     guard();
     if(session.room?.closed)throw Error(session.room.closed);
-    if(session.room?.nearAuthoritative!==true || !['queued','loading'].includes(session.room?.phase)) {
+    if(options.cup&&!session.room?.config?.cup)throw Error('The relay did not assign a Cup round.');
+    const hostedPractice = !options.cup && session.room?.hostedPractice === true && session.room?.phase === 'loading';
+    const recorded = session.room?.nearAuthoritative === true && ['queued','loading'].includes(session.room.phase);
+    if(!recorded && !hostedPractice) {
       throw Error('Server-recorded Quick Play is unavailable. Try again when the match server is ready.');
     }
+    if (hostedPractice) menus.toast?.('Practice match · No on-chain rewards');
     void session.poll();
     return session;
   } catch(error) {

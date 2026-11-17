@@ -4,7 +4,7 @@ import { cosmeticCardInfo, marketCard, marketSection, marketPicker } from './nea
 import { NEAR_TESTNET, formatFoxo, viewNearContract, readNearAccountCode, nearRelayUrl } from './near-testnet-assets.js';
 import { verifyEconomyDeployment } from '../economy/near-deployment.js';
 import { economyDeployment } from '../../assets/near-fox/economy-deployment.js';
-import { fundOrderDraft, matchingOrderItems, orderMatches, orderFillQuote } from '../economy/near-orders.js';
+import { fundOrderDraft, matchingOrderItems, orderMatches, orderFillQuote, MATERIAL_ORDER_PRODUCTS } from '../economy/near-orders.js';
 
 const DAY = 86_400_000;
 const GAS = 100n * 10n ** 12n;
@@ -29,7 +29,7 @@ export function openNearOrders(menu, back, host) {
     state.nearSession===session && state.config?.network===NEAR_TESTNET.network;
   const view = async (method, args = {}) => (await viewNearContract(economy, method, args)).value;
   const storageKey = 'fox-buy-order:' + economy + ':' + account;
-  const recipes = economyDeployment.recipes;
+  const recipes = [...economyDeployment.recipes, ...MATERIAL_ORDER_PRODUCTS];
   let busy = false;
   let prepared = null;
   let owned = [];
@@ -38,7 +38,7 @@ export function openNearOrders(menu, back, host) {
   let feeBps = 0;
   let storageDeposit = 0n;
   let storageReady = false;
-  const recipe = h('select', null, ...recipes.map((entry, index) => h('option', { value: index }, entry.label)));
+  const recipe = h('select', null, ...recipes.map((entry, index) => h('option', { value: index, disabled: entry.version === 0 }, entry.label)));
   const qty = h('input', { type: 'number', min: 1, max: 100, value: 1 });
   const price = h('input', { type: 'text', inputmode: 'decimal', autocomplete: 'off' });
   const orderInput = h('input', { type: 'text', maxlength: 129, autocomplete: 'off', spellcheck: 'false' });
@@ -54,16 +54,22 @@ export function openNearOrders(menu, back, host) {
     });
   }
 
-  async function sign(receiverId, method, args, deposit = 1n) {
+  async function sign(receiverId, method, args, deposit = 1n, storage = 0n) {
     if (!verified) throw new Error('Refresh and verify the order contract first.');
     await wallet.prepareWallet();
     if (!active()) throw new Error('Wallet or screen changed.');
     await verifyEconomyDeployment({deployment:economyDeployment,tokenId:NEAR_TESTNET.token,readCode:readNearAccountCode,view:viewNearContract});
     if (!active()) throw new Error('Wallet or screen changed.');
-    const response = await wallet.intear.signAndSendTransaction({
+    const transaction = {
       signerId: account, receiverId,
       actions: [wallet.nearActions.functionCall(method, args, GAS, deposit)],
-    });
+    };
+    const response = storage>0n
+      ? (await wallet.intear.signAndSendTransactions({transactions:[{
+        signerId:account,receiverId:economy,
+        actions:[wallet.nearActions.functionCall('deposit_order_storage',{},GAS,storage)],
+      },transaction]})).at(-1)
+      : await wallet.intear.signAndSendTransaction(transaction);
     const value = response?.status?.SuccessValue;
     if (typeof value !== 'string') throw new Error('Transaction outcome is unavailable. Refresh before retrying.');
     return value;
@@ -98,9 +104,10 @@ export function openNearOrders(menu, back, host) {
 
   async function refresh() {
     verified = false;
-    const [config, creditAtomic, items] = await Promise.all([
+    const [config, creditAtomic, items, materialOrdersReady] = await Promise.all([
       view('get_config'), view('get_order_credit', { account_id: account }),
       view('get_owned_items', { account_id: account, offset: 0, limit: 50 }),
+      view('can_fund_material_order', { account_id: account }).catch(() => false),
     ]);
     if (!active()) return;
     if (config.network !== NEAR_TESTNET.network || config.foxoContractId !== NEAR_TESTNET.token) {
@@ -110,6 +117,13 @@ export function openNearOrders(menu, back, host) {
     enabled = config.ordersEnabled;
     feeBps = config.marketFeeBps ?? 0;
     owned = items;
+    for (const [index, entry] of recipes.entries()) {
+      if (entry.version === 0) {
+        recipe.options[index].disabled = materialOrdersReady !== true;
+        recipeCards[index].hidden = materialOrdersReady !== true;
+      }
+    }
+    if (recipe.selectedOptions[0]?.disabled) recipe.selectedIndex = 0;
     credit.textContent = 'Withdrawable balance · ' + formatFoxo(creditAtomic) + ' FOXO';
     withdraw.disabled = creditAtomic === '0';
     review.disabled = !enabled || !recipes.length;
@@ -136,6 +150,23 @@ export function openNearOrders(menu, back, host) {
     if (!order.closed && order.buyerId === account) {
       detail.append(button('order-close', 'CLOSE ORDER', () => act(async () => {
         await sign(economy, 'close_order', { order_id: id });
+        await refresh();
+        await loadOrder(id);
+      })));
+    } else if (enabled && !order.closed && !expired && order.recipeVersion === 0) {
+      const inventory = await view('get_inventory', { account_id: account });
+      if (!active()) return;
+      const max = Math.min(order.remaining, Number(inventory.available?.[order.recipeId] || 0));
+      if (max < 1) {
+        detail.append(h('p', null, 'No matching materials available.'));
+        return;
+      }
+      const quantity = h('input', { type: 'number', min: 1, max, value: 1 });
+      quantity.addEventListener('keydown', event => { if (event.key !== 'Escape') event.stopPropagation(); });
+      detail.append(field('Quantity to deliver', quantity), button('material-order-fill', 'DELIVER MATERIALS', () => act(async () => {
+        const count = Number(quantity.value);
+        if (!Number.isSafeInteger(count) || count < 1 || count > max) throw new Error('Enter a quantity within your available balance.');
+        await sign(economy, 'fill_material_order', { order_id: id, quantity: count });
         await refresh();
         await loadOrder(id);
       })));
@@ -167,7 +198,7 @@ export function openNearOrders(menu, back, host) {
       }));
       if (!active()) return;
       for (const node of quartermaster.querySelectorAll('[data-nav]')) menu._binds.delete(node);
-      const cards = activeListings.filter(Boolean).map(({ orderId, source, order }, index) => {
+      const cards = activeListings.filter(Boolean).map(({ orderId, source, projectId, order }, index) => {
         const entry = recipes.find(row => row.recipeId === order.recipeId && row.version === order.recipeVersion);
         const open = () => act(async () => {
           orderInput.value = orderId;
@@ -179,6 +210,7 @@ export function openNearOrders(menu, back, host) {
             { ...cosmeticCardInfo(entry?.sku || order.recipeId), name: entry?.label || order.recipeId,
               caption:formatFoxo(order.unitPrice)+' FOXO each' }, open),
           h('p',null,source+' · '+order.remaining+' wanted'),
+          source==='Guild' && typeof projectId==='string' ? h('p',null,'Project '+projectId) : null,
           button('quartermaster-view-'+index,'VIEW BUY ORDER',open));
       });
       quartermaster.replaceChildren(h('h3', { class: 'iw-display' }, 'QUARTERMASTER'),
@@ -188,7 +220,7 @@ export function openNearOrders(menu, back, host) {
     } catch { /* Player orders remain available independently of the relay. */ }
   }
 
-  const submit = button('order-fund', 'FUND ORDER', () => act(async () => {
+  async function fundPrepared() {
     const draft = prepared;
     if (!draft) return;
     const current = await view('get_order', { order_id: draft.id });
@@ -196,11 +228,16 @@ export function openNearOrders(menu, back, host) {
     if (!current) {
       if (!enabled) throw new Error('New orders are paused.');
       const terms=JSON.parse(draft.args.msg);
-      const [charge,balance]=await Promise.all([view('get_order_storage_charge',{quantity:terms.quantity}),view('get_order_storage_credit',{account_id:account})]);
-      if(BigInt(balance)<BigInt(charge))throw new Error('Prepay the reviewed native storage fee before funding this order.');
+      if (terms.recipeVersion === 0 && !await view('can_fund_material_order', { account_id: account })) {
+        throw new Error('Material orders require an active material inventory.');
+      }
+      const [charge,balance,registration]=await Promise.all([view('get_order_storage_charge',{quantity:terms.quantity}),view('get_order_storage_credit',{account_id:account}),view('get_order_storage_registration_charge',{account_id:account})]);
+      const missing=BigInt(charge)-BigInt(balance);
+      const storage=missing>0n?missing+BigInt(registration):0n;
+      if(storage>0n&&!host)throw new Error('Prepay the reviewed native storage fee before funding this order.');
       localStorage.setItem(storageKey, JSON.stringify(draft));
       status.textContent = 'Confirm the order in Intear.';
-      await sign(draft.receiverId, 'ft_transfer_call', draft.args);
+      await sign(draft.receiverId, 'ft_transfer_call', draft.args, 1n, storage);
       const result = await view('get_order', { order_id: draft.id });
       if (!orderMatches(result, draft)) throw new Error('Order not confirmed yet. Review the saved order before retrying.');
     }
@@ -213,10 +250,11 @@ export function openNearOrders(menu, back, host) {
     await refresh();
     await loadOrder(draft.id);
     status.textContent = 'Order confirmed. Share its ID with a seller.';
-  }));
+  }
+  const submit = button('order-fund', 'FUND ORDER', () => act(fundPrepared));
   submit.disabled = true;
 
-  const review = button('order-review', 'REVIEW ORDER', () => act(async () => {
+  const review = button('order-review', host?'PLACE ORDER':'REVIEW ORDER', () => act(async () => {
     const saved = pending();
     const draft = saved || fundOrderDraft({ token: NEAR_TESTNET.token, economy, buyer: account,
       operationId: crypto.randomUUID(), recipe: recipes[Number(recipe.value)], quantity: Number(qty.value),
@@ -234,6 +272,7 @@ export function openNearOrders(menu, back, host) {
     }
     if (!active()) return;
     prepared = draft;
+    if(host){await fundPrepared();return;}
     const [charge,balance,registration]=await Promise.all([
       view('get_order_storage_charge',{quantity:terms.quantity}),view('get_order_storage_credit',{account_id:account}),view('get_order_storage_registration_charge',{account_id:account}),
     ]);
@@ -272,6 +311,9 @@ export function openNearOrders(menu, back, host) {
       recipe.value = String(index);
       recipe.dispatchEvent(new Event('input', { bubbles: true }));
     }));
+  for (const [index, entry] of recipes.entries()) {
+    if (entry.version === 0) recipeCards[index].hidden = true;
+  }
   const updateSelection = () => recipeCards.forEach((card, index) => {
     const selected = recipe.selectedIndex === index;
     card.classList.toggle('is-selected', selected);
@@ -280,7 +322,7 @@ export function openNearOrders(menu, back, host) {
   recipe.addEventListener('input', updateSelection);
   updateSelection();
   const create = marketSection('CREATE AN ORDER', h('div', { class: 'near-market-grid' }, recipeCards),
-    field('Recipe', recipe), field('Quantity', qty), field('FOXO per item', price), review, quote, storageButton, submit);
+    field('Item or material', recipe), field('Quantity', qty), field('FOXO per unit', price), review, quote, host?null:[storageButton,submit]);
   const browse = marketSection('FIND AN ORDER', h('div', { class: 'near-market-search' }, field('Order ID', orderInput),
     button('order-find', 'FIND ORDER', () => act(() => loadOrder(orderInput.value.trim())))), detail);
   const credits = marketSection('MARKET WALLET', credit, h('div', { class: 'near-market-actions' }, withdraw,

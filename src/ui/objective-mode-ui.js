@@ -4,9 +4,13 @@ import { bossStatIcons } from './chog-icons.js';
 import { TESTNET } from './chog-wallet.js';
 import { objectiveFromNft } from '../game/chog-objectives.js';
 import { workshopIdentity, workshopOptions, workshopRaidStorageKey, defaultWorkshopSkill, resolveWorkshopSkill, loadWorkshopSkill, saveWorkshopSkill } from '../game/skill-workshop.js';
-import { FOXO_ICON, readNearWorkshopProgress } from './near-testnet-assets.js';
+import {describeWorkshopSkill,workshopPresets} from '../game/foxo-preset-discovery.js';
+import { FOXO_ICON, nearRelayUrl, readNearWorkshopProgress } from './near-testnet-assets.js';
 import { economyPanel } from './near-economy-page.js';
 import { trialGhostLink } from '../game/trial-ghost-share.js';
+import {CUP_ROUNDS,createPracticeCup,cupTime,recordCupRound} from '../game/foxo-event-rules.js';
+import {startNearQuickPlay} from '../net/near-quickplay.js';
+import {HuntRoomSession} from '../net/hunt-room.js';
 
 // Reuse in-flight reads across redraws without retaining another wallet's state.
 const modeReads=new WeakMap();
@@ -37,16 +41,129 @@ export function modeChooserScreen(menu) {
   };
   const cards = [
     { id: 'mode-control', title: 'TRAIT CONTROL', detail: '3 vs 3 · Capture and hold three stations',
-      icon: GLYPHS.flag, accept: () => launch('control') },
+      art: 'assets/near-fox/mode-previews/trait-control.webp',
+      info: 'Capture stations with your squad and hold them to score. The first team to reach 100 points wins.',
+      accept: () => launch('control') },
     { id: 'mode-trials', title: 'DAILY TRIALS', detail: 'Race the clock and activate eight beacons',
-      icon: GLYPHS.clock, accept: () => launch('trials') },
+      art: 'assets/near-fox/mode-previews/daily-trials.webp',
+      info: 'Activate all eight beacons. Hold each ring for three seconds and try to finish as fast as possible.',
+      accept: () => launch('trials') },
+    { id: 'mode-plaza-cup', title: 'PLAZA CUP', detail: 'Three beacon runs · Fastest total time wins',
+      art: 'assets/near-fox/mode-previews/plaza-cup.webp',
+      info: 'Run the beacon course three times. Competition records your total time in the live standings. Practice lets you run solo.',
+      accept: () => menu._go('plazaCup') },
+    { id: 'mode-decoy-hunt', title: 'DECOY HUNT PRACTICE', detail: 'Drop false Carrier signals to divert rival Hunters',
+      art: 'assets/near-fox/mode-previews/decoy-hunt.webp',
+      info: 'Use false Carrier signals to pull rival Hunters away during a 90-second practice match.',
+      accept: () => {
+        if(menu.chogWallet.requirePlayer())void menu.api.startMatch({mode:'hunt',duration:90,decoyHunt:true});
+      } },
     { id: 'mode-workshop', title: 'SKILL WORKSHOP', detail: 'Build a skill for Boss Battle',
-      icon: GLYPHS.gear, accept: () => menu._go('skillWorkshop') },
+      art: 'assets/near-fox/mode-previews/skill-workshop.webp',
+      info: 'Combine your Fox traits into a skill loadout and use it in Boss Battle.',
+      accept: () => menu._go('skillWorkshop') },
     { id: 'mode-economy', title: 'FOX ECONOMY', detail: 'Craft, trade and manage your NFTs',
-      icon: h('img', { src: FOXO_ICON, alt: '' }),
+      art: 'assets/near-fox/mode-previews/fox-economy.webp',
+      info: 'Craft gear, trade cosmetics and Fox NFTs, support Guild Projects, and check your claims and rankings.',
       accept: () => menu._go('foxEconomy') },
   ];
-  return hubScreen(menu, 'CHOOSE MODE', cards);
+  const title = h('h2', { class: 'iw-display' });
+  const detail = h('p');
+  const art = h('img', { class: 'foxo-mode-hero__art', alt: '' });
+  const copy = h('div', { class: 'foxo-mode-hero__copy', 'aria-live': 'polite' }, title, detail);
+  const current = () => cards[menu._modeSlide ?? 0];
+  const render = () => {
+    const card = current();
+    art.src = card.art;
+    title.textContent = card.title;
+    detail.textContent = card.detail;
+    tabs.forEach((tab, index) => {
+      const selected = index === (menu._modeSlide ?? 0);
+      tab.setAttribute('aria-pressed', String(selected));
+    });
+    copy.animate([{ opacity: 0 }, { opacity: 1 }], {
+      duration: matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 180,
+    });
+  };
+  const arrow = (step, label) => {
+    const icon = h('i', { html: GLYPHS.next, 'aria-hidden': 'true' });
+    const button = h('button', { class: 'foxo-mode-arrow', 'aria-label': label }, icon);
+    return menu._bind(button, { id: step < 0 ? 'previous-mode' : 'next-mode', accept: () => {
+      menu._modeSlide = ((menu._modeSlide ?? 0) + step + cards.length) % cards.length;
+      render();
+    } });
+  };
+  const play = menu._btn({ id: 'mode-play', label: 'PLAY', icon: GLYPHS.play,
+    cls: 'iw-btn--primary', accept: () => current().accept() });
+  const info = menu._btn({ id: 'mode-info', label: 'MORE INFO', accept: () => {
+    const card = current();
+    economyPanel(menu, null, { title: card.title, text: card.info,
+      buttons: [{ id: 'close-mode-info', label: 'BACK', accept: () => menu._closeModal() }] });
+  } });
+  const hero = h('section', { class: 'foxo-mode-hero' }, art,
+    h('div', { class: 'foxo-mode-hero__content' }, copy,
+      h('div', { class: 'foxo-mode-hero__actions' }, play, info)));
+  const tabs = cards.map((card, index) => menu._btn({
+    id: card.id, label: card.title, cls: 'iw-btn--small', accept: () => {
+      menu._modeSlide = index;
+      render();
+    },
+  }));
+  render();
+  return { el: h('div', { class: 'iw-screen iw-online chog-online chog-mode-screen foxo-mode-carousel' },
+    h('div', { class: 'iw-scrim-left' }), menu._header('CHOOSE MODE'),
+    h('div', { class: 'foxo-mode-carousel__stage' },
+      h('nav', { class: 'foxo-mode-carousel__tabs', 'aria-label': 'Choose game mode' }, tabs),
+      arrow(-1, 'Previous mode'), hero, arrow(1, 'Next mode'))),
+    initial: play };
+}
+
+export function plazaCupScreen(menu) {
+  return hubScreen(menu, 'PLAZA CUP', [
+    { id: 'mode-plaza-cup-online', title: 'COMPETITION', detail: 'Eight slots · Three recorded runs · Live standings',
+      icon: GLYPHS.crown, accept: () => openCupStandings(menu) },
+    { id: 'mode-plaza-cup-practice', title: 'PRACTICE', detail: 'Three solo runs · Beat your best total time',
+      icon: GLYPHS.clock, accept: () => {
+        if (menu.chogWallet.requirePlayer()) void menu.api.startMatch({mode:'trials',practiceCup:createPracticeCup()});
+      } },
+  ], 'foxo-cup-grid');
+}
+
+function launchCup(menu,day,isCurrent){
+ return startNearQuickPlay(menu,{mapId:'tidewater',time:'day',mode:'trials',cup:true,cupDay:day},m=>new HuntRoomSession(m),isCurrent);
+}
+
+function openCupStandings(menu,initialDay){
+ const standings=h('div',{role:'status'},'Loading standings…');
+ let day=initialDay,active=true,ready=false;
+ const panel=economyPanel(menu,null,{title:'PLAZA CUP',text:'Complete three runs on the same beacon course. Lowest total time wins.',buttons:[
+  {id:'start-cup',label:'START NEXT ROUND',accept:async()=>{
+   if(!ready||menu._nearQuickPending)return;
+   try{await launchCup(menu,day,()=>active&&panel.isConnected);}
+   catch(error){menu.toast(error.message);}
+  }},
+  {id:'refresh-cup',label:'REFRESH',accept:()=>void refresh()},
+  {id:'close-cup',label:'BACK',accept:()=>{active=false;menu._closeModal();}},
+ ]});
+ panel.querySelector('.iw-modal__btns').before(standings);
+ panel.classList.add('foxo-cup-standings');
+ standings.classList.add('foxo-cup-entries');
+ const lifetime=modalPollLifetime(panel);
+ async function refresh(){
+  try{
+   const response=await fetch(nearRelayUrl()+'/plaza-cup/status',{method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({day}),signal:AbortSignal.timeout(10000)});
+   if(!response.ok)throw Error('Cup standings are unavailable.');
+   const value=await response.json();
+   if(!active||!lifetime.alive())return;
+   day=value.day;ready=value.available&&value.phase!=='finished';
+   standings.replaceChildren(h('p',null,`${value.entries.length}/${value.capacity} entries · ${value.phase}`),
+    h('ol',null,value.entries.map(row=>h('li',null,`${row.position?row.position+'. ':''}${row.name} · ${row.roundCount}/3 · ${row.dnf?'DNF':row.totalMs===null?'In progress':(row.totalMs/1000).toFixed(2)+'s'}`))));
+   if(!value.available)standings.append(h('p',null,'The match simulator is unavailable. Try Plaza Cup Practice.'));
+  }catch(error){if(active&&lifetime.alive())standings.textContent=error.message;}
+  if(active&&lifetime.alive())lifetime.later(refresh);
+ }
+ void refresh();
 }
 
 export function foxEconomyScreen(menu) {
@@ -60,9 +177,9 @@ export function foxEconomyScreen(menu) {
       accept: open('economyNfts') },
     { id: 'economy-orders', title: 'BUY ORDERS', detail: 'Request items or fill open orders', icon: GLYPHS.check,
       accept: open('economyOrders') },
-    { id: 'economy-guild', title: 'GUILD PROJECTS', detail: 'Contribute materials to guild projects', icon: GLYPHS.users,
+    { id: 'economy-guild', title: 'GUILD', detail: 'Contribute materials to guild projects', icon: GLYPHS.users,
       accept: open('economyGuild') },
-    { id: 'economy-activity', title: 'ACTIVITY & RANKING', detail: 'View economy activity and leaderboards',
+    { id: 'economy-activity', title: 'PLAYER DESK', detail: 'View wallet balances, claims and leaderboards',
       icon: h('img', { src: FOXO_ICON, alt: '' }), accept: open('economyActivity') },
   ], 'chog-economy-screen');
 }
@@ -134,7 +251,7 @@ export function openSkillWorkshop(menu,back=()=>menu._closeModal(),host){
       }choices.append(row);
     }
     const facts=h('p',{class:'iw-modal__text',role:'status'});
-    try{const resolved=resolveWorkshopSkill(recipe,nft,progress);facts.textContent=`${resolved.name} · ${resolved.effect==='mend'?resolved.amount+' HP':Math.round(resolved.amount*100)+'%'} · ${resolved.target==='self'?'Self':resolved.radius+'m squad'}${resolved.duration?' · '+resolved.duration+'s':''} · ${resolved.cooldown}s cooldown · Budget ${resolved.cost}/${options.budget}`;}
+    try{const resolved=resolveWorkshopSkill(recipe,nft,progress);facts.textContent=describeWorkshopSkill(resolved);}
     catch(e){facts.textContent=e.message;}
     const sync=h('p',{class:'iw-modal__text',role:'status'});syncMessage(sync,syncText,syncHash);body.append(sync);
     const cost=['effect','target','modifier'].reduce((sum,field)=>sum+
@@ -142,12 +259,22 @@ export function openSkillWorkshop(menu,back=()=>menu._closeModal(),host){
     const saved=loadWorkshopSkill(localStorage,nft,progress);
     const equipped=localStorage.getItem(workshopRaidStorageKey(nft,progress))==='workshop';
     const isSaved=['effect','target','modifier'].every(field=>saved?.[field]===recipe?.[field]);
+    const presetList=h('div',{class:'chog-workshop-options'},h('div',{class:'iw-seclabel'},'PRESETS'));
+    for(const preset of workshopPresets(nft,progress)){
+      const button=menu._btn({id:`workshop-preset-${preset.id}`,label:preset.name,
+        sub:preset.skill?describeWorkshopSkill(preset.skill):'Unlock the required parts',
+        cls:'iw-btn--small',accept:()=>{if(preset.skill){recipeDirty=true;recipe=preset.recipe;render();}}});
+      button.disabled=!preset.skill;
+      presetList.append(button);
+    }
+    choices.append(presetList);
     body.append(h('div',{class:'fox-feature-grid fox-workshop-grid'},choices,
       h('aside',{class:'near-market-section fox-feature-card'},
         h('h3',{class:'iw-display'},'SKILL PREVIEW'),
         h('label',{class:'guild-meter'},h('span',null,'Skill points',h('b',null,cost+'/'+options.budget)),
           h('progress',{value:Math.min(cost,options.budget),max:options.budget})),
-        h('p',null,equipped&&isSaved?'Equipped for Boss Battle':isSaved?'Saved preset':'Unsaved changes'),facts)));
+        h('p',null,equipped&&isSaved?'Equipped for Boss Battle':isSaved?'Saved preset':'Unsaved changes'),facts,
+        !isSaved?h('p',null,`Saved • ${describeWorkshopSkill(resolveWorkshopSkill(saved,nft,progress))}`):null)));
     const focused=[...body.querySelectorAll('[data-id]')].find(b=>b.dataset.id===focusId);if(focused)menu._setFocus(focused,{snap:true});
   };render();
   if(nearSession){
@@ -202,6 +329,32 @@ export function objectiveResults(menu,screen,context){
   el.querySelectorAll('.iw-res__cover,.iw-xp,.iw-res__medals,.iw-res__tag').forEach(n=>n.remove());
   const summary=h('div',{class:'iw-panel chog-objective-summary iw-in iw-in--up'},h('div',{class:'iw-seclabel'},r.mode==='control'?'FINAL SCORE':'DAILY CHALLENGE'),h('b',{class:'iw-display'},r.mode==='control'?`${Math.floor(r.scores[0])} — ${Math.floor(r.scores[1])}`:String(r.score||0)),h('p',null,r.mode==='trials'?`${r.completed?'Completed':'Not completed'} · ${r.challenge?.id||r.challenge?.name||''}`:'First to 100 · Three stations'));
   el.querySelector('.iw-res__head').append(summary);
+  const practiceCup=runtime.match.opts.practiceCup;
+  const onlineCup=runtime.session?.room.config.cup;
+  if(practiceCup){
+    recordCupRound(practiceCup,r);
+    const total=cupTime(practiceCup);
+    summary.append(h('h3',null,'PLAZA CUP PRACTICE'),h('ol',null,practiceCup.results.map(round=>
+      h('li',null,round.elapsedMs===null?'Did not finish':(round.elapsedMs/1000).toFixed(2)+'s'))));
+    if(practiceCup.results.length===CUP_ROUNDS){
+      summary.append(h('p',null,total===null?'Cup incomplete':`Total: ${(total/1000).toFixed(2)}s`));
+    }else{
+      summary.append(menu._btn({id:'next-cup-round',label:'NEXT ROUND',cls:'iw-btn--small',accept:()=>{
+        if(menu._cupStarting)return;
+        menu._cupStarting=true;
+        Promise.resolve(menu.api.startMatch({mode:'trials',practiceCup}))
+          .catch(error=>menu.toast(error.message)).finally(()=>{menu._cupStarting=false;});
+      }}));
+    }
+  }
+  if(onlineCup){
+    summary.append(h('p',null,`Plaza Cup · Round ${onlineCup.round}/${CUP_ROUNDS}`));
+    summary.append(menu._btn({id:'cup-results-standings',label:'VIEW STANDINGS',cls:'iw-btn--small',accept:async()=>{
+      await runtime.leave();
+      menu.show('chooseModes');
+      openCupStandings(menu,onlineCup.day);
+    }}));
+  }
   if(r.mode==='trials'&&runtime.ghostTrace&&r.completed){
     const delta=runtime.ghostDelta;
     summary.append(h('p',null,Number.isFinite(delta)?Math.abs(delta).toFixed(2)+'s '+
@@ -218,7 +371,7 @@ export function objectiveResults(menu,screen,context){
   const rewards=menu.chogWallet?.rewards,tokenId=menu._identity?.nft?.tokenId,session=rewards?.token;
   let pollTimer=null,closed=false;const oldDestroy=screen.destroy;
   screen.destroy=()=>{closed=true;clearTimeout(pollTimer);oldDestroy?.call(screen);};
-  if(session&&tokenId!=null&&r.roundId){
+  if(!practiceCup&&!onlineCup&&session&&tokenId!=null&&r.roundId){
     const status=h('p',{class:'iw-modal__text',role:'status'},'Checking onchain record…');summary.append(status);
     const active=()=>!closed&&rewards.token===session;
     const poll=async()=>{

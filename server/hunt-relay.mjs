@@ -6,10 +6,14 @@ import {objectiveFromNft} from '../src/game/chog-objectives.js';
 import {nearWorkshopProgress} from '../src/economy/specializations.js';
 import {closeMatchRewards} from './near/match-reward-closure.mjs';
 import {roomRewardStatus} from './near/room-reward-status.mjs';
+import {createCupBrackets} from './near/event-bracket.mjs';
+import {sampleHuntReplay} from './near/replay-service.mjs';
 import http from 'node:http';import {randomUUID,randomInt,randomBytes}from 'node:crypto';import{pathToFileURL}from 'node:url';
 const WEAPONS=['shooter','twins','spinner','charger','blaster'],NFTS=['varsity','1462','0697','1070','1055'];
-export function createHuntRelay({now=Date.now,ttl=60000,economy=null,runner=null,maintenance=false,nearAuth=null,readNft=readNearFox,nearResults=null,nearRoutes=null,nearUsage=null,nearPassport=null,nearFixedRewards=null}={}){
+export function createHuntRelay({now=Date.now,ttl=60000,economy=null,runner=null,maintenance=false,nearAuth=null,readNft=readNearFox,nearResults=null,nearRoutes=null,nearUsage=null,nearPassport=null,nearFixedRewards=null,nearReplay=null,cupDatabase=null,hostedPractice=false}={}){
  const rooms=new Map();
+ const brackets=createCupBrackets({now,database:cupDatabase});
+ const closeCup=(r,result)=>r.cup&&brackets.closeRound({...r.cup,matchId:r.roundId,result});
  const nearProfile=async(account,id,mode)=>{
   if(!id)return {nftImage:null,canCarry:false,nftTokenId:null,nftContract:null,objectiveNft:null,
    workshopProgress:nearWorkshopProgress(null,nearPassport?.rank(account))};
@@ -20,8 +24,8 @@ export function createHuntRelay({now=Date.now,ttl=60000,economy=null,runner=null
    workshopProgress:nearWorkshopProgress(key,nearPassport?.rank(account),
     nearPassport?.gameplayCareer?await nearPassport.gameplayCareer(key):nearPassport?.tokenCareer(key))};
  };
- const publicRoom=r=>({code:r.code,phase:r.phase,config:r.config,roster:r.roster?.map(({nearWallet,...actor})=>actor),roundId:r.roundId,go:r.go,closed:r.closed,verified:r.verified,nearAuthoritative:!!r.nearAuthoritative,rewardStatus:roomRewardStatus(nearFixedRewards,r),authority:r.authority,simulation:r.simulation||null,players:[...r.players.values()].map(p=>({id:p.id,name:p.name,host:p.id===r.host,ready:p.ready,loaded:p.loaded,nftImage:p.nftImage,nft:p.nft,weapon:p.weapon})),host:r.host});
- const close=(r,reason)=>{if(r.closed)return;closeMatchRewards(nearFixedRewards,r);r.closed=reason;if(r.roundId)nearUsage?.finishMatch(r.roundId);if(r.verified)economy.ledger.abort(r);runner?.close(r.code);};
+ const publicRoom=r=>({code:r.code,phase:r.phase,config:r.config,roster:r.roster?.map(({nearWallet,...actor})=>actor),roundId:r.roundId,go:r.go,closed:r.closed,verified:r.verified,nearAuthoritative:!!r.nearAuthoritative,hostedPractice:hostedPractice&&!r.verified,rewardStatus:roomRewardStatus(nearFixedRewards,r),authority:r.authority,simulation:r.simulation||null,players:[...r.players.values()].map(p=>({id:p.id,name:p.name,host:p.id===r.host,ready:p.ready,loaded:p.loaded,nftImage:p.nftImage,nft:p.nft,weapon:p.weapon})),host:r.host});
+ const close=(r,reason)=>{if(r.closed)return;closeCup(r);closeMatchRewards(nearFixedRewards,r);r.closed=reason;if(r.roundId)nearUsage?.finishMatch(r.roundId);if(r.verified)economy.ledger.abort(r);runner?.close(r.code);};
  const clean=()=>{for(const [code,r]of rooms){for(const [id,p]of r.players)if(now()-p.seen>(r.phase==='loading'?180000:ttl)){r.players.delete(id);if(id===r.host&&!r.verified)close(r,'Host disconnected');}if((r.verified||r.nearAuthoritative)&&r.phase!=='queued'&&r.simulator&&!r.finished&&now()-r.simulator.seen>(r.phase==='loading'?180000:ttl))close(r,'Match server disconnected');if(!r.players.size)close(r,'Room closed');if(!r.players.size||r.closed&&now()-r.updated>ttl)rooms.delete(code);}};
  const server=http.createServer(async(req,res)=>{
   res.setHeader('Access-Control-Allow-Origin','*');res.setHeader('Access-Control-Allow-Headers','Content-Type,Authorization');res.setHeader('Access-Control-Allow-Methods','POST,OPTIONS');res.setHeader('Cache-Control','no-store');if(req.method==='OPTIONS'){res.writeHead(204);res.end();return;}
@@ -31,6 +35,7 @@ export function createHuntRelay({now=Date.now,ttl=60000,economy=null,runner=null
   try{clean();if(nearRoutes&&req.method==='GET'){const routed=await nearRoutes({method:req.method,url:req.url,headers:req.headers});if(routed)return reply(routed.status,routed.data);}if(req.method!=='POST')return reply(405,{error:'POST required'});let raw='';for await(const chunk of req){raw+=chunk;if(raw.length>1200000)throw Error('Payload too large');}const b=JSON.parse(raw||'{}'),action=req.url.slice(1);
    if(nearRoutes&&action.startsWith('near/')){const routed=await nearRoutes({method:req.method,url:req.url,headers:req.headers,body:b});if(routed)return reply(routed.status,routed.data);}
    if(action==='capacity')return reply(200,runner?.status?.()||{maxConcurrent:0,maxQueued:0,active:0,queued:0});
+   if(action==='plaza-cup/status')return reply(200,{available:!!(nearResults&&runner),...brackets.status(b.day)});
    if(action.startsWith('near-auth/')){if(!nearAuth)throw Error('NEAR sign-in is unavailable');return reply(200,await nearAuth.handle(action.slice(10),b,req.headers.origin));}
    if(action.startsWith('rewards/')){if(!economy)throw Error('Reward service unavailable');return reply(200,await economy.handle(action.slice(8),b,req));}
    let r=rooms.get(String(b.code||'').toUpperCase());
@@ -50,7 +55,10 @@ export function createHuntRelay({now=Date.now,ttl=60000,economy=null,runner=null
    if(action==='join'){if(r.phase!=='lobby')throw Error('Match already started');if(r.players.size>=6)throw Error('Room is full');const p=await roomProfile(r.verified);if(r.phase!=='lobby'||r.players.size>=6)throw Error('Room is no longer open');if(p.nearWallet&&[...r.players.values()].some(player=>player.nearWallet===p.nearWallet))throw Error('Wallet already joined this room');r.players.set(p.id,p);return reply(200,{id:p.id,token:p.token,room:publicRoom(r)});}
    const token=req.headers.authorization?.replace(/^Bearer /,'');const p=[...r.players.values(),...(r.simulator?[r.simulator]:[])].find(p=>p.token===token);if(!p)return reply(401,{error:'Invalid room session'});p.seen=now();r.updated=now();
    if(action==='leave'){r.players.delete(p.id);if(p.id===r.host&&!r.verified)close(r,'Host left the room');if(r.verified&&p.id===r.host&&r.players.size)r.host=r.players.keys().next().value;if(!r.players.size)close(r,'Room closed');return reply(200,{ok:true});}
-   if(action==='settings'){if(p.id!==r.host||r.phase!=='lobby')throw Error('Only host can edit lobby settings');if(typeof b.mapId==='string'&&/^[a-z-]{2,30}$/.test(b.mapId))r.config.mapId=b.mapId;r.config.time=b.time==='dusk'?'dusk':'day';if(['boss','hunt','control','trials'].includes(b.mode))r.config.mode=b.mode;if(r.config.mode==='trials'){r.config.mapId='tidewater';r.config.time='day';r.config.difficulty='normal';}}
+   if(action==='settings'){if(p.id!==r.host||r.phase!=='lobby')throw Error('Only host can edit lobby settings');if(typeof b.mapId==='string'&&/^[a-z-]{2,30}$/.test(b.mapId))r.config.mapId=b.mapId;r.config.time=b.time==='dusk'?'dusk':'day';if(['boss','hunt','control','trials'].includes(b.mode))r.config.mode=b.mode;if(r.config.mode==='trials'){r.config.mapId='tidewater';r.config.time='day';r.config.difficulty='normal';}
+    if(b.cup===true){if(r.verified||r.config.mode!=='trials'||!runner||!nearResults||!p.nearWallet)throw Error('Plaza Cup requires a verified NEAR session and an available simulator.');r.cupRequested=true;r.cupDay=typeof b.cupDay==='string'?b.cupDay:undefined;}
+    else{r.cupRequested=false;delete r.cupDay;}
+   }
    if(action==='ready'){if(r.phase==='lobby')p.ready=!!b.ready;else if(r.phase==='loading')p.loaded=true;else if(r.phase==='queued')throw Error('Waiting for a match slot');}
    if(action==='start'){if(p.id!==r.host||r.phase!=='lobby'||r.starting)throw Error('Only host can start an idle lobby');if([...r.players.values()].some(p=>!p.ready))throw Error('Waiting for players to ready up');r.starting=true;try{if(r.config.mode==='trials'){if(r.players.size!==1)throw Error('Daily Trials is solo');r.config.challenge=dailyChallenge(new Date(now()).toISOString().slice(0,10));r.config.duration=r.config.challenge.duration;}for(const q of r.players.values()){if(q.wallet)Object.assign(q,await economy.nftProfile(q.wallet,q.nftTokenId));else if(q.nearWallet)Object.assign(q,await nearProfile(q.nearWallet,q.nftTokenId,r.config.mode||'hunt'));}for(const q of r.players.values()){const nft={...q.objectiveNft,contract:q.nftContract,tokenId:q.nftTokenId},progress=q.workshopProgress??{identity:workshopIdentity(nft),wins:q.raidWins||0};q.workshopSkill=r.config.mode==='trials'?defaultWorkshopSkill(nft):q.requestedWorkshop?validateWorkshopSkill(q.requestedWorkshop,nft,progress):defaultWorkshopSkill(nft);}
     r.roundId=randomUUID();r.nearAuthoritative=!!(!r.verified&&nearResults&&runner&&[...r.players.values()].every(player=>player.nearWallet));r.roster=[...r.players.values()].map((p,i)=>({nid:i,owner:p.id,wallet:p.wallet,nearWallet:p.nearWallet,canCarry:p.canCarry,nftContract:p.nftContract,nftTokenId:p.nftTokenId,objectiveNft:p.objectiveNft,raidWins:p.raidWins||0,workshopSkill:p.workshopSkill,workshopProgress:p.workshopProgress,raidSkill:p.raidSkill==='workshop'&&p.workshopSkill?'workshop':raidSkills(p.raidWins||0).some(s=>s.id===p.raidSkill)?p.raidSkill:'trait',name:p.name,weapon:p.weapon,style:{chogNft:p.nft},balance:p.balance,level:p.level,bot:false,team:i<3?0:1,slot:i%3}));while(r.roster.length<(r.config.mode==='trials'?1:6)){const i=r.roster.length;r.roster.push({nid:i,owner:r.host,name:['Pip','Nori','Kelp','Fizz','Coral','Moxie'][i],weapon:WEAPONS[i%5],style:{chogNft:NFTS[i%5]},balance:0,canCarry:true,bot:true,team:i<3?0:1,slot:i%3});}
@@ -59,6 +67,13 @@ export function createHuntRelay({now=Date.now,ttl=60000,economy=null,runner=null
     if((r.config.mode||'hunt')==='hunt'&&!r.roster.some(q=>q.canCarry))throw Error('At least one player must own a Chog NFT to play as Carrier');
     if(r.verified){if(r.config.mode==='boss')for(const q of r.roster)if(q.wallet)q.raidStakeNonce=await economy.raidPool?.entry(q.wallet,q.nftTokenId)||null;const capacity=runner.status?.();if(capacity&&capacity.active>=capacity.maxConcurrent&&capacity.queued>=capacity.maxQueued)throw Error('Match queue is full. Please try again shortly.');economy.ledger.start(r);}
     if(r.verified||r.nearAuthoritative){r.simulator={id:randomUUID(),token:randomBytes(32).toString('hex'),seen:now(),loaded:false};r.authority=r.simulator.id;}
+    if(r.cupRequested){
+     if(!r.nearAuthoritative||r.players.size!==1)throw Error('Each Cup round requires one authenticated runner.');
+     const cup=brackets.reserve(p.nearWallet,p.name,r.roundId,r.cupDay);
+     r.cup={day:cup.day,account:p.nearWallet};
+     r.config.cup={day:cup.day,round:cup.round};
+     r.config.challenge=cup.challenge;r.config.duration=cup.challenge.duration;
+    }
     r.phase=(r.verified||r.nearAuthoritative)&&runner.status?'queued':'loading';r.go=false;for(const q of r.players.values())q.loaded=false;
     if(r.verified||r.nearAuthoritative)runner.launch(r,publicRoom(r),{onState:state=>{r.simulation=state;if(state.state==='starting'&&!r.closed&&r.phase==='queued'){r.phase='loading';r.simulator.seen=now();r.updated=now();}},onFailure:e=>close(r,'Simulation failed: '+e.message)}).catch(e=>close(r,'Simulation failed: '+e.message));
     }catch(error){if(r.phase==='lobby'&&r.roundId)nearUsage?.finishMatch(r.roundId);throw error;}finally{r.starting=false;}
@@ -68,8 +83,20 @@ export function createHuntRelay({now=Date.now,ttl=60000,economy=null,runner=null
     if(p.input){const m=p.input.move,k=Math.max(1,Math.hypot(m[0]||0,m[2]||0));p.input.move=[(m[0]||0)/k,0,(m[2]||0)/k];}
     if(['buy','raid-skill','workshop-skill'].includes(b.command)&&r.phase==='playing'&&!r.commands.some(c=>c.id===p.id))r.commands.push({id:p.id,type:b.command});
     if(b.snapshot&&p.id!==r.authority)throw Error('Only the match authority can publish snapshots');
+    if(nearReplay&&b.snapshot&&r.phase==='playing'&&p===r.simulator&&!r.finished)sampleHuntReplay(r,b.snapshot);
     if(p.id===r.authority&&b.snapshot&&r.phase==='playing'){if(r.verified){economy.ledger.observe(r,b.snapshot);if(b.snapshot.core?.phase==='finished'){economy.nftXP?.wake();economy.modeRegistry?.wake();}}if(r.nearAuthoritative&&p===r.simulator&&b.snapshot.core?.phase==='finished'&&!r.finished){
+ if(r.cup){
+  const result=b.snapshot.core.result;
+  if(result?.players?.length!==1||result.players[0].id!=='hunt-0')throw Error('Invalid Plaza Cup actor.');
+  closeCup(r,result.players[0].left?null:result);
+ }
+ else {
  const results = nearResults.record(r,b.snapshot);
+ if(nearReplay&&r.huntReplayFrames?.length){
+  try{nearReplay.record(r,r.huntReplayFrames);}
+  catch(error){console.error('Could not save Hunt replay',error.message);}
+  finally{delete r.huntReplayFrames;}
+ }
  if (nearFixedRewards && r.fixedReservations) {
   for (const result of results) {
    const id = r.fixedReservations.get(result.accountId);
@@ -78,6 +105,7 @@ export function createHuntRelay({now=Date.now,ttl=60000,economy=null,runner=null
    else nearFixedRewards.complete(id, {finishedAt:result.finishedAt,resultHash:result.resultHash})
     .catch(error=>console.error('Fixed result settlement pending',error.message));
   }
+ }
  }
 }r.snapshot=b.snapshot;r.seq++;if(b.snapshot.core?.phase==='finished'&&!r.finished){r.finished=true;nearUsage?.finishMatch(r.roundId);if(r.verified||r.nearAuthoritative)setTimeout(()=>runner.close(r.code),1500);}}
    }
@@ -96,7 +124,7 @@ export function createHuntRelay({now=Date.now,ttl=60000,economy=null,runner=null
        if (r.closed) throw Error(r.closed);
       }
      }
-     if (nearFixedRewards && r.nearAuthoritative && ['boss', 'trials'].includes(r.config.mode)) {
+     if (nearFixedRewards && !r.cup && r.nearAuthoritative && ['boss', 'trials'].includes(r.config.mode)) {
      r.fixedReservations ??= new Map();
      for (const player of r.roster.filter(row => row.nearWallet && !row.bot)) {
       if (!r.fixedReservations.has(player.nearWallet)) {

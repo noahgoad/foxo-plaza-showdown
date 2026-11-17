@@ -10,7 +10,7 @@ import { openNearRanking } from './near-ranking-ui.js';
 import { craftingScreen } from './near-crafting-ui.js';
 import { watchProfessionUnlock } from './near-profession-ui.js';
 import { dailyChallenge } from '../game/objective-rules.js';
-import { foxEconomyScreen, modeChooserScreen, openSkillWorkshop, modeName, objectivePause, objectiveResults } from './objective-mode-ui.js';
+import { foxEconomyScreen, modeChooserScreen, plazaCupScreen, openSkillWorkshop, modeName, objectivePause, objectiveResults } from './objective-mode-ui.js';
 import { loadWorkshopSkill } from '../game/skill-workshop.js';
 import {mountRaidLobby,adaptRaidResults} from './boss-raid-ui.js';
 import {HuntRoomSession} from '../net/hunt-room.js';
@@ -26,6 +26,7 @@ import { HUNT_RULE_ART } from './hunt-rule-art.js';
 import { WIPE } from './menu-art.js';
 import { replaceSquidIcons, chogMonoIcon, huntStatIcons, bossStatIcons } from './chog-icons.js';
 import { NearWalletUI } from './near-wallet-ui.js';
+import { foxoProductEvent } from '../game/foxo-product-telemetry.js';
 import { HUNT_WEAPONS,HUNT_WEAPON_ORDER,weaponArt,weaponMarkup } from './hunt-arsenal.js';
 const PORTRAIT = new URL('../../assets/near-fox/foxo-token-icon.png', import.meta.url).href;
 const LOGO = new URL('../../assets/near-fox/foxo-plaza-showdown-logo.png', import.meta.url).href;
@@ -101,9 +102,20 @@ export class Menus extends OriginalMenus {
     const aliases={room:'lobby',nft:'locker',preview:'setup',mode:'lobby'};
     name=aliases[name]||name;
     if(['locker','loadout'].includes(name)&&name!==this.current){const origin=['main','lobby','online','pause'].includes(this.current)?this.current:'main';if(name==='locker')this._nftReturn=origin;else this._loadoutReturn=origin;}
-    if(!['loading','title','main','online','chooseModes','foxEconomy','economyCosmetics','economyNfts','economyOrders','economyGuild','economyActivity','economyRanking','nearBossPool','foxPassport','skillWorkshop','crafting','loadout','lobby','locker','settings','howto','setup','pause','results',null].includes(name))name='main';
+    if(!['loading','title','main','online','chooseModes','plazaCup','foxEconomy','economyCosmetics','economyNfts','economyOrders','economyGuild','economyActivity','economyRanking','nearBossPool','foxPassport','skillWorkshop','crafting','loadout','lobby','locker','settings','howto','setup','pause','results',null].includes(name))name='main';
     if(name!=='setup'&&G.hud?.setHuntPreview)G.hud.setHuntPreview(null);
     super.show(name,opts);
+    const track=(event,details)=>foxoProductEvent(event,{identity:this._identity,...details});
+    if(['loading','title','main'].includes(name)&&!this._metricsLanded){this._metricsLanded=true;track('landing');}
+    if(name==='main'&&!this._metricsInteractive){this._metricsInteractive=true;track('interactive');}
+    if(name==='foxEconomy')track('economy_opened');
+    const match=G.match;
+    if(name==='results'&&match?.telemetryStarted&&!match.telemetryCompleted){
+      match.telemetryCompleted=true;
+      const details={context:match.opts.huntRoom?'online':'practice',mode:match.mode};
+      track('match_completed',details);
+      if(match.opts.huntTutorial)track('tutorial_completed',details);
+    }
     this.el.querySelectorAll('.iw-corner').forEach(n=>{if(/^v\d+\.\d+/.test(n.textContent.trim()))n.remove();});
   }
   _logo(el){
@@ -166,8 +178,8 @@ export class Menus extends OriginalMenus {
   _scr_economyCosmetics(){return economyPage(this, 'COSMETIC MARKET', openNearSales);}
   _scr_economyNfts(){return economyPage(this, 'FOX NFT MARKET', openNearMarket);}
   _scr_economyOrders(){return economyPage(this, 'BUY ORDERS', openNearOrders);}
-  _scr_economyGuild(){return economyPage(this, 'GUILD PROJECTS', openNearGuild);}
-  _scr_economyActivity(){return economyPage(this, 'ECONOMY ACTIVITY', openEconomyStatus);}
+  _scr_economyGuild(){return economyPage(this, 'GUILD', openNearGuild);}
+  _scr_economyActivity(){return economyPage(this, 'PLAYER DESK', openEconomyStatus);}
   _scr_foxPassport(){return economyPage(this, 'FOX PASSPORT', (menu,back,host)=>openNearPassport(menu,this._passportNft,back,host));}
   _scr_skillWorkshop(){return economyPage(this, 'SKILL WORKSHOP', openSkillWorkshop);}
   _scr_nearBossPool(){return economyPage(this, 'FOXO BOSS POOL', openNearPool);}
@@ -175,6 +187,7 @@ export class Menus extends OriginalMenus {
   _scr_foxEconomy(){return foxEconomyScreen(this);}
   _scr_crafting(){return craftingScreen(this);}
   _scr_chooseModes(){return modeChooserScreen(this);}
+  _scr_plazaCup(){return plazaCupScreen(this);}
   _scr_online(){
     const s=super._scr_online();s.el.classList.add('chog-online');
     remove(s.el,'.iw-lchip,.iw-stag__title,.iw-stag__num,.iw-stag__lv');
@@ -212,7 +225,12 @@ export class Menus extends OriginalMenus {
   }
   _scr_lobby(){
     const s=super._scr_lobby();s.destroy?.(); // Release legacy lobby listeners; keep its rendered components.
-    const el=s.el;const raid=this._lobbyKind==='boss'||this.huntRoom?.room?.config?.mode==='boss'&&this._lobbyKind==='private';const objective=['control','trials'].includes(this._lobbyKind)?this._lobbyKind:null;const matchMode=objective||(raid?'boss':'hunt');const quick=this._lobbyKind!=='private';el.classList.add('chog-hunt-lobby','is-host');if(quick)el.classList.add('chog-quickplay');if(objective==='trials'){this._huntMap=Math.max(0,this._maps().findIndex(m=>m.id==='tidewater'));this._huntTime='day';}
+    const el=s.el;const quick=this._lobbyKind!=='private';
+    const selectedMode=quick?this._lobbyKind:this.huntRoom?.room?.config.mode;
+    const raid=selectedMode==='boss';
+    const objective=['control','trials'].includes(selectedMode)?selectedMode:null;
+    const matchMode=objective||(raid?'boss':'hunt');
+    el.classList.add('chog-hunt-lobby','is-host');if(quick)el.classList.add('chog-quickplay');if(objective==='trials'){this._huntMap=Math.max(0,this._maps().findIndex(m=>m.id==='tidewater'));this._huntTime='day';}
     remove(el,'.iw-lob__modelbl,.iw-lset--pal,.iw-lset--bots,.iw-lset--diff,.iw-lob__modearrows,.iw-lob__beta,.iw-lob__bossvs,.iw-lob__team,.iw-lob__emote,.iw-lob__lchip,.iw-lob__plates,.iw-lcd,.iw-prompts,.iw-lock,.iw-btn--lobstart,.iw-rc__copied');
     el.querySelector('.iw-lob__modename').textContent=objective?modeName(objective):raid?'BOSS BATTLE':'TRAIT HUNT';
     // A stepped, bevelled dock replaces the original wavy paint band.
@@ -224,7 +242,7 @@ export class Menus extends OriginalMenus {
       const mask=`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 150" preserveAspectRatio="none"><path fill="white" d="${edge}"/></svg>`;
       band.style.setProperty('--chog-band-mask',`url("data:image/svg+xml,${encodeURIComponent(mask)}")`);
     }
-    const count=el.querySelector('.iw-lob__count');count.replaceChildren(h('small',{class:'iw-lob__countlbl'},'PLAYERS'),h('b',null,'1'),h('small',null,'/6'));
+    const count=el.querySelector('.iw-lob__count');count.replaceChildren(h('small',{class:'iw-lob__countlbl'},'PLAYERS'),h('b',null,'1'),h('small',null,objective==='trials'?'/1':'/6'));
     el.querySelector('.iw-lob__teams').replaceChildren(h('div',{class:'chog-room-pips'},this._roomSlots()));
     el.querySelector('.iw-lob__statustxt').textContent='Room draft · multiplayer connection pending';
     el.querySelector('.iw-rc__share').textContent='A room code is issued when Trait Hunt connects.';
@@ -263,6 +281,41 @@ export class Menus extends OriginalMenus {
     const weapon=el.querySelector('.iw-lob__wchip');this._binds.get(weapon).accept=()=>this._gunModal();if(raid)mountRaidLobby(this,el);if(objective==='trials'){stage.querySelector('.iw-lstage__arrows').hidden=true;timeRow.style.pointerEvents='none';timeRow.setAttribute('aria-disabled','true');}
     const ready=el.querySelector('.iw-btn--ready');ready.classList.remove('is-hidden');ready.style.display='';ready.querySelector('.iw-btn__label').textContent=quick?(objective?'START '+modeName(objective):raid?'START BOSS':'START HUNT'):'READY?';ready.querySelector('.iw-btn__sub').textContent=quick?(isNearWalletPlayer(this._identity)?'Server-recorded · Rewards require confirmed reservation':'Local practice · No on-chain rewards'):'Private room · Bots fill empty slots';this._binds.get(ready).accept=()=>{if(!this.chogWallet.requirePlayer()||this._nearQuickPending)return;this._press(ready);if(quick&&isNearWalletPlayer(this._identity)){ready.disabled=true;startNearQuickPlay(this,{mode:matchMode,mapId:this._maps()[this._huntMap].id,time:this._huntTime},menu=>new HuntRoomSession(menu),()=>el.isConnected&&this.current==='lobby').catch(e=>this.toast(e.message));}else if(quick){this.api.startMatch({mode:matchMode,raidSkill:localStorage.getItem('chog.raid.skill:'+this._identity?.nft?.tokenId)||'trait',workshopSkill:loadWorkshopSkill(localStorage,this._identity?.nft),mapId:this._maps()[this._huntMap].id,time:this._huntTime});}else{const room=this.huntRoom;if(!room)return;const act=room.isOwner?room.settings(this._maps()[this._huntMap].id,this._huntTime,matchMode).then(()=>room.start()):room.ready();act.catch(e=>this.toast(e.message));}};
     el.querySelector('.iw-lob__you').append(this._matchNftButton());
+    let updatePartyButton;
+    if(!quick){
+      const setMode=async mode=>{
+        const session=this.huntRoom;
+        if(!session?.isOwner||session.room.phase!=='lobby'||this._partyModePending)return;
+        if(mode==='trials'&&session.room.players.length>1){this.toast('Daily Trials is solo. Choose a group mode for this party.');return;}
+        this._partyModePending=true;ready.disabled=true;
+        try{
+          await session.settings(this._maps()[this._huntMap].id,this._huntTime,mode);
+          if(this.huntRoom===session&&el.isConnected)this.show('lobby',{force:true,wipe:false});
+        }catch(error){this.toast(error.message);}
+        finally{
+          this._partyModePending=false;
+          if(el.isConnected&&this.huntRoom===session)ready.disabled=session.room.phase!=='lobby'||session.room.players.some(player=>!player.ready);
+        }
+      };
+      const pick=this._btn({id:'party-switch-mode',label:'SWITCH MODE',sub:'Keep this room and its code',cls:'iw-btn--small',accept:()=>{
+        this._openModal({title:'PARTY MODE',text:'Choose what your party will play.',buttons:[
+          ...[['hunt','TRAIT HUNT'],['boss','BOSS BATTLE'],['control','TRAIT CONTROL'],['trials','DAILY TRIALS']].map(([mode,label])=>({label,accept:()=>{
+            this._closeModal();void setMode(mode);
+          }})),
+          {label:'BACK',accept:()=>this._closeModal()},
+        ]});
+      }});
+      el.querySelector('.iw-lob__you').append(pick);
+      updatePartyButton=()=>{pick.hidden=!this.huntRoom?.isOwner;pick.disabled=!!this._partyModePending||this.huntRoom?.room?.phase!=='lobby';};
+      updatePartyButton();
+    }
+    if(quick&&matchMode==='hunt'){
+      const practice=this._btn({id:'hunt-first-practice',label:'90-SECOND PRACTICE',sub:'Capture the Carrier and inherit their traits',cls:'iw-btn--small',accept:()=>{
+        if(this._nearQuickPending||this._startingReward)return;
+        this.api.startMatch({mode:'hunt',duration:90,huntTutorial:true,mapId:this._maps()[this._huntMap].id,time:this._huntTime});
+      }});
+      el.querySelector('.iw-lob__you').append(practice);
+    }
     const leaveLobby=()=>{
       this.huntRoom?.leave();
       if(objective&&this._stack.at(-2)==='chooseModes')this.show('chooseModes',{pop:true,back:true});
@@ -275,20 +328,22 @@ export class Menus extends OriginalMenus {
     let roomSignature;const roomTick=()=>{const session=this.huntRoom,room=session?.room,pending=!!this._nearQuickPending||!!room&&!session.closed&&['queued','loading'].includes(room.phase);waiting.hidden=!pending;
      if(pending)waiting.querySelector('b').textContent=this._nearQuickPending?'Connecting to the match server…':room.phase==='queued'?`Waiting for a match · Queue position ${room.simulation?.position||1}`:'Preparing your match…';
      if(quick){ready.disabled=pending||!!this._startingReward;ready.querySelector('.iw-btn__label').textContent=pending?'PLEASE WAIT':objective?'START '+modeName(objective):raid?'START BOSS':'START HUNT';return;}
-     if(!room)return;const signature=JSON.stringify([room,this._huntMap,this._huntTime]);if(signature===roomSignature)return;roomSignature=signature;
+     if(!room)return;
+     if(!session.isOwner&&room.phase==='lobby'&&(room.config.mode||'hunt')!==matchMode){this.show('lobby',{force:true,wipe:false});return;}
+     const signature=JSON.stringify([room,this._huntMap,this._huntTime]);if(signature===roomSignature)return;roomSignature=signature;
      el.classList.toggle('is-host',session.isOwner);count.querySelector('b').textContent=room.players.length;
      el.querySelector('.chog-room-pips').replaceChildren(...this._roomSlots(room.players,session.id));
      el.querySelector('.iw-rc__tiles').replaceChildren(...[...room.code].map(c=>h('span',{class:'iw-rc__tile'},c)));
      el.querySelector('.iw-rc__share').textContent='Share this code · ONLINE > JOIN A ROOM';
      el.querySelector('.iw-lob__statustxt').textContent=room.phase==='loading'?'Loading players…':`${room.players.length} connected`;
      ready.querySelector('.iw-btn__label').textContent=session.isOwner?(objective?'START '+modeName(objective):raid?'START BOSS':'START HUNT'):room.players.find(p=>p.id===session.id)?.ready?'NOT READY':'READY';
-     ready.disabled=room.phase!=='lobby'||session.isOwner&&room.players.some(p=>!p.ready);
+     ready.disabled=!!this._partyModePending||room.phase!=='lobby'||session.isOwner&&room.players.some(p=>!p.ready);
      stage.style.pointerEvents=session.isOwner&&room.phase==='lobby'?'':'none';timeRow.style.pointerEvents=session.isOwner&&room.phase==='lobby'?'':'none';
      if(!session.isOwner){const index=this._maps().findIndex(m=>m.id===room.config.mapId);if(index>=0&&index!==this._huntMap||this._huntTime!==room.config.time){this._huntMap=Math.max(0,index);this._huntTime=room.config.time;refresh();}}
-     else if(room.phase==='lobby'){const cfg=this._maps()[this._huntMap].id+':'+this._huntTime;if(session._settings!==cfg){session._settings=cfg;session.settings(this._maps()[this._huntMap].id,this._huntTime).catch(e=>this.toast(e.message));}}
+     else if(room.phase==='lobby'&&!this._partyModePending){const cfg=this._maps()[this._huntMap].id+':'+this._huntTime;if(session._settings!==cfg){session._settings=cfg;session.settings(this._maps()[this._huntMap].id,this._huntTime).catch(e=>this.toast(e.message));}}
     };
     roomTick();
-    return {el,initial:stage,wrap:true,tick:roomTick,onBack:leaveLobby,destroy:()=>{const input=quickName?.nameRow._input;if(input&&document.activeElement===input)input.blur();timers.forEach(clearTimeout);}};
+    return {el,initial:stage,wrap:true,tick:()=>{updatePartyButton?.();roomTick();},onBack:leaveLobby,destroy:()=>{const input=quickName?.nameRow._input;if(input&&document.activeElement===input)input.blur();timers.forEach(clearTimeout);}};
   }
   _previewStage(){this.api.previewHuntMap?.(this._maps()[this._huntMap].id,this._huntTime).catch(e=>this.toast(e.message));}
   _gunModal(screen='lobby'){this._loadoutReturn=screen;this._go('loadout');}

@@ -365,6 +365,10 @@ impl Economy {
         self.orders.orders.get(&order_id)
     }
 
+    pub fn can_fund_material_order(&self, account_id: AccountId) -> bool {
+        self.orders.enabled && self.material_order_buyer_ready(&account_id)
+    }
+
     pub fn get_order_credit(&self, account_id: AccountId) -> U128 {
         U128(self.orders.credits.get(&account_id).unwrap_or(0))
     }
@@ -384,6 +388,7 @@ impl Economy {
         require!(self.orders.enabled, "Orders are paused");
         let seller = env::predecessor_account_id();
         let mut order = self.get_order(order_id.clone()).expect("Unknown order");
+        require!(order.recipe_version != 0, "Use fill_material_order");
         require!(
             !order.closed && order.remaining > 0 && env::block_timestamp_ms() < order.expires_at_ms,
             "Order is closed"
@@ -414,6 +419,43 @@ impl Economy {
                 "feeAtomic": U128(fee), "netAtomic": U128(net)
             }),
         );
+    }
+
+    #[payable]
+    pub fn fill_material_order(&mut self, order_id: String, quantity: u32) {
+        assert_one_yocto();
+        require!(self.orders.enabled, "Orders are paused");
+        self.mt_assert_enabled();
+        let seller = env::predecessor_account_id();
+        let mut order = self.get_order(order_id.clone()).expect("Unknown order");
+        require!(
+            order.recipe_version == 0 && matches!(order.recipe_id.as_str(), "alloy" | "core" | "catalyst"),
+            "Not a material order"
+        );
+        require!(
+            !order.closed && (1..=order.remaining).contains(&quantity)
+                && env::block_timestamp_ms() < order.expires_at_ms,
+            "Order is closed or quantity is invalid"
+        );
+        require!(seller != order.buyer_id, "Cannot fill your own order");
+        self.mt_move(
+            &seller, &order.buyer_id, &[order.recipe_id.clone()], &[U128(u128::from(quantity))],
+            Some(order_id.clone()),
+        );
+        let gross = order.unit_price.0 * u128::from(quantity);
+        let fee = orders::market_fee(gross);
+        let net = gross - fee;
+        order.remaining -= quantity;
+        order.closed = order.remaining == 0;
+        self.orders.orders.insert(&order_id, &order);
+        self.orders.escrow -= gross;
+        self.orders.credit(&seller, net);
+        orders::collect_market_fee(fee);
+        events::emit("order_filled", near_sdk::serde_json::json!({
+            "orderId": order_id, "materialId": order.recipe_id, "quantity": quantity,
+            "accountId": seller, "amountAtomic": U128(gross), "grossAtomic": U128(gross),
+            "feeAtomic": U128(fee), "netAtomic": U128(net)
+        }));
     }
 
     #[payable]
@@ -552,6 +594,12 @@ impl Economy {
             }) => {
                 let order_id = format!("{sender_id}:{operation_id}");
                 let now = env::block_timestamp_ms();
+                let valid_product = if recipe_version == 0 {
+                    matches!(recipe_id.as_str(), "alloy" | "core" | "catalyst")
+                        && self.material_order_buyer_ready(&sender_id)
+                } else {
+                    self.get_recipe(recipe_id.clone(), recipe_version).is_some()
+                };
                 if !self.orders.enabled
                     || !valid_identifier(&operation_id, 64)
                     || !valid_identifier(&recipe_id, 48)
@@ -561,7 +609,7 @@ impl Economy {
                     || unit_price.0 == 0
                     || unit_price.0.checked_mul(u128::from(quantity)) != Some(amount.0)
                     || self.orders.orders.contains_key(&order_id)
-                    || self.get_recipe(recipe_id.clone(), recipe_version).is_none()
+                    || !valid_product
                 {
                     return amount;
                 }

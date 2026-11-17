@@ -6,6 +6,7 @@ import { verifyEconomyDeployment } from '../economy/near-deployment.js';
 import { economyDeployment } from '../../assets/near-fox/economy-deployment.js';
 import { h } from './ui-util.js';
 import { GLYPHS } from './ui-icons.js';
+import { foxoProductEvent } from '../game/foxo-product-telemetry.js';
 
 export class NearWalletUI extends ChogWalletUI {
   prepareWallet() {
@@ -170,8 +171,11 @@ export class NearWalletUI extends ChogWalletUI {
       this.socialPopup = null;
     };
     channel.onmessage = ({ data }) => {
+      if (!data || (!data.error && (!data.session?.token || !data.session?.profileId))) return;
+      channel.postMessage({received:true});
       cleanup();
       popup.close();
+      window.focus();
       if (data.error) {
         this.menu.toast(data.error, {kind:'error'});
       } else if (!this.menu._identity && data.session?.token && data.session?.profileId) {
@@ -227,15 +231,11 @@ export class NearWalletUI extends ChogWalletUI {
       },
       {
         label: '10 FOXO', icon: `<img src="${FOXO_ICON}" alt="">`,
-        disabled: !foxoReady || !!claims?.storageDeposit, accept: choose('claim_foxo'),
+        disabled: !foxoReady, accept: choose('claim_foxo'),
         sub: !claims ? loading : claims.pending ? 'Transfer in progress' :
           !claims.faucetFunded ? 'Faucet is empty' : !foxoReady ? 'Daily claim on cooldown' :
-          claims.storageDeposit ? 'Register FOXO first' : 'Daily testnet tokens',
+          claims.storageDeposit ? 'Includes FOXO wallet registration' : 'Daily testnet tokens',
       },
-      ...(foxoReady && claims.storageDeposit ? [{
-        label: 'REGISTER FOXO', icon: GLYPHS.check, sub: 'Enable your wallet to receive FOXO',
-        accept: choose('storage_deposit'),
-      }] : []),
     ]);
   }
 
@@ -327,13 +327,28 @@ export class NearWalletUI extends ChogWalletUI {
     const register = method === 'storage_deposit';
     await this.run(async progress => {
       progress('Confirm the transaction in Intear.');
-      const result = await this.intear.signAndSendTransaction({
+      const transaction = {
         signerId: state.address,
         receiverId: register ? NEAR_TESTNET.token : NEAR_TESTNET.claims,
         actions: [this.nearActions.functionCall(method,
           register ? { account_id: state.address, registration_only: true } : {},
           80n * 10n ** 12n, register ? BigInt(state.claims.storageDeposit) : 1n)],
-      });
+      };
+      let result;
+      if (method === 'claim_foxo' && state.claims.storageDeposit) {
+        const [registration, claim] = await this.intear.signAndSendTransactions({ transactions: [{
+          signerId: state.address, receiverId: NEAR_TESTNET.token,
+          actions: [this.nearActions.functionCall('storage_deposit', {
+            account_id: state.address, registration_only: true,
+          }, 30n * 10n ** 12n, BigInt(state.claims.storageDeposit))],
+        }, transaction] });
+        if (typeof registration?.status?.SuccessValue !== 'string' && typeof claim?.status?.SuccessValue !== 'string') {
+          throw new Error('FOXO registration or claim could not be confirmed. Refresh your wallet.');
+        }
+        result = claim;
+      } else {
+        result = await this.intear.signAndSendTransaction(transaction);
+      }
       const success = result?.status?.SuccessValue;
       if (typeof success !== 'string' || (!register && atob(success) !== 'true')) {
         throw new Error('Transfer was not confirmed. Refresh your wallet before trying again.');
@@ -382,6 +397,7 @@ export class NearWalletUI extends ChogWalletUI {
         if (!verified) await this.intear.signOut().catch(() => {});
       }
       await this.refresh();
+      if (verified && epoch === this.epoch) foxoProductEvent('wallet_connected', { identity: this.menu._identity });
     }, false);
   }
 

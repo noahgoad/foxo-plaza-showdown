@@ -99,14 +99,16 @@ export function openNearSales(menu,back,host){
    const fresh=await verifiedSnapshot();if((await fresh.view('get_cosmetic_sale',{sale_id:id}))?.status!=='cancelled')throw new Error('Cancellation is awaiting confirmation.');
    await find();if(active())status.textContent='Listing cancellation confirmed. No FOXO principal was charged.';
   }));
-  else if(snap.enabled&&sale.status==='open'&&!stale&&sale.expiresAtMs>Date.now())detail.append(button('sale-buy-review','REVIEW PURCHASE',async()=>{
+  else if(snap.enabled&&sale.status==='open'&&!stale&&sale.expiresAtMs>Date.now())detail.append(button('sale-buy-review',host?'BUY FOR '+formatFoxo(sale.priceAtomic)+' FOXO':'REVIEW PURCHASE',async()=>{
    if(localStorage.getItem(key)){review(saved(),true);return;}
    const fresh=await verifiedSnapshot(),current=await saleState(fresh,id);
    if(!fresh.enabled)throw new Error('Purchases are paused.');
+   if(host&&(current.sale?.priceAtomic!==sale.priceAtomic||current.version!==version))throw new Error('Listing changed. Reopen it before buying.');
    review(buySaleDraft({economy,token:NEAR_TESTNET.token,buyer:account,operationId:crypto.randomUUID(),saleId:id,sale:current.sale,currentVersion:current.version}));
+   if(host)await submitPrepared();
   }));
  }
- const confirm=button('sale-confirm','CONFIRM IN WALLET',async()=>{
+ async function submitPrepared(){
   const draft=prepared;if(!draft)return;
   const snap=await verifiedSnapshot();
   if(draft.kind==='list'){
@@ -133,13 +135,15 @@ export function openNearSales(menu,back,host){
    if(active())status.textContent='Purchase confirmed by its operation receipt and delivered item ownership.';
   }
   if(!active())return;localStorage.removeItem(key);prepared=null;confirm.disabled=true;quote.textContent='';
- });confirm.disabled=true;
- const reviewList=button('sale-list-review','REVIEW LISTING',async()=>{
+ }
+ const confirm=button('sale-confirm','CONFIRM IN WALLET',submitPrepared);confirm.disabled=true;
+ const reviewList=button('sale-list-review',host?'LIST ITEM':'REVIEW LISTING',async()=>{
   if(localStorage.getItem(key)){review(saved(),true);return;}
   const snap=await verifiedSnapshot(),itemId=itemSelect.value;
   if(!snap.enabled)throw new Error('New listings are paused.');
   const [item,version]=await Promise.all([snap.view('get_item',{item_id:itemId}),snap.view('get_cosmetic_item_version',{item_id:itemId})]);
   review(listingDraft({economy,seller:account,operationId:crypto.randomUUID(),item,transferVersion:version,price:price.value.trim(),expiresAtMs:Date.now()+DAY,storageCharge:snap.charge}));
+  if(host)await submitPrepared();
  });reviewList.disabled=true;
  const discard=button('sale-discard-closed','DISCARD CLOSED REVIEW',async()=>{
   const draft=saved();if(!draft)throw new Error('No saved market operation.');

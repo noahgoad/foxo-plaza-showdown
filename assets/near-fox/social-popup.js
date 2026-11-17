@@ -24,17 +24,34 @@ async function auth(action, data) {
 function report(result) {
   if (!pending) return;
   const page = new URL(pending.returnPage);
+  if (page.origin === location.origin) {
+    deliver(pending.nonce, result);
+    return;
+  }
   page.hash = new URLSearchParams({ nonce: pending.nonce, result: JSON.stringify(result) }).toString();
   location.replace(page.href);
 }
 
+function deliver(nonce, result) {
+  if (!/^[a-f0-9-]{36}$/.test(nonce || '')) throw Error('Invalid sign-in return.');
+  const channel = new BroadcastChannel('fox-social-' + nonce);
+  status.textContent = result.error || 'Returning to the game…';
+  channel.onmessage = ({data}) => {
+    if (data?.received !== true) return;
+    channel.close();
+    window.close();
+    status.textContent = 'You can close this window and return to the game.';
+  };
+  channel.postMessage(result);
+  setTimeout(() => {
+    channel.close();
+    if (!result.error) status.textContent = 'Return to the game. If you are still signed out, try Social Sign-In again.';
+  }, 4000);
+}
+
 try {
   if (params.has('result')) {
-    const channel = new BroadcastChannel('fox-social-' + params.get('nonce'));
-    channel.postMessage(JSON.parse(params.get('result')));
-    channel.close();
-    status.textContent = 'Return to the game.';
-    window.close();
+    deliver(params.get('nonce'), JSON.parse(params.get('result')));
   } else if (params.has('state')) {
     pending = JSON.parse(sessionStorage.getItem(storageKey) || 'null');
     if (!pending || pending.state !== params.get('state')) throw Error('Social sign-in expired. Try again from the game.');
@@ -43,7 +60,6 @@ try {
     status.textContent = 'Finishing sign-in…';
     const session = await auth('social-login', { state: pending.state, key: pending.key, code: params.get('code') });
     report({ session });
-    status.textContent = 'Signed in. Return to the game.';
   } else {
     const returnPage = new URL(params.get('returnPage'));
     const nonce = params.get('nonce');

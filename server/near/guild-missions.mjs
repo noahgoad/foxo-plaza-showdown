@@ -1,10 +1,25 @@
 import { createHash } from 'node:crypto';
 import { guildDeployment } from '../../assets/near-fox/guild-deployment.js';
+import { economyDeployment, guildMissionCodeHashes } from '../../assets/near-fox/economy-deployment.js';
 import { rankingMetricsHash } from './ranking-rubric.mjs';
 import { guildTermsHash } from '../../src/economy/near-guild.js';
 
-const modes = ['boss', 'control', 'trials'];
+const modes = ['hunt', 'boss', 'control', 'trials'];
 const idPattern = /^[a-zA-Z0-9_-]{1,64}$/;
+
+export function describeGuildCampaign(campaign, now) {
+  if (!campaign) return { state:'unfunded' };
+  const details = {
+    remainingAtomic:String(campaign.remaining),
+    perMissionAtomic:String(campaign.maxAward),
+    expiresAt:Number(campaign.closesAtMs),
+  };
+  if (campaign.closed || details.expiresAt <= now) return { state:'closed', ...details };
+  if (BigInt(details.perMissionAtomic) <= 0n || BigInt(details.remainingAtomic) < BigInt(details.perMissionAtomic)) {
+    return { state:'exhausted', ...details };
+  }
+  return { state:'funded', ...details };
+}
 
 export function qualifiesGuildMission(row, { account, mode, acceptedAt, deadline }) {
   try {
@@ -12,7 +27,8 @@ export function qualifiesGuildMission(row, { account, mode, acceptedAt, deadline
     const metric = JSON.parse(row.metric);
     const digest = createHash('sha256').update(JSON.stringify(result)).digest('hex');
     const signals = metric.signals;
-    const expectedVersion = mode === 'control' ? /^near-practice-objective-\d+$/ : new RegExp('^near-authoritative-' + mode + '-1$');
+    const expectedVersion = mode === 'hunt' ? /^near-practice-1$/ : mode === 'control'
+      ? /^near-practice-objective-\d+$/ : new RegExp('^near-authoritative-' + mode + '-1$');
     if (result.matchId !== row.match_id || result.accountId !== account || result.mode !== mode ||
         !expectedVersion.test(result.rulesVersion) || result.left !== false ||
         result.won !== true || resultHash !== digest || row.result_hash !== digest ||
@@ -27,6 +43,7 @@ export function qualifiesGuildMission(row, { account, mode, acceptedAt, deadline
         signals.activeMs < Math.min(12_000, Math.ceil(signals.durationMs / 5))) return null;
     if (mode === 'boss' && !(signals.shieldBreaks > 0 || signals.allyHealing > 0 || signals.allyBlocked > 0)) return null;
     if (mode === 'control' && !(signals.captureMs > 0 || signals.defenseMs > 0)) return null;
+    if (mode === 'hunt' && !(signals.captures > 0 || signals.traits > 0)) return null;
     if (mode === 'trials' && (signals.standardizedKit !== true || signals.objectiveProgress !== 8)) return null;
     return { matchId:result.matchId, finishedAt };
   } catch { return null; }
@@ -48,6 +65,22 @@ export function createGuildMissions({ database, rpc, now = Date.now }) {
     WHERE r.account_id=? AND json_extract(r.payload,'$.mode')=?
       AND json_extract(r.payload,'$.finishedAt')>? AND json_extract(r.payload,'$.finishedAt')<=?
     ORDER BY json_extract(r.payload,'$.finishedAt'),r.match_id`);
+  async function campaignStatus(projectId, time) {
+    if (!economyDeployment.accountId || projectId.length > 48) return { state:'unfunded' };
+    try {
+      const account_id = economyDeployment.accountId;
+      const code = await rpc('query', { request_type:'view_account', account_id, finality:'final' });
+      if (!code.block_hash || !guildMissionCodeHashes.includes(code.code_hash)) return { state:'unavailable' };
+      const response = await rpc('query', {
+        request_type:'call_function', account_id, method_name:'get_campaign', block_id:code.block_hash,
+        args_base64:Buffer.from(JSON.stringify({campaign_id:'guild-mission:' + projectId})).toString('base64'),
+      });
+      if (response.block_hash !== code.block_hash || !Array.isArray(response.result)) return { state:'unavailable' };
+      return describeGuildCampaign(JSON.parse(Buffer.from(response.result).toString()), time);
+    } catch {
+      return { state:'unavailable' };
+    }
+  }
   async function snapshot(projectId, account) {
     const account_id = guildDeployment.accountId;
     const code = await rpc('query',{request_type:'view_account',account_id,finality:'final'});
@@ -71,11 +104,12 @@ export function createGuildMissions({ database, rpc, now = Date.now }) {
   return async (account, {projectId, mode}, action) => {
     if (typeof projectId !== 'string' || !idPattern.test(projectId) ||
         (action === 'accept' && !modes.includes(mode))) return {status:400,data:{error:'Invalid guild mission.'}};
+    const time = now();
+    const reward = campaignStatus(projectId,time);
     const current = await snapshot(projectId, account);
     if (!current?.member) return {status:403,data:{error:'Join the project guild before accepting a mission.'}};
     const {project} = current;
     const deadline = Number(BigInt(project.deadline) / 1_000_000n);
-    const time = now();
     if (action === 'accept') {
       if (project.status !== 'open' || time >= deadline) return {status:409,data:{error:'This project is closed.'}};
       accept.run(account,projectId,mode,project.terms_hash,time,deadline);
@@ -96,6 +130,6 @@ export function createGuildMissions({ database, rpc, now = Date.now }) {
         valid && project.status==='open' && time<row.deadline?'accepted':'closed',
         matchId:valid?row.match_id:null, finishedAt:valid?row.completed_at:null};
     });
-    return {status:200,data:{missions}};
+    return {status:200,data:{missions,reward:await reward}};
   };
 }

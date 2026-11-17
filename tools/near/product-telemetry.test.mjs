@@ -1,0 +1,31 @@
+import assert from 'node:assert/strict';
+import { DatabaseSync } from 'node:sqlite';
+import test from 'node:test';
+import { createProductTelemetry, productCohortReport } from '../../server/near/product-telemetry.mjs';
+
+test('cohort counts browsers once and excludes demos and incomplete retention dates', t => {
+  const database = new DatabaseSync(':memory:');
+  t.after(() => database.close());
+  const day = 86_400_000;
+  let now = day * 10;
+  const metrics = createProductTelemetry(database, () => now);
+  const event = { visitor: 'a'.repeat(32), eventId: '1'.repeat(32), name: 'landing', audience: 'guest', context: 'menu' };
+  assert.equal(metrics.record({ ...event, email: 'ignored' }), true);
+  assert.equal(metrics.record(event), true);
+  now += day;
+  assert.equal(metrics.record({ ...event, eventId: '2'.repeat(32), name: 'match_started', context: 'practice' }), true);
+  assert.equal(metrics.record({ ...event, eventId: '3'.repeat(32), name: 'match_started', context: 'practice' }), true);
+  assert.equal(metrics.record({ ...event, visitor: 'b'.repeat(32), context: 'demo' }), true);
+  assert.equal(metrics.record({ ...event, name: 'invented' }), false);
+  assert.equal(productCohortReport(database, now).d1Eligible, 0);
+  const report = productCohortReport(database, now + day);
+  assert.equal(report.browsers, 1);
+  assert.equal(report.secondMatch, 1);
+  assert.equal(report.d1Returned, 1);
+  assert.equal(report.d7Eligible, 0);
+  assert.equal(report.contextsSeen.menu, 1);
+  assert.ok(!JSON.stringify(report).includes(event.visitor));
+  now += day * 31;
+  assert.equal(metrics.expire(), 4);
+  assert.equal(productCohortReport(database, now).browsers, 0);
+});

@@ -26,7 +26,7 @@ export class HuntRoomSession extends EventTarget{
   }
   if(!current())throw Error('Wallet or selected Fox changed. Join the room again.');
  }
- async settings(mapId,time,mode){await this.request('settings',{mapId,time,mode});if(mode&&this.room?.config?.mode!==mode)throw Error('The room server needs an update. Restart the relay to enable this mode.');}
+ async settings(mapId,time,mode,{cup=false,cupDay}={}){await this.request('settings',{mapId,time,mode,cup,cupDay});if(mode&&this.room?.config?.mode!==mode)throw Error('The room server needs an update. Restart the relay to enable this mode.');}
  async ready(){await this.request('ready',{ready:!this.room.players.find(p=>p.id===this.id)?.ready});}
  async start(){await this.request('start');}
  async poll(){if(this.closed)return;const changed=async()=>{if(!this.playerCurrent||this.playerCurrent())return false;await this.leave();this.menus.toast('Wallet or selected Fox changed. Start the match again.');return true;};if(await changed())return;try{const r=this.runtime,command=this.command;const out=await this.request('sync',r?this.isHost?{snapshot:this.room.go?this.replica.snapshot():null}:{input:this.replica.input(),command}:{});if(this.closed||await changed())return;if(this.command===command)this.command=null;this.failures=0;

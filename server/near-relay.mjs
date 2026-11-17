@@ -6,7 +6,7 @@ import { testnetRequest } from './near/testnet-rpc.mjs';
 import { mkdirSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 
-const port = Number(process.env.NEAR_RELAY_PORT || 8818);
+const port = Number(process.env.NEAR_RELAY_PORT || process.env.PORT || 8818);
 const origins = process.env.NEAR_GAME_ORIGINS?.split(',').map(value => value.trim()).filter(Boolean);
 const pilotOrigin = 'http://127.0.0.1:8819';
 const socialOrigins = (process.env.NEAR_SOCIAL_ORIGINS ?? '').split(',').map(value => value.trim()).filter(Boolean);
@@ -23,6 +23,7 @@ const nearAuth = new NearWalletAuth({
 const options = { nearAuth };
 let database;
 let rewardTimer;
+let telemetryTimer;
 let indexTimer;
 let indexWork;
 let economyIndex;
@@ -52,11 +53,21 @@ if (process.env.NEAR_QUARTERMASTER_KEY_FILE) {
   const { createFoxUsage } = await import('./near/usage.mjs');
   const { createFoxPassportRoutes } = await import('./near/passport-routes.mjs');
   const { createGuildMissions } = await import('./near/guild-missions.mjs');
+  const { createGuildCommunity } = await import('./near/community-events.mjs');
+  const { createProductTelemetry } = await import('./near/product-telemetry.mjs');
   const file = resolve(process.env.NEAR_ECONOMY_DB || 'outputs/near-economy.sqlite');
   mkdirSync(dirname(file), { recursive: true });
   database = openRewardDatabase(file);
+  const telemetry = createProductTelemetry(database);
+  telemetry.expire();
+  telemetryTimer=setInterval(()=>telemetry.expire(),3_600_000).unref();
   const { bootstrapFixedRewards } = await import('./near/reward-bootstrap.mjs');
   const config = JSON.parse(await (await import('node:fs/promises')).readFile(new URL('../config/economy.testnet.json', import.meta.url), 'utf8'));
+  const practiceOnly = process.env.NEAR_PRACTICE_ONLY === '1';
+  if (practiceOnly) {
+    Object.assign(config.features, { nearRewards:false, passport:false, materials:false });
+    config.ranking.enabledModes = [];
+  }
   options.nearFixedRewards = await bootstrapFixedRewards({ database, config });
   const usage = createFoxUsage({ database });
   let career;
@@ -67,7 +78,7 @@ if (process.env.NEAR_QUARTERMASTER_KEY_FILE) {
   const { bootstrapEconomyIndex } = await import('./near/indexer-bootstrap.mjs');
   economyIndex=bootstrapEconomyIndex({ database });
   const { readPublishedQuartermasterOrders } = await import('./near/quartermaster-orders.mjs');
-  const gasBudget = process.env.NEAR_GAS_SPONSOR_BUDGET_ATOMIC;
+  const gasBudget = practiceOnly ? '0' : process.env.NEAR_GAS_SPONSOR_BUDGET_ATOMIC;
   let gasSponsor;
   if (gasBudget && gasBudget !== '0') {
     const { NEAR_GAS_SPONSOR_ACCOUNT: signerId, NEAR_GAS_SPONSOR_KEY_FILE: keyFile } = process.env;
@@ -87,14 +98,16 @@ if (process.env.NEAR_QUARTERMASTER_KEY_FILE) {
       enabled: true, budgetAtomic: gasBudget, maxDepositAtomic: '0', maxGas:'20000000000000', oneRegistrationPerAccount:true,
       allowlist: { [poolDeployment.accountId]: ['register'] } });
   }
-  options.nearRoutes = createFoxPassportRoutes({ passport, usage, nearAuth, fixedRewards: options.nearFixedRewards,
-    guildMissions:createGuildMissions({database,rpc:async (method,params)=>{
+  const guildRpc = async (method,params)=>{
       const response=await testnetRequest(method,params,{id:'guild-missions',timeoutMs:10_000});
       if(!response.ok)throw Error('Guild Testnet RPC unavailable.');
       const envelope=await response.json();
       if(envelope.error||envelope.result===undefined)throw Error('Guild Testnet RPC unavailable.');
       return envelope.result;
-    }}),
+  };
+  options.nearRoutes = createFoxPassportRoutes({ passport, usage, nearAuth, fixedRewards: options.nearFixedRewards,
+    guildMissions:createGuildMissions({database,rpc:guildRpc}),
+    guildCommunity:createGuildCommunity({database,rpc:guildRpc}),
     economyIndex,quartermaster:{enabled:false,budgetFoxo:config.quartermaster.budgetFoxo},
     quartermasterOrders: { list: () => readPublishedQuartermasterOrders(database) }, gasSponsor,
     gasEligibility: async account => (await bossPool?.eligibility(account))?.status === 'confirmed',
@@ -113,9 +126,29 @@ if (process.env.NEAR_QUARTERMASTER_KEY_FILE) {
   const { bootstrapMaterials } = await import('./near/material-bootstrap.mjs');
   const materials = await bootstrapMaterials({ database, config });
   const { bootstrapPool } = await import('./near/pool-bootstrap.mjs');
-  const bossPool = await bootstrapPool({ database, config });
+  const bossPool = practiceOnly ? null : await bootstrapPool({ database, config });
+  const { createHuntReplayService } = await import('./near/replay-service.mjs');
+  options.nearReplay = createHuntReplayService(database);
+  options.cupDatabase = database;
   const existingRoutes=options.nearRoutes;
   options.nearRoutes=async request=>{
+    if (request.method==='POST' && request.url==='/near/telemetry') {
+      if (!nearAuth.origins.has(request.headers.origin)) return {status:403,data:{accepted:false}};
+      const accepted=telemetry.record(request.body);
+      return {status:accepted?200:400,data:{accepted}};
+    }
+    if(request.method==='POST' && request.url==='/near/replay/share'){
+      const account=nearAuth.account(request.body?.nearSession,request.headers.origin);
+      const matchId=request.body?.matchId;
+      if(typeof matchId!=='string'||matchId.length>120)return {status:400,data:{error:'Invalid match.'}};
+      const key=options.nearReplay.share(matchId,account);
+      return key?{status:200,data:{key}}:{status:404,data:{error:'Replay unavailable.'}};
+    }
+    const replayPath=/^\/near\/replay\/([\w-]{24})$/.exec(request.url);
+    if(request.method==='GET' && replayPath){
+      const replay=options.nearReplay.read(replayPath[1]);
+      return replay?{status:200,data:replay}:{status:404,data:{error:'Replay unavailable.'}};
+    }
     if(request.method==='POST' && request.url==='/near/pool/eligibility'){
       const account=nearAuth.account(request.body?.nearSession,request.headers.origin);
       return {status:200,data:bossPool ? await bossPool.eligibility(account) : {status:'unavailable'}};
@@ -144,7 +177,8 @@ if (process.env.NEAR_QUARTERMASTER_KEY_FILE) {
     }, 5000);
     rewardTimer.unref();
   }
-  options.runner = new SimulationRunner({
+  options.hostedPractice = practiceOnly && process.env.NEAR_HOSTED_PRACTICE === '1';
+  if (!options.hostedPractice) options.runner = new SimulationRunner({
     relayURL: 'http://127.0.0.1:' + port,
     gameURL: process.env.NEAR_GAME_URL || 'http://127.0.0.1:8817/dist/',
   });
@@ -160,6 +194,7 @@ if (database) {
     closing = true;
     shuttingDown = true;
     clearInterval(rewardTimer);
+    clearInterval(telemetryTimer);
     clearInterval(indexTimer);
     for (const room of server.rooms.values()) server.closeRoom(room.code, 'Match server restarting');
     await options.runner?.closeAll();

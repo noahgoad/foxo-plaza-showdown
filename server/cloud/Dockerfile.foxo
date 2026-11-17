@@ -1,0 +1,18 @@
+FROM node:24-bookworm-slim
+RUN apt-get update && apt-get install -y --no-install-recommends chromium ca-certificates fonts-liberation tini && rm -rf /var/lib/apt/lists/*
+WORKDIR /app
+RUN apt-get update && apt-get install -y --no-install-recommends chromium-sandbox && rm -rf /var/lib/apt/lists/*
+COPY package.json package-lock.json ./
+RUN npm ci --omit=dev --ignore-scripts
+COPY server/cloud/package.json server/cloud/package-lock.json ./server/cloud/
+RUN npm ci --prefix server/cloud --omit=dev && ln -s /app/server/cloud/node_modules/puppeteer-core /app/node_modules/puppeteer-core && mkdir -p /tmp/foxo && chown node:node /tmp/foxo
+COPY server ./server
+COPY src ./src
+COPY config ./config
+COPY tools/near/reconcile-ledger.mjs ./tools/near/
+COPY assets/near-fox/*.js ./assets/near-fox/
+COPY assets/near-fox/*.json ./assets/near-fox/
+ENV NODE_ENV=production NEAR_AUTHORITATIVE_RESULTS=1 NEAR_PRACTICE_ONLY=1 NEAR_ECONOMY_DB=/tmp/foxo/practice.sqlite NEAR_GAME_URL=https://foxo-plaza.vercel.app/ CHOG_BROWSER_PATH=/usr/bin/chromium CHOG_SIM_CPU_ONLY=1 CHOG_MAX_REWARD_ROOMS=1 CHOG_MAX_QUEUED_ROOMS=4
+USER node
+ENTRYPOINT ["/usr/bin/tini","--"]
+CMD ["node","server/near-relay.mjs"]
